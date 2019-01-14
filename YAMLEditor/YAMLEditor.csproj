@@ -67,7 +67,6 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Model\YamlLeaf.cs" />
     <EmbeddedResource Include="YAMLEditorForm.resx">
       <DependentUpon>YAMLEditorForm.cs</DependentUpon>
     </EmbeddedResource>

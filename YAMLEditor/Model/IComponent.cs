@@ -13,6 +13,6 @@ namespace YAMLEditor
         void add(IComponent child);
         void remove(IComponent child);
         Object getValue();
-        void setValue(string value);
+        void setValue(Object value);
     }
 }
