@@ -9,10 +9,8 @@ namespace YAMLEditor
     interface IComponent
     {
         IComponent getChild(int i);
-        List<IComponent> getChildren();
         void add(IComponent child);
         void remove(IComponent child);
-        Object getValue();
         void setValue(Object value);
     }
 }

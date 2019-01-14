@@ -9,42 +9,34 @@ namespace YAMLEditor
 {
     class YamlComponent : IComponent
     {
-        public List<IComponent> mChildren;
-        public Object value;
+        public List<IComponent> children { get; }
+        public Object value { get; set; }
+        public string filepath { get; }
 
-        public YamlComponent(List<IComponent> aChildren = null)
+        public YamlComponent(string aFilepath, List<IComponent> aChildren = null)
         {
-            mChildren = aChildren;
-            value = mChildren;
+            children = aChildren;
+            value = children;
+            filepath = aFilepath;
         }
 
         public void add(IComponent child)
         {
-            mChildren.Add(child);
-            value = mChildren;
+            children.Add(child);
+            value = children;
         }
 
         public void remove(IComponent child)
         {
-            mChildren.Remove(child);
-            value = mChildren;
+            children.Remove(child);
+            value = children;
         }
 
         public IComponent getChild(int i)
         {
-            if(mChildren.Count >= i)
-                return mChildren[i];
+            if(children.Count >= i)
+                return children[i];
             return null;
-        }
-
-        public List<IComponent> getChildren()
-        {
-            return mChildren;
-        }
-
-        public Object getValue()
-        {
-            return value;
         }
 
         public void setValue(Object aValue)
