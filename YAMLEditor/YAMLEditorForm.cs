@@ -174,5 +174,27 @@ namespace YAMLEditor
                 }
             }
         }
+
+        private IDictionary<YamlNode, YamlNode> getDataStructure(string filename)
+        {
+            // Read file
+            var yaml = new YamlStream();
+            try
+            {
+                using (var stream = new StreamReader(filename))
+                {
+                    yaml.Load(stream);
+                }
+            }
+            catch (Exception exception)
+            {
+                mLogger.WriteLine(exception.Message);
+            }
+
+            if (yaml.Documents.Count == 0) return null;
+
+            YamlMappingNode mapping = yaml.Documents[0].RootNode as YamlMappingNode;
+            return mapping?.Children;
+        }
     }
 }
