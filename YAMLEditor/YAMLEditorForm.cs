@@ -10,13 +10,16 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using YamlDotNet.RepresentationModel;
 using YAMLEditor.Logging;
+using YAMLEditor.Patterns;
 
 namespace YAMLEditor
 {
     public partial class YAMLEditorForm : Form
     {
-        //use mLogger.Write(string message) to log to the textbox
-        private ILogger mLogger = Logger.Instance;
+		private CommandManager Manager = new CommandManager();
+
+		//use mLogger.Write(string message) to log to the textbox
+		private ILogger mLogger = Logger.Instance;
         public IComponent composite;
         public IComponent currentParent;
 
@@ -313,5 +316,15 @@ namespace YAMLEditor
             YamlMappingNode mapping = yaml.Documents[0].RootNode as YamlMappingNode;
             return mapping?.Children;
         }
-    }
+
+		private void OnUndo(object sender, EventArgs e)
+		{
+			Manager.Undo();
+		}
+
+		private void OnRedo(object sender, EventArgs e)
+		{
+			Manager.Redo();
+		}
+	}
 }

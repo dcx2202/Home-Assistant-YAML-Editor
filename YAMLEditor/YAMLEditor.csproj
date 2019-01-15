@@ -59,6 +59,11 @@
     <Compile Include="Logging\IRecorder.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Model\Component.cs" />
+    <Compile Include="Patterns\CommandManager.cs" />
+    <Compile Include="Patterns\ICommand.cs" />
+    <Compile Include="Patterns\ICommandManager.cs" />
+    <Compile Include="Patterns\ISubject.cs" />
+    <Compile Include="Patterns\Subject.cs" />
     <Compile Include="YAMLEditorForm.cs">
       <SubType>Form</SubType>
     </Compile>
