@@ -6,11 +6,15 @@ using System.Threading.Tasks;
 
 namespace YAMLEditor
 {
-    interface IComponent
+    public interface IComponent
     {
-        IComponent getChild(int i);
         void add(IComponent child);
         void remove(IComponent child);
-        void setValue(Object value);
+        IComponent getChild(int i);
+        List<IComponent> getChildren();
+        IComponent getParent();
+        string getName();
+        void setName(string aName);
+        string getFilePath();
     }
 }

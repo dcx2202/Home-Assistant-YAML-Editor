@@ -17,11 +17,15 @@ namespace YAMLEditor
     {
         //use mLogger.Write(string message) to log to the textbox
         private ILogger mLogger = Logger.Instance;
+        public IComponent composite;
+        public IComponent currentParent;
 
         public YAMLEditorForm()
         {
             InitializeComponent();
             mLogger.Recorder = new TextBoxRecorder(mainTextBox);
+            composite = new Component("root", "root", null);
+            currentParent = composite;
         }
 
         private void OnExit(object sender, EventArgs e)
@@ -44,7 +48,62 @@ namespace YAMLEditor
                 root.ImageIndex = root.SelectedImageIndex = 3;
                 LoadFile(root, dialog.FileName);
                 root.Expand();
+
+                createDataStructure(getDataStructure(dialog.FileName));
+                PrintComposite(composite, "", true);
             }
+        }
+
+        public void PrintComposite(IComponent aRoot, String indent, bool last)
+        {
+            mLogger.WriteLine(indent + "+- " + aRoot.getName());
+            indent += last ? "   " : "|    ";
+
+            var nchildren = aRoot.getChildren().Count;
+
+            for (int i = 0; i < nchildren; i++)
+            {
+                PrintComposite(aRoot.getChild(i), indent, i == nchildren - 1);
+            }
+        }
+
+        private void createDataStructure(IDictionary<YamlNode, YamlNode> structure)
+        {
+            foreach(YamlNode key in structure.Keys)
+            {
+                // Create a new component for this node
+                IComponent comp = new Component(key.ToString(), "teste", currentParent);
+
+                // Add it to the current parent
+                currentParent.add(comp);
+
+                // Get the value
+                var node = structure[key] as YamlMappingNode;
+
+                // Holds the next level
+                IDictionary<YamlNode, YamlNode> nextLevel;
+
+                // Node is a leaf
+                if (node == null)
+                    nextLevel = null;
+
+                // Node isn't a leaf
+                else
+                {
+                    currentParent = comp; // update the current parent before we go into the next level down
+                    nextLevel = node.Children; // get the next level
+                }
+
+                // if we are in a leaf then continue
+                if (nextLevel == null)
+                    continue;
+
+                // else go one level deeper
+                createDataStructure(nextLevel);
+            }
+
+            if(currentParent.getParent() != null)
+                currentParent = currentParent.getParent();
         }
 
         private void LoadFile(TreeNode node, string filename)

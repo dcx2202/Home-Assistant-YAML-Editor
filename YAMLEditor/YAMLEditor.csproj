@@ -58,7 +58,7 @@
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\IRecorder.cs" />
     <Compile Include="Logging\Logger.cs" />
-    <Compile Include="Model\YamlComponent.cs" />
+    <Compile Include="Model\Component.cs" />
     <Compile Include="YAMLEditorForm.cs">
       <SubType>Form</SubType>
     </Compile>
