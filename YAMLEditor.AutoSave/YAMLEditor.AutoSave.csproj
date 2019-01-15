@@ -43,11 +43,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutoSaveMemento.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SaveTimer.cs" />
+    <Compile Include="AutoSaver.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\YAMLEditor\YAMLEditor.csproj">
+      <Project>{1c860fce-2645-4621-92b6-abb73d4b7b1e}</Project>
+      <Name>YAMLEditor</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

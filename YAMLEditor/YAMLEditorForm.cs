@@ -268,5 +268,10 @@ namespace YAMLEditor
 		{
 			Manager.Redo();
 		}
-	}
+
+        private void saveToolStripButton_Click(object sender, EventArgs e)
+        {
+
+        }
+    }
 }
