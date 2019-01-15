@@ -15,6 +15,7 @@ namespace YAMLEditor
         IComponent getParent();
         string getName();
         void setName(string aName);
-        string getFilePath();
+        string getFileName();
+        void setFileName(string aFileName);
     }
 }

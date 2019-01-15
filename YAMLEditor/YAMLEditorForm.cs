@@ -49,11 +49,18 @@ namespace YAMLEditor
                 LoadFile(root, dialog.FileName);
                 root.Expand();
 
-                createDataStructure(getDataStructure(dialog.FileName));
+                // Create the composite
+                PopulateComposite(getDataStructure(dialog.FileName));
+
+                // Update the components' filenames
+                setFileNames(dialog.FileName);
+
+                // Print the composite
                 PrintComposite(composite, "", true);
             }
         }
 
+        // Prints the composite
         public void PrintComposite(IComponent aRoot, String indent, bool last)
         {
             mLogger.WriteLine(indent + "+- " + aRoot.getName());
@@ -67,12 +74,62 @@ namespace YAMLEditor
             }
         }
 
-        private void createDataStructure(IDictionary<YamlNode, YamlNode> structure)
+        // Update the components' filenames
+        public void setFileNames(string FilePath)
+        {
+            // List that holds the components (level 1 only)
+            Dictionary<string, IComponent> components = new Dictionary<string, IComponent>();
+
+            // Add the components to the list
+            foreach(Component node in composite.getChildren())
+                components.Add(node.getName(), node);
+
+            // List that holds the names of the files that are to be parsed for the components' names
+            List<string> files = new List<string>() { FilePath };
+
+            // Read all the lines of the opened file
+            var lines = File.ReadAllLines(FilePath);
+
+            // For each line in the file check if it includes another file
+            // If so then add that file to the list of files
+            foreach(string line in lines)
+            {
+                if (line.Contains("!include"))
+                {
+                    var a = line.Split(' ');
+                    foreach(string s in a)
+                    {
+                        if (s.Contains(".yaml"))
+                            files.Add(s);
+                    }
+                }
+            }
+
+            // For each file to be checked, read all of its lines and look for the components' names
+            foreach (string file in files)
+            {
+                // Arranjar os paths. O FilePath (ficheiro que foi aberto) usa absoluto, os outros ficheiros em files so sao os nomes.
+                lines = File.ReadAllLines(file);
+                
+                foreach(string line in lines)
+                {
+                    foreach(string component in components.Keys)
+                    {
+                        // If this component is in this file then set this component and its children's file names correctly
+                        if (line.Contains(component + ":"))
+                            components[component].setFileName(file);
+                    }
+                }
+            }
+        }
+
+        // Populates the composite
+        private void PopulateComposite(IDictionary<YamlNode, YamlNode> structure)
         {
             foreach(YamlNode key in structure.Keys)
             {
                 // Create a new component for this node
-                IComponent comp = new Component(key.ToString(), "teste", currentParent);
+                IComponent comp = new Component(key.ToString(), "", currentParent);
 
                 // Add it to the current parent
                 currentParent.add(comp);
@@ -99,9 +156,10 @@ namespace YAMLEditor
                     continue;
 
                 // else go one level deeper
-                createDataStructure(nextLevel);
+                PopulateComposite(nextLevel);
             }
 
+            // Go up one level
             if(currentParent.getParent() != null)
                 currentParent = currentParent.getParent();
         }
