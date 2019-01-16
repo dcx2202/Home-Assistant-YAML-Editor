@@ -110,18 +110,23 @@ namespace YAMLEditor
                 {
                     var scalar = child.Value as YamlScalarNode;
 
-                    var node = root.Nodes.Add($"{key.Value}: {scalar.Value}");
-                    node.Tag = child;
-                    node.ImageIndex = node.SelectedImageIndex = GetImageIndex(scalar);
-
                     IComponent comp = new Component(key.Value, filename, currentParent);
                     currentParent.add(comp);
+
+                    var node = root.Nodes.Add($"{key.Value}");
+                    node.Tag = comp;
+                    node.ImageIndex = node.SelectedImageIndex = GetImageIndex(scalar);
+
                     currentParent = comp;
 
                     if (scalar.Value != "")
                     {
                         comp = new Component(scalar.Value, filename, currentParent);
                         currentParent.add(comp);
+
+                        node = root.Nodes[root.Nodes.Count - 1].Nodes.Add($"{scalar.Value}");
+                        node.Tag = comp;
+                        node.ImageIndex = node.SelectedImageIndex = GetImageIndex(scalar);
                     }
 
                     if (scalar.Tag == "!include")
@@ -133,24 +138,26 @@ namespace YAMLEditor
                 }
                 else if(child.Value is YamlSequenceNode)
                 {
-                    var node = root.Nodes.Add(key.Value);
-                    node.Tag = child.Value;
-                    node.ImageIndex = node.SelectedImageIndex = GetImageIndex(child.Value);
-
                     IComponent comp = new Component(key.Value, filename, currentParent);
                     currentParent.add(comp);
+
+                    var node = root.Nodes.Add(key.Value);
+                    node.Tag = comp;
+                    node.ImageIndex = node.SelectedImageIndex = GetImageIndex(child.Value);
+
                     currentParent = comp;
 
                     LoadChildren(node, child.Value as YamlSequenceNode);
                 }
                 else if(child.Value is YamlMappingNode)
                 {
-                    var node = root.Nodes.Add(key.Value);
-                    node.Tag = child.Value;
-                    node.ImageIndex = node.SelectedImageIndex = GetImageIndex(child.Value);
-
                     IComponent comp = new Component(key.Value, filename, currentParent);
                     currentParent.add(comp);
+
+                    var node = root.Nodes.Add(key.Value);
+                    node.Tag = comp;
+                    node.ImageIndex = node.SelectedImageIndex = GetImageIndex(child.Value);
+
                     currentParent = comp;
 
                     LoadChildren(node, child.Value as YamlMappingNode);
@@ -184,35 +191,32 @@ namespace YAMLEditor
             {
                 if(child is YamlSequenceNode)
                 {
-                    var node = root.Nodes.Add(root.Text);
-                    node.Tag = child;
-                    node.ImageIndex = node.SelectedImageIndex = GetImageIndex(child);
-
                     IComponent comp = new Component(root.Text, filename, currentParent);
                     currentParent.add(comp);
+
+                    var node = root.Nodes.Add(root.Text);
+                    node.Tag = comp;
+                    node.ImageIndex = node.SelectedImageIndex = GetImageIndex(child);
+
                     currentParent = comp;
 
                     LoadChildren(node, child as YamlSequenceNode);
                 }
                 else if(child is YamlMappingNode)
                 {
-                    var node = root.Nodes.Add(root.Text);
-                    node.Tag = child;
-                    node.ImageIndex = node.SelectedImageIndex = GetImageIndex(child);
-                    var childnode = child as YamlMappingNode;
-
-                    LoadChildren(node, child as YamlMappingNode);
-
+                    LoadChildren(root, child as YamlMappingNode);
                 }
                 else if(child is YamlScalarNode)
                 {
-                    var scalar = child as YamlScalarNode;
-                    var node = root.Nodes.Add(scalar.Value);
-                    node.Tag = child;
-                    node.ImageIndex = node.SelectedImageIndex = GetImageIndex(child);
+                    var scalar = child as YamlScalarNode; 
 
                     IComponent comp = new Component(root.Text, filename, currentParent);
                     currentParent.add(comp);
+
+                    var node = root.Nodes.Add(scalar.Value);
+                    node.Tag = comp;
+                    node.ImageIndex = node.SelectedImageIndex = GetImageIndex(child);
+
                     currentParent = comp;
                 }
             }
