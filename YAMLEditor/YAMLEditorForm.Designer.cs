@@ -489,7 +489,7 @@
             // mainSplitContainer.Panel2
             // 
             this.mainSplitContainer.Panel2.Controls.Add(this.mainTabControl);
-            this.mainSplitContainer.Size = new System.Drawing.Size(801, 243);
+            this.mainSplitContainer.Size = new System.Drawing.Size(801, 241);
             this.mainSplitContainer.SplitterDistance = 375;
             this.mainSplitContainer.SplitterWidth = 2;
             this.mainSplitContainer.TabIndex = 3;
@@ -513,7 +513,7 @@
             this.mainTextBox.Multiline = true;
             this.mainTextBox.Name = "mainTextBox";
             this.mainTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.mainTextBox.Size = new System.Drawing.Size(801, 90);
+            this.mainTextBox.Size = new System.Drawing.Size(801, 92);
             this.mainTextBox.TabIndex = 4;
             // 
             // mainTabControl
@@ -525,7 +525,7 @@
             this.mainTabControl.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.mainTabControl.Name = "mainTabControl";
             this.mainTabControl.SelectedIndex = 0;
-            this.mainTabControl.Size = new System.Drawing.Size(424, 243);
+            this.mainTabControl.Size = new System.Drawing.Size(424, 241);
             this.mainTabControl.TabIndex = 1;
             // 
             // tabPage1
@@ -535,7 +535,7 @@
             this.tabPage1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.tabPage1.Size = new System.Drawing.Size(416, 217);
+            this.tabPage1.Size = new System.Drawing.Size(416, 215);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Properties";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -546,7 +546,7 @@
             this.mainPropertyGrid.Location = new System.Drawing.Point(2, 2);
             this.mainPropertyGrid.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.mainPropertyGrid.Name = "mainPropertyGrid";
-            this.mainPropertyGrid.Size = new System.Drawing.Size(412, 213);
+            this.mainPropertyGrid.Size = new System.Drawing.Size(412, 211);
             this.mainPropertyGrid.TabIndex = 0;
             // 
             // helpTabPage
@@ -586,16 +586,23 @@
             // 
             this.splitContainer2.Panel2.Controls.Add(this.mainTextBox);
             this.splitContainer2.Size = new System.Drawing.Size(801, 337);
-            this.splitContainer2.SplitterDistance = 243;
+            this.splitContainer2.SplitterDistance = 241;
             this.splitContainer2.TabIndex = 4;
             // 
             // mainTreeView
             // 
             this.mainTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.mainTreeView.FullRowSelect = true;
+            this.mainTreeView.ImageIndex = 0;
+            this.mainTreeView.ImageList = this.mainImageList;
             this.mainTreeView.Location = new System.Drawing.Point(0, 0);
+            this.mainTreeView.Margin = new System.Windows.Forms.Padding(2);
             this.mainTreeView.Name = "mainTreeView";
-            this.mainTreeView.Size = new System.Drawing.Size(375, 243);
+            this.mainTreeView.SelectedImageIndex = 0;
+            this.mainTreeView.Size = new System.Drawing.Size(375, 241);
             this.mainTreeView.TabIndex = 0;
+            this.mainTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnAfterSelect);
+            this.mainTreeView.DoubleClick += new System.EventHandler(this.OnDoubleClick);
             // 
             // YAMLEditorForm
             // 
@@ -686,8 +693,8 @@
         private System.Windows.Forms.TextBox mainTextBox;
 		private System.Windows.Forms.ToolStripButton toolStripButton1;
 		private System.Windows.Forms.ToolStripButton toolStripButton2;
-        private System.Windows.Forms.TreeView mainTreeView;
         private System.Windows.Forms.SplitContainer splitContainer2;
+        private System.Windows.Forms.TreeView mainTreeView;
     }
 }
 
