@@ -276,7 +276,10 @@ namespace YAMLEditor
 
 		private void NewComponent(object sender, EventArgs e)
 		{
-			string input = Interaction.InputBox("New Component", "Name of the new component:", "Default", -1, -1);
+			
+			NewComponent nc = new NewComponent();
+			nc.ShowDialog();
+			//string input = Interaction.InputBox("New Component", "Name of the new component:", "Default", -1, -1);
 		}
 
 		private void AboutButton(object sender, EventArgs e)

@@ -63,6 +63,12 @@
     <Compile Include="Commands\CommandManager.cs" />
     <Compile Include="Commands\ICommand.cs" />
     <Compile Include="Commands\ICommandManager.cs" />
+    <Compile Include="NewComponent.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NewComponent.Designer.cs">
+      <DependentUpon>NewComponent.cs</DependentUpon>
+    </Compile>
     <Compile Include="Observer\ISubject.cs" />
     <Compile Include="Observer\Subject.cs" />
     <Compile Include="YAMLEditorForm.cs">
@@ -73,6 +79,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="NewComponent.resx">
+      <DependentUpon>NewComponent.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="YAMLEditorForm.resx">
       <DependentUpon>YAMLEditorForm.cs</DependentUpon>
     </EmbeddedResource>
