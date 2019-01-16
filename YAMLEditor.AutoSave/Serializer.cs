@@ -17,10 +17,6 @@ namespace YAMLEditor.AutoSave
             this.output = output;
         }
 
-        public static void Main()
-        {
-        }
-
         public void PrintYAML<T>(T root)
         {
             var serializer = new SerializerBuilder().Build();
