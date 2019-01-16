@@ -10,15 +10,15 @@ namespace YAMLEditor
     class Component : IComponent
     {
         public List<IComponent> children;
-        public string filepath;
+        public string filename;
         public string name;
         public IComponent parent;
 
-        public Component(string aName, string aFilepath, IComponent aParent)
+        public Component(string aName, string aFileName, IComponent aParent)
         {
             children = new List<IComponent> { };
             parent = aParent;
-            filepath = aFilepath;
+            filename = aFileName;
             name = aName;
         }
 
@@ -59,9 +59,20 @@ namespace YAMLEditor
             name = aName;
         }
 
-        public string getFilePath()
+        public string getFileName()
         {
-            return filepath;
+            return filename;
+        }
+
+        public void setFileName(string aFileName)
+        {
+            if (children.Count > 0)
+            {
+                foreach (IComponent child in children)
+                    child.setFileName(aFileName);
+            }
+
+            filename = aFileName;
         }
     }
 }

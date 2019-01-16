@@ -12,8 +12,6 @@
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -35,6 +33,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -61,12 +60,11 @@
     <Compile Include="Logging\IRecorder.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Model\Component.cs" />
-    <Compile Include="Patterns\CommandManager.cs" />
-    <Compile Include="Patterns\ICommand.cs" />
-    <Compile Include="Patterns\ICommandManager.cs" />
-    <Compile Include="Patterns\ISubject.cs" />
-    <Compile Include="Patterns\Subject.cs" />
-    <Compile Include="Saver\Saver.cs" />
+    <Compile Include="Commands\CommandManager.cs" />
+    <Compile Include="Commands\ICommand.cs" />
+    <Compile Include="Commands\ICommandManager.cs" />
+    <Compile Include="Observer\ISubject.cs" />
+    <Compile Include="Observer\Subject.cs" />
     <Compile Include="YAMLEditorForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -108,11 +106,6 @@
   <ItemGroup>
     <None Include="Resources\favicon-192x1921.png" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\YAMLEditor.AutoSave\YAMLEditor.AutoSave.csproj">
-      <Project>{2812f5bc-ba53-4152-b648-652d125dc4a9}</Project>
-      <Name>YAMLEditor.AutoSave</Name>
-    </ProjectReference>
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
