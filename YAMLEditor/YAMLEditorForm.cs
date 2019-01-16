@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using YamlDotNet.RepresentationModel;
 using YAMLEditor.Logging;
 using YAMLEditor.Patterns;
+using Microsoft.VisualBasic;
 
 namespace YAMLEditor
 {
@@ -271,6 +272,20 @@ namespace YAMLEditor
 		private void OnRedo(object sender, EventArgs e)
 		{
 			Manager.Redo();
+		}
+
+		private void NewComponent(object sender, EventArgs e)
+		{
+			string input = Interaction.InputBox("New Component", "Name of the new component:", "Default", -1, -1);
+		}
+
+		private void AboutButton(object sender, EventArgs e)
+		{
+			MessageBox.Show("Made by: " +
+				"Diogo Cruz, " +
+				"Diogo Nóbrega, " +
+				"Francisco Teixeira, " +
+				"Marco Lima", "About");
 		}
 	}
 }
