@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,17 +11,20 @@ using System.Windows.Forms;
 using YamlDotNet.RepresentationModel;
 using YAMLEditor.Logging;
 using YAMLEditor.Patterns;
+using Microsoft.VisualBasic;
 
 namespace YAMLEditor
 {
     public partial class YAMLEditorForm : Form
     {
-        private CommandManager Manager = new CommandManager();
+		private CommandManager Manager = new CommandManager();
 
-        //use mLogger.Write(string message) to log to the textbox
-        private ILogger mLogger = Logger.Instance;
+		//use mLogger.Write(string message) to log to the textbox
+		private ILogger mLogger = Logger.Instance;
         public IComponent composite;
         public IComponent currentParent;
+        public string filename;
+        public string openedfilename;
 
         public YAMLEditorForm()
         {
@@ -50,14 +52,11 @@ namespace YAMLEditor
                 mainTreeView.Nodes.Clear();
                 var root = mainTreeView.Nodes.Add(Path.GetFileName(dialog.FileName));
                 root.ImageIndex = root.SelectedImageIndex = 3;
+
+                openedfilename = dialog.FileName;
+                filename = openedfilename;
                 LoadFile(root, dialog.FileName);
                 root.Expand();
-
-                // Create the composite
-                PopulateComposite(getDataStructure(dialog.FileName));
-
-                // Update the components' filenames
-                setFileNames(dialog.FileName);
 
                 // Print the composite
                 PrintComposite(composite, "", true);
@@ -72,100 +71,10 @@ namespace YAMLEditor
 
             var nchildren = aRoot.getChildren().Count;
 
-            for(int i = 0; i < nchildren; i++)
+            for (int i = 0; i < nchildren; i++)
             {
                 PrintComposite(aRoot.getChild(i), indent, i == nchildren - 1);
             }
-        }
-
-        // Update the components' filenames
-        public void setFileNames(string FilePath)
-        {
-            // List that holds the components (level 1 only)
-            Dictionary<string, IComponent> components = new Dictionary<string, IComponent>();
-
-            // Add the components to the list
-            foreach(Component node in composite.getChildren())
-                components.Add(node.getName(), node);
-
-            // List that holds the names of the files that are to be parsed for the components' names
-            List<string> files = new List<string>() { FilePath };
-
-            // Read all the lines of the opened file
-            var lines = File.ReadAllLines(FilePath);
-
-            // For each line in the file check if it includes another file
-            // If so then add that file to the list of files
-            foreach(string line in lines)
-            {
-                if(line.Contains("!include"))
-                {
-                    var a = line.Split(' ');
-                    foreach(string s in a)
-                    {
-                        if(s.Contains(".yaml"))
-                            files.Add(s);
-                    }
-                }
-            }
-
-            // For each file to be checked, read all of its lines and look for the components' names
-            foreach(string file in files)
-            {
-                // Arranjar os paths. O FilePath (ficheiro que foi aberto) usa absoluto, os outros ficheiros em files so sao os nomes.
-                lines = File.ReadAllLines(file);
-
-                foreach(string line in lines)
-                {
-                    foreach(string component in components.Keys)
-                    {
-                        // If this component is in this file then set this component and its children's file names correctly
-                        if(line.Contains(component + ":"))
-                            components[component].setFileName(file);
-                    }
-                }
-            }
-        }
-
-        // Populates the composite
-        private void PopulateComposite(IDictionary<YamlNode, YamlNode> structure)
-        {
-            foreach(YamlNode key in structure.Keys)
-            {
-                // Create a new component for this node
-                IComponent comp = new Component(key.ToString(), "", currentParent);
-
-                // Add it to the current parent
-                currentParent.add(comp);
-
-                // Get the value
-                var node = structure[key] as YamlMappingNode;
-
-                // Holds the next level
-                IDictionary<YamlNode, YamlNode> nextLevel;
-
-                // Node is a leaf
-                if(node == null)
-                    nextLevel = null;
-
-                // Node isn't a leaf
-                else
-                {
-                    currentParent = comp; // update the current parent before we go into the next level down
-                    nextLevel = node.Children; // get the next level
-                }
-
-                // if we are in a leaf then continue
-                if(nextLevel == null)
-                    continue;
-
-                // else go one level deeper
-                PopulateComposite(nextLevel);
-            }
-
-            // Go up one level
-            if(currentParent.getParent() != null)
-                currentParent = currentParent.getParent();
         }
 
         private void LoadFile(TreeNode node, string filename)
@@ -205,9 +114,21 @@ namespace YAMLEditor
                     node.Tag = child;
                     node.ImageIndex = node.SelectedImageIndex = GetImageIndex(scalar);
 
-                    if(scalar.Tag == "!include")
+                    IComponent comp = new Component(key.Value, filename, currentParent);
+                    currentParent.add(comp);
+                    currentParent = comp;
+
+                    if (scalar.Value != "")
                     {
+                        comp = new Component(scalar.Value, filename, currentParent);
+                        currentParent.add(comp);
+                    }
+
+                    if (scalar.Tag == "!include")
+                    {
+                        filename = scalar.Value;
                         LoadFile(node, scalar.Value);
+                        filename = openedfilename;
                     }
                 }
                 else if(child.Value is YamlSequenceNode)
@@ -215,6 +136,10 @@ namespace YAMLEditor
                     var node = root.Nodes.Add(key.Value);
                     node.Tag = child.Value;
                     node.ImageIndex = node.SelectedImageIndex = GetImageIndex(child.Value);
+
+                    IComponent comp = new Component(key.Value, filename, currentParent);
+                    currentParent.add(comp);
+                    currentParent = comp;
 
                     LoadChildren(node, child.Value as YamlSequenceNode);
                 }
@@ -224,9 +149,17 @@ namespace YAMLEditor
                     node.Tag = child.Value;
                     node.ImageIndex = node.SelectedImageIndex = GetImageIndex(child.Value);
 
+                    IComponent comp = new Component(key.Value, filename, currentParent);
+                    currentParent.add(comp);
+                    currentParent = comp;
+
                     LoadChildren(node, child.Value as YamlMappingNode);
                 }
+
+                if (currentParent.getParent() != null)
+                    currentParent = currentParent.getParent();
             }
+            
         }
 
         private int GetImageIndex(YamlNode node)
@@ -255,6 +188,10 @@ namespace YAMLEditor
                     node.Tag = child;
                     node.ImageIndex = node.SelectedImageIndex = GetImageIndex(child);
 
+                    IComponent comp = new Component(root.Text, filename, currentParent);
+                    currentParent.add(comp);
+                    currentParent = comp;
+
                     LoadChildren(node, child as YamlSequenceNode);
                 }
                 else if(child is YamlMappingNode)
@@ -262,8 +199,10 @@ namespace YAMLEditor
                     var node = root.Nodes.Add(root.Text);
                     node.Tag = child;
                     node.ImageIndex = node.SelectedImageIndex = GetImageIndex(child);
+                    var childnode = child as YamlMappingNode;
 
                     LoadChildren(node, child as YamlMappingNode);
+
                 }
                 else if(child is YamlScalarNode)
                 {
@@ -271,8 +210,15 @@ namespace YAMLEditor
                     var node = root.Nodes.Add(scalar.Value);
                     node.Tag = child;
                     node.ImageIndex = node.SelectedImageIndex = GetImageIndex(child);
+
+                    IComponent comp = new Component(root.Text, filename, currentParent);
+                    currentParent.add(comp);
+                    currentParent = comp;
                 }
             }
+
+            if (currentParent.getParent() != null)
+                currentParent = currentParent.getParent();
         }
 
         private void OnAfterSelect(object sender, TreeViewEventArgs e)
@@ -302,44 +248,44 @@ namespace YAMLEditor
             var yaml = new YamlStream();
             try
             {
-                using(var stream = new StreamReader(filename))
+                using (var stream = new StreamReader(filename))
                 {
                     yaml.Load(stream);
                 }
             }
-            catch(Exception exception)
+            catch (Exception exception)
             {
                 mLogger.WriteLine(exception.Message);
             }
 
-            if(yaml.Documents.Count == 0) return null;
+            if (yaml.Documents.Count == 0) return null;
 
             YamlMappingNode mapping = yaml.Documents[0].RootNode as YamlMappingNode;
             return mapping?.Children;
         }
 
-        private void OnUndo(object sender, EventArgs e)
-        {
-            Manager.Undo();
-        }
+		private void OnUndo(object sender, EventArgs e)
+		{
+			Manager.Undo();
+		}
 
-        private void OnRedo(object sender, EventArgs e)
-        {
-            Manager.Redo();
-        }
+		private void OnRedo(object sender, EventArgs e)
+		{
+			Manager.Redo();
+		}
 
-        private void NewComponent(object sender, EventArgs e)
-        {
-            string input = Interaction.InputBox("New Component", "Name of the new component:", "Default", -1, -1);
-        }
+		private void NewComponent(object sender, EventArgs e)
+		{
+			string input = Interaction.InputBox("New Component", "Name of the new component:", "Default", -1, -1);
+		}
 
-        private void AboutButton(object sender, EventArgs e)
-        {
-            MessageBox.Show("Made by: " +
-                            "Diogo Cruz, " +
-                            "Diogo Nóbrega, " +
-                            "Francisco Teixeira, " +
-                            "Marco Lima", "About");
-        }
-    }
+		private void AboutButton(object sender, EventArgs e)
+		{
+			MessageBox.Show("Made by: " +
+				"Diogo Cruz, " +
+				"Diogo Nóbrega, " +
+				"Francisco Teixeira, " +
+				"Marco Lima", "About");
+		}
+	}
 }
