@@ -112,12 +112,11 @@ namespace YAMLEditor
 
                     IComponent comp = new Component(key.Value, filename, currentParent);
                     currentParent.add(comp);
+                    currentParent = comp;
 
                     var node = root.Nodes.Add($"{key.Value}");
                     node.Tag = comp;
                     node.ImageIndex = node.SelectedImageIndex = GetImageIndex(scalar);
-
-                    currentParent = comp;
 
                     if (scalar.Value != "")
                     {
@@ -140,12 +139,11 @@ namespace YAMLEditor
                 {
                     IComponent comp = new Component(key.Value, filename, currentParent);
                     currentParent.add(comp);
+                    currentParent = comp;
 
                     var node = root.Nodes.Add(key.Value);
                     node.Tag = comp;
                     node.ImageIndex = node.SelectedImageIndex = GetImageIndex(child.Value);
-
-                    currentParent = comp;
 
                     LoadChildren(node, child.Value as YamlSequenceNode);
                 }
@@ -153,12 +151,11 @@ namespace YAMLEditor
                 {
                     IComponent comp = new Component(key.Value, filename, currentParent);
                     currentParent.add(comp);
+                    currentParent = comp;
 
                     var node = root.Nodes.Add(key.Value);
                     node.Tag = comp;
                     node.ImageIndex = node.SelectedImageIndex = GetImageIndex(child.Value);
-
-                    currentParent = comp;
 
                     LoadChildren(node, child.Value as YamlMappingNode);
                 }
@@ -193,12 +190,11 @@ namespace YAMLEditor
                 {
                     IComponent comp = new Component(root.Text, filename, currentParent);
                     currentParent.add(comp);
+                    currentParent = comp;
 
                     var node = root.Nodes.Add(root.Text);
                     node.Tag = comp;
                     node.ImageIndex = node.SelectedImageIndex = GetImageIndex(child);
-
-                    currentParent = comp;
 
                     LoadChildren(node, child as YamlSequenceNode);
                 }
@@ -212,12 +208,11 @@ namespace YAMLEditor
 
                     IComponent comp = new Component(root.Text, filename, currentParent);
                     currentParent.add(comp);
+                    currentParent = comp;
 
                     var node = root.Nodes.Add(scalar.Value);
                     node.Tag = comp;
                     node.ImageIndex = node.SelectedImageIndex = GetImageIndex(child);
-
-                    currentParent = comp;
                 }
             }
 
