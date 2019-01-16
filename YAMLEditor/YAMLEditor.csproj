@@ -71,6 +71,7 @@
     </Compile>
     <Compile Include="Observer\ISubject.cs" />
     <Compile Include="Observer\Subject.cs" />
+    <Compile Include="Saver\Saver.cs" />
     <Compile Include="YAMLEditorForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -115,6 +116,11 @@
   <ItemGroup>
     <None Include="Resources\favicon-192x1921.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\YAMLEditor.AutoSave\YAMLEditor.AutoSave.csproj">
+      <Project>{2812f5bc-ba53-4152-b648-652d125dc4a9}</Project>
+      <Name>YAMLEditor.AutoSave</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
