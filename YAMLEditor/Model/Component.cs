@@ -11,7 +11,7 @@ namespace YAMLEditor
     {
         public List<IComponent> children;
         public string filename;
-        public string name;
+        public string name { get; set; }
         public IComponent parent;
 
         public Component(string aName, string aFileName, IComponent aParent)
@@ -47,16 +47,6 @@ namespace YAMLEditor
         public IComponent getParent()
         {
             return parent;
-        }
-
-        public string getName()
-        {
-            return name;
-        }
-
-        public void setName(string aName)
-        {
-            name = aName;
         }
 
         public string getFileName()

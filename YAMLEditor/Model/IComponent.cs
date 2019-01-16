@@ -13,8 +13,6 @@ namespace YAMLEditor
         IComponent getChild(int i);
         List<IComponent> getChildren();
         IComponent getParent();
-        string getName();
-        void setName(string aName);
         string getFileName();
         void setFileName(string aFileName);
     }

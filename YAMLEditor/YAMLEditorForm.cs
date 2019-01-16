@@ -59,12 +59,12 @@ namespace YAMLEditor
                 root.Expand();
 
                 // Print the composite
-                PrintComposite(composite, "", true);
+                //PrintComposite(composite, "", true);
             }
         }
 
         // Prints the composite
-        public void PrintComposite(IComponent aRoot, String indent, bool last)
+        /*public void PrintComposite(IComponent aRoot, String indent, bool last)
         {
             mLogger.WriteLine(indent + "+- " + aRoot.getName());
             indent += last ? "   " : "|    ";
@@ -75,7 +75,7 @@ namespace YAMLEditor
             {
                 PrintComposite(aRoot.getChild(i), indent, i == nchildren - 1);
             }
-        }
+        }*/
 
         private void LoadFile(TreeNode node, string filename)
         {
@@ -118,15 +118,15 @@ namespace YAMLEditor
                     node.Tag = comp;
                     node.ImageIndex = node.SelectedImageIndex = GetImageIndex(scalar);
 
-                    if (scalar.Value != "")
-                    {
-                        comp = new Component(scalar.Value, filename, currentParent);
-                        currentParent.add(comp);
+                    //if (scalar.Value != "")
+                    //{
+                    comp = new Component(scalar.Value, filename, currentParent);
+                    currentParent.add(comp);
 
-                        node = root.Nodes[root.Nodes.Count - 1].Nodes.Add($"{scalar.Value}");
-                        node.Tag = comp;
-                        node.ImageIndex = node.SelectedImageIndex = GetImageIndex(scalar);
-                    }
+                    node = root.Nodes[root.Nodes.Count - 1].Nodes.Add($"{scalar.Value}");
+                    node.Tag = comp;
+                    node.ImageIndex = node.SelectedImageIndex = GetImageIndex(scalar);
+                    //}
 
                     if (scalar.Tag == "!include")
                     {
