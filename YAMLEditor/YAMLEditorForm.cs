@@ -273,5 +273,10 @@ namespace YAMLEditor
         {
 
         }
+
+        private void newToolStripButton_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

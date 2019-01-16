@@ -378,6 +378,7 @@
             this.newToolStripButton.Name = "newToolStripButton";
             this.newToolStripButton.Size = new System.Drawing.Size(24, 24);
             this.newToolStripButton.Text = "&New";
+            this.newToolStripButton.Click += new System.EventHandler(this.newToolStripButton_Click);
             // 
             // openToolStripButton
             // 
@@ -478,7 +479,7 @@
             // 
             this.mainSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mainSplitContainer.Location = new System.Drawing.Point(0, 51);
-            this.mainSplitContainer.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.mainSplitContainer.Margin = new System.Windows.Forms.Padding(2);
             this.mainSplitContainer.Name = "mainSplitContainer";
             // 
             // mainSplitContainer.Panel1
@@ -518,7 +519,7 @@
             this.mainTreeView.ImageIndex = 0;
             this.mainTreeView.ImageList = this.mainImageList;
             this.mainTreeView.Location = new System.Drawing.Point(0, 0);
-            this.mainTreeView.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.mainTreeView.Margin = new System.Windows.Forms.Padding(2);
             this.mainTreeView.Name = "mainTreeView";
             this.mainTreeView.SelectedImageIndex = 0;
             this.mainTreeView.Size = new System.Drawing.Size(375, 235);
@@ -554,7 +555,7 @@
             this.mainTabControl.Controls.Add(this.helpTabPage);
             this.mainTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mainTabControl.Location = new System.Drawing.Point(0, 0);
-            this.mainTabControl.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.mainTabControl.Margin = new System.Windows.Forms.Padding(2);
             this.mainTabControl.Name = "mainTabControl";
             this.mainTabControl.SelectedIndex = 0;
             this.mainTabControl.Size = new System.Drawing.Size(424, 337);
@@ -564,9 +565,9 @@
             // 
             this.tabPage1.Controls.Add(this.mainPropertyGrid);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tabPage1.Margin = new System.Windows.Forms.Padding(2);
             this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(2);
             this.tabPage1.Size = new System.Drawing.Size(416, 311);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Properties";
@@ -576,7 +577,7 @@
             // 
             this.mainPropertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mainPropertyGrid.Location = new System.Drawing.Point(2, 2);
-            this.mainPropertyGrid.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.mainPropertyGrid.Margin = new System.Windows.Forms.Padding(2);
             this.mainPropertyGrid.Name = "mainPropertyGrid";
             this.mainPropertyGrid.Size = new System.Drawing.Size(412, 307);
             this.mainPropertyGrid.TabIndex = 0;
@@ -585,10 +586,10 @@
             // 
             this.helpTabPage.Controls.Add(this.mainWebBrowser);
             this.helpTabPage.Location = new System.Drawing.Point(4, 22);
-            this.helpTabPage.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.helpTabPage.Margin = new System.Windows.Forms.Padding(2);
             this.helpTabPage.Name = "helpTabPage";
-            this.helpTabPage.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.helpTabPage.Size = new System.Drawing.Size(416, 323);
+            this.helpTabPage.Padding = new System.Windows.Forms.Padding(2);
+            this.helpTabPage.Size = new System.Drawing.Size(416, 311);
             this.helpTabPage.TabIndex = 1;
             this.helpTabPage.Text = "Help";
             this.helpTabPage.UseVisualStyleBackColor = true;
@@ -597,10 +598,10 @@
             // 
             this.mainWebBrowser.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mainWebBrowser.Location = new System.Drawing.Point(2, 2);
-            this.mainWebBrowser.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.mainWebBrowser.Margin = new System.Windows.Forms.Padding(2);
             this.mainWebBrowser.MinimumSize = new System.Drawing.Size(11, 11);
             this.mainWebBrowser.Name = "mainWebBrowser";
-            this.mainWebBrowser.Size = new System.Drawing.Size(412, 319);
+            this.mainWebBrowser.Size = new System.Drawing.Size(412, 307);
             this.mainWebBrowser.TabIndex = 0;
             // 
             // YAMLEditorForm
@@ -614,7 +615,7 @@
             this.Controls.Add(this.mainMenuStrip);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.mainMenuStrip;
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "YAMLEditorForm";
             this.Text = "YAML Editor";
             this.mainMenuStrip.ResumeLayout(false);

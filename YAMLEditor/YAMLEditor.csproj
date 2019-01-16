@@ -12,6 +12,8 @@
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -64,6 +66,7 @@
     <Compile Include="Patterns\ICommandManager.cs" />
     <Compile Include="Patterns\ISubject.cs" />
     <Compile Include="Patterns\Subject.cs" />
+    <Compile Include="Saver\Saver.cs" />
     <Compile Include="YAMLEditorForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -105,6 +108,11 @@
   <ItemGroup>
     <None Include="Resources\favicon-192x1921.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\YAMLEditor.AutoSave\YAMLEditor.AutoSave.csproj">
+      <Project>{2812f5bc-ba53-4152-b648-652d125dc4a9}</Project>
+      <Name>YAMLEditor.AutoSave</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
