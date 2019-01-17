@@ -50,6 +50,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\Command.cs" />
     <Compile Include="Model\IComponent.cs" />
     <Compile Include="Logging\ComposedRecorder.cs" />
     <Compile Include="Logging\ConsoleRecorder.cs" />
