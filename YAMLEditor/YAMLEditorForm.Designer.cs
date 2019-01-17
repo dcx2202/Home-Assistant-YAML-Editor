@@ -380,7 +380,7 @@
             this.newToolStripButton.Name = "newToolStripButton";
             this.newToolStripButton.Size = new System.Drawing.Size(24, 24);
             this.newToolStripButton.Text = "&New";
-            this.newToolStripButton.Click += new System.EventHandler(this.newToolStripButton_Click);
+            this.newToolStripButton.Click += new System.EventHandler(this.NewComponent2);
             // 
             // openToolStripButton
             // 

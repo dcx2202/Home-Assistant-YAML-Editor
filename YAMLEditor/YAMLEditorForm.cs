@@ -262,7 +262,6 @@ namespace YAMLEditor
 			
 			NewComponent nc = new NewComponent();
 			nc.ShowDialog();
-			//string input = Interaction.InputBox("New Component", "Name of the new component:", "Default", -1, -1);
 		}
 
 		private void AboutButton(object sender, EventArgs e)
@@ -274,12 +273,11 @@ namespace YAMLEditor
 				"Marco Lima", "About");
 		}
 
-        private void newToolStripButton_Click(object sender, EventArgs e)
+        private void NewComponent2(object sender, EventArgs e)
         {
-            // Using this for debugging
-            var a = composite;
-            var b = FileTreeRoot;
-        }
+			NewComponent nc = new NewComponent();
+			nc.ShowDialog();
+		}
 
         public static void updateTree(IComponent component, TreeNode root)
         {
