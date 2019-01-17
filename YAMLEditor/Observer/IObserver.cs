@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace YAMLEditor.Observer
 {
-	public interface ISubject
-	{
-	    void AddObserver(IObserver o);
-	    void RemoveObserver(IObserver o);
-		void Notify(object aData);
-	}
+    public interface IObserver
+    {
+        void Update(object aData = null);
+    }
 }
