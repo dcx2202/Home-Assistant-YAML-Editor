@@ -70,8 +70,8 @@
     <Compile Include="NewComponent.Designer.cs">
       <DependentUpon>NewComponent.cs</DependentUpon>
     </Compile>
+    <Compile Include="Observer\IObserver.cs" />
     <Compile Include="Observer\ISubject.cs" />
-    <Compile Include="Observer\Subject.cs" />
     <Compile Include="Saver\Saver.cs" />
     <Compile Include="YAMLEditorForm.cs">
       <SubType>Form</SubType>

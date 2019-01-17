@@ -10,28 +10,29 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using YamlDotNet.RepresentationModel;
 using YAMLEditor.Logging;
-using YAMLEditor.Patterns;
 using Microsoft.VisualBasic;
+using YAMLEditor.Commands;
 
 namespace YAMLEditor
 {
     public partial class YAMLEditorForm : Form
     {
-        public static CommandManager Manager = new CommandManager();
+        private CommandManager commandManager = new CommandManager();
 
         //use mLogger.Write(string message) to log to the textbox
         private ILogger mLogger = Logger.Instance;
-        public static IComponent composite {get; set;}
+        public IComponent composite;
         public IComponent currentParent;
         public string filename;
         public string openedfilename;
-        public static TreeNode FileTreeRoot { get; set; }
+        static TreeNode FileTreeRoot;
 
         public YAMLEditorForm()
         {
             InitializeComponent();
+            SetUndoRedoButtons();
             mLogger.Recorder = new TextBoxRecorder(mainTextBox);
-            composite = new Component("root", "root", null);
+            composite = new Component("root", "root", null, "root");
             currentParent = composite;
         }
 
@@ -94,8 +95,8 @@ namespace YAMLEditor
                 {
                     var scalar = child.Value as YamlScalarNode;
 
-                    IComponent comp = new Component(key.Value, filename, currentParent);
-                    currentParent.add(comp);
+                    IComponent comp = new Component(key.Value, filename, currentParent, "YamlScalarNode");
+                    currentParent.Add(comp);
                     currentParent = comp;
 
                     var node = root.Nodes.Add($"{key.Value}");
@@ -104,15 +105,15 @@ namespace YAMLEditor
 
                     //if (scalar.Value != "")
                     //{
-                    comp = new Component(scalar.Value, filename, currentParent);
-                    currentParent.add(comp);
+                    comp = new Component(scalar.Value, filename, currentParent, "YamlScalarNode");
+                    currentParent.Add(comp);
 
                     node = root.Nodes[root.Nodes.Count - 1].Nodes.Add($"{scalar.Value}");
                     node.Tag = comp;
                     node.ImageIndex = node.SelectedImageIndex = GetImageIndex(scalar);
                     //}
 
-                    if (scalar.Tag == "!include")
+                    if(scalar.Tag == "!include")
                     {
                         filename = scalar.Value;
                         LoadFile(node, scalar.Value);
@@ -121,8 +122,8 @@ namespace YAMLEditor
                 }
                 else if(child.Value is YamlSequenceNode)
                 {
-                    IComponent comp = new Component(key.Value, filename, currentParent);
-                    currentParent.add(comp);
+                    IComponent comp = new Component(key.Value, filename, currentParent, "YamlScalarNode");
+                    currentParent.Add(comp);
                     currentParent = comp;
 
                     var node = root.Nodes.Add(key.Value);
@@ -133,8 +134,8 @@ namespace YAMLEditor
                 }
                 else if(child.Value is YamlMappingNode)
                 {
-                    IComponent comp = new Component(key.Value, filename, currentParent);
-                    currentParent.add(comp);
+                    IComponent comp = new Component(key.Value, filename, currentParent, "YamlScalarNode");
+                    currentParent.Add(comp);
                     currentParent = comp;
 
                     var node = root.Nodes.Add(key.Value);
@@ -144,10 +145,10 @@ namespace YAMLEditor
                     LoadChildren(node, child.Value as YamlMappingNode);
                 }
 
-                if (currentParent.getParent() != null)
-                    currentParent = currentParent.getParent();
+                if(currentParent.GetParent() != null)
+                    currentParent = currentParent.GetParent();
             }
-            
+
         }
 
         private int GetImageIndex(YamlNode node)
@@ -172,8 +173,8 @@ namespace YAMLEditor
             {
                 if(child is YamlSequenceNode)
                 {
-                    IComponent comp = new Component(root.Text, filename, currentParent);
-                    currentParent.add(comp);
+                    IComponent comp = new Component(root.Text, filename, currentParent, "YamlSequenceNode");
+                    currentParent.Add(comp);
                     currentParent = comp;
 
                     var node = root.Nodes.Add(root.Text);
@@ -188,10 +189,10 @@ namespace YAMLEditor
                 }
                 else if(child is YamlScalarNode)
                 {
-                    var scalar = child as YamlScalarNode; 
+                    var scalar = child as YamlScalarNode;
 
-                    IComponent comp = new Component(root.Text, filename, currentParent);
-                    currentParent.add(comp);
+                    IComponent comp = new Component(root.Text, filename, currentParent, "YamlScalarNode");
+                    currentParent.Add(comp);
                     currentParent = comp;
 
                     var node = root.Nodes.Add(scalar.Value);
@@ -200,8 +201,8 @@ namespace YAMLEditor
                 }
             }
 
-            if (currentParent.getParent() != null)
-                currentParent = currentParent.getParent();
+            if(currentParent.GetParent() != null)
+                currentParent = currentParent.GetParent();
         }
 
         private void OnAfterSelect(object sender, TreeViewEventArgs e)
@@ -212,16 +213,13 @@ namespace YAMLEditor
         private void OnDoubleClick(object sender, EventArgs e)
         {
             if(mainTreeView.SelectedNode == null) return;
-            var selected = mainTreeView.SelectedNode;
+            var selected = (Component)mainTreeView.SelectedNode.Tag;
 
-            if(selected.Tag is YamlMappingNode node)
+            if(selected.GetChildren().Any(p => ((Component)p).Name == "platform"))
             {
-                if(node.Children.Any(p => ((YamlScalarNode)p.Key).Value == "platform"))
-                {
-                    var platform = node.Children.FirstOrDefault(p => ((YamlScalarNode)p.Key).Value == "platform");
-                    mainWebBrowser.Url = new Uri($@"https://www.home-assistant.io/components/{ selected.Text }.{ platform.Value }");
-                    mainTabControl.SelectTab(helpTabPage);
-                }
+                var platform = selected.GetChildren().FirstOrDefault(p => ((Component)p).Name == "platform") as Component;
+                mainWebBrowser.Url = new Uri($@"https://www.home-assistant.io/components/{ selected.Name }.{ ((Component)platform.GetChild(0)).Name }");
+                mainTabControl.SelectTab(helpTabPage);
             }
         }
 
@@ -231,48 +229,48 @@ namespace YAMLEditor
             var yaml = new YamlStream();
             try
             {
-                using (var stream = new StreamReader(filename))
+                using(var stream = new StreamReader(filename))
                 {
                     yaml.Load(stream);
                 }
             }
-            catch (Exception exception)
+            catch(Exception exception)
             {
                 mLogger.WriteLine(exception.Message);
             }
 
-            if (yaml.Documents.Count == 0) return null;
+            if(yaml.Documents.Count == 0) return null;
 
             YamlMappingNode mapping = yaml.Documents[0].RootNode as YamlMappingNode;
             return mapping?.Children;
         }
 
-		private void OnUndo(object sender, EventArgs e)
-		{
-			Manager.Undo();
-		}
+        private void OnUndo(object sender, EventArgs e)
+        {
+            commandManager.Undo();
+        }
 
-		private void OnRedo(object sender, EventArgs e)
-		{
-			Manager.Redo();
-		}
+        private void OnRedo(object sender, EventArgs e)
+        {
+            commandManager.Redo();
+        }
 
-		private void NewComponent(object sender, EventArgs e)
-		{
-			
-			NewComponent nc = new NewComponent();
-			nc.ShowDialog();
-			//string input = Interaction.InputBox("New Component", "Name of the new component:", "Default", -1, -1);
-		}
+        private void NewComponent(object sender, EventArgs e)
+        {
 
-		private void AboutButton(object sender, EventArgs e)
-		{
-			MessageBox.Show("Made by: " +
-				"Diogo Cruz, " +
-				"Diogo Nóbrega, " +
-				"Francisco Teixeira, " +
-				"Marco Lima", "About");
-		}
+            NewComponent nc = new NewComponent();
+            nc.ShowDialog();
+            //string input = Interaction.InputBox("New Component", "Name of the new component:", "Default", -1, -1);
+        }
+
+        private void AboutButton(object sender, EventArgs e)
+        {
+            MessageBox.Show("Made by: " +
+                "Diogo Cruz, " +
+                "Diogo Nóbrega, " +
+                "Francisco Teixeira, " +
+                "Marco Lima", "About");
+        }
 
         private void newToolStripButton_Click(object sender, EventArgs e)
         {
@@ -281,38 +279,33 @@ namespace YAMLEditor
             var b = FileTreeRoot;
         }
 
-        public static void updateTree(IComponent component, TreeNode root)
+        public static void UpdateTree(IComponent component, string aValue, TreeNode root)
         {
-            if (root == null)
+            if(root == null)
                 root = FileTreeRoot;
 
             if(root.Tag == component)
             {
-                root.Text = component.Name;
+                root.Text = aValue;
                 return;
             }
 
             foreach(TreeNode node in root.Nodes)
             {
-                updateTree(component, node);
+                UpdateTree(component, aValue, node);
             }
         }
 
-        public static void updateComposite(IComponent node, IComponent component, string aValue)
+        private void OnUpdatePropertyGrid(object sender, PropertyValueChangedEventArgs e)
         {
-            if (node == null)
-                node = composite;
+            //adicionar comandos ao commandManager aqui
+            mLogger.WriteLine("alteração");
+        }
 
-            if (node == component)
-            {
-                node.setName(aValue);
-                return;
-            }
-
-            foreach (IComponent n in node.getChildren())
-            {
-                updateComposite(n, component, aValue);
-            }
+        private void SetUndoRedoButtons()
+        {
+            undoButton.Enabled = commandManager.HasUndo();
+            redoButton.Enabled = commandManager.HasRedo();
         }
 
         public static void getComponentFromFile(string filename)
