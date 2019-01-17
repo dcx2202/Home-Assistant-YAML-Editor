@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using YAMLEditor.Observer;
 
-namespace YAMLEditor.Patterns
+namespace YAMLEditor.Commands
 {
 	public class CommandManager : ICommandManager, ISubject
 	{
@@ -12,8 +13,6 @@ namespace YAMLEditor.Patterns
 
 		protected List<ICommand> Commands { get; } = new List<ICommand>();
 		protected int Position { get; set; } = -1;
-
-		public event UpdateEventHandler OnUpdate;
 
 		#endregion
 
@@ -73,7 +72,17 @@ namespace YAMLEditor.Patterns
 
 		public void Notify(object aData = null)
 		{
-			OnUpdate?.Invoke(this, aData);
-		}
-	}
+		    throw new NotImplementedException();
+        }
+
+        public void AddObserver(IObserver o)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveObserver(IObserver o)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }
