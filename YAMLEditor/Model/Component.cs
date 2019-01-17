@@ -31,6 +31,13 @@ namespace YAMLEditor
                     YAMLEditorForm.GetParents(parents, this);
                     YAMLEditorForm.changedComponents.Add(this, parents);
                 }
+                else
+                {
+                    YAMLEditorForm.changedComponents.Remove(this);
+                    List<IComponent> parents = new List<IComponent>();
+                    YAMLEditorForm.GetParents(parents, this);
+                    YAMLEditorForm.changedComponents.Add(this, parents);
+                }
 
                 // Keep the old name
                 string oldvalue = this.name;
