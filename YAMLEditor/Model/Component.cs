@@ -74,6 +74,11 @@ namespace YAMLEditor
             return parent;
         }
 
+        public void setParent(IComponent aParent)
+        {
+            parent = aParent;
+        }
+
         public string getFileName()
         {
             return filename;

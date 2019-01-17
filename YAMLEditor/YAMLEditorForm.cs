@@ -20,11 +20,12 @@ namespace YAMLEditor
         public static CommandManager Manager = new CommandManager();
 
         //use mLogger.Write(string message) to log to the textbox
-        private ILogger mLogger = Logger.Instance;
+        private static ILogger mLogger = Logger.Instance;
         public static IComponent composite {get; set;}
-        public IComponent currentParent;
-        public string filename;
-        public string openedfilename;
+        public static IComponent currentParent;
+        public static string filename;
+        public static string openedfilename;
+        public static bool componentexists { get; set; } = false;
         public static TreeNode FileTreeRoot { get; set; }
 
         public YAMLEditorForm()
@@ -61,7 +62,7 @@ namespace YAMLEditor
             }
         }
 
-        private void LoadFile(TreeNode node, string filename)
+        private static void LoadFile(TreeNode node, string filename)
         {
             var yaml = new YamlStream();
             try
@@ -80,7 +81,7 @@ namespace YAMLEditor
             LoadChildren(node, yaml.Documents[0].RootNode as YamlMappingNode);
         }
 
-        private void LoadChildren(TreeNode root, YamlMappingNode mapping)
+        private static void LoadChildren(TreeNode root, YamlMappingNode mapping)
         {
             var children = mapping?.Children;
             if(children == null) return;
@@ -150,7 +151,7 @@ namespace YAMLEditor
             
         }
 
-        private int GetImageIndex(YamlNode node)
+        private static int GetImageIndex(YamlNode node)
         {
             switch(node.NodeType)
             {
@@ -166,7 +167,7 @@ namespace YAMLEditor
             return 0;
         }
 
-        private void LoadChildren(TreeNode root, YamlSequenceNode sequence)
+        private static void LoadChildren(TreeNode root, YamlSequenceNode sequence)
         {
             foreach(var child in sequence.Children)
             {
@@ -313,15 +314,47 @@ namespace YAMLEditor
             }
         }
 
-        public static void getComponentFromFile(string filename)
+        public static void checkIfComponentExists(IComponent node, IComponent component)
         {
+            if (node == null)
+                node = composite;
+
+            if (node.Name == component.Name)
+            {
+                componentexists = true;
+                return;
+            }
+
+            foreach (IComponent n in node.getChildren())
+            {
+                checkIfComponentExists(n, component);
+            }
+        }
+
+        public static Dictionary<IComponent, TreeNode> getComponentFromFile(string filename)
+        {
+            // Get composite and tree from the opened component file
             IComponent newcomponent = new Component("root", filename, null);
             TreeNode newtree = new TreeNode();
 
-            var temp = new YAMLEditorForm();
-            temp.currentParent = newcomponent;
+            currentParent = newcomponent;
+            LoadFile(newtree, filename);
+            currentParent = composite;
 
-            temp.LoadFile(newtree, filename);
+            return new Dictionary<IComponent, TreeNode> { { newcomponent, newtree } };
+        }
+
+        public static void addComponent(IComponent aComponent, TreeNode aTree)
+        {
+            aComponent.setParent(currentParent);
+            composite.add(aComponent);
+            FileTreeRoot.Nodes.Add(aTree);
+        }
+
+        private void pasteToolStripButton_Click(object sender, EventArgs e)
+        {
+            var a = composite;
+            var b = FileTreeRoot;
         }
     }
 }

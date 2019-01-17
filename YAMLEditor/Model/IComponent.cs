@@ -14,6 +14,7 @@ namespace YAMLEditor
         IComponent getChild(int i);
         List<IComponent> getChildren();
         IComponent getParent();
+        void setParent(IComponent aParent);
         string getFileName();
         void setFileName(string aFileName);
         void setName(string aName);
