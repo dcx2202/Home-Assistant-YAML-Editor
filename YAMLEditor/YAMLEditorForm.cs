@@ -473,6 +473,8 @@ namespace YAMLEditor
                         break;
                     }
                 }
+
+                File.WriteAllLines(node.getFileName(), lines);
             }
         }
     }
