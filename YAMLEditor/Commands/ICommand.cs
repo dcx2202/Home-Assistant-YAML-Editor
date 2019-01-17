@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace YAMLEditor.Commands
+namespace YAMLEditor.Patterns
 {
 	public interface ICommand
 	{
