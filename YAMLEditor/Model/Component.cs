@@ -25,6 +25,13 @@ namespace YAMLEditor
             }
             set
             {
+                if(!YAMLEditorForm.changedComponents.Keys.Contains(this))
+                {
+                    List<IComponent> parents = new List<IComponent>();
+                    YAMLEditorForm.GetParents(parents, this);
+                    YAMLEditorForm.changedComponents.Add(this, parents);
+                }
+
                 // Keep the old name
                 string oldvalue = this.name;
 
@@ -50,6 +57,8 @@ namespace YAMLEditor
             parent = aParent;
             filename = aFileName;
             name = aName;
+            getParents();
+            parents.Reverse();
         }
 
         public void add(IComponent child)
@@ -77,6 +86,15 @@ namespace YAMLEditor
         public IComponent getParent()
         {
             return parent;
+        }
+
+        public void getParents()
+        {
+            if(getParent() != null)
+            {
+                parents.Add(getParent());
+                getParent().getParents();
+            }
         }
 
         public void setParent(IComponent aParent)
