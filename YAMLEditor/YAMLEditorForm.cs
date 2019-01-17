@@ -17,15 +17,15 @@ namespace YAMLEditor
 {
     public partial class YAMLEditorForm : Form
     {
-		private CommandManager Manager = new CommandManager();
+        public static CommandManager Manager = new CommandManager();
 
-		//use mLogger.Write(string message) to log to the textbox
-		private ILogger mLogger = Logger.Instance;
-        public IComponent composite;
+        //use mLogger.Write(string message) to log to the textbox
+        private ILogger mLogger = Logger.Instance;
+        public static IComponent composite {get; set;}
         public IComponent currentParent;
         public string filename;
         public string openedfilename;
-        static TreeNode FileTreeRoot;
+        public static TreeNode FileTreeRoot { get; set; }
 
         public YAMLEditorForm()
         {
@@ -281,20 +281,37 @@ namespace YAMLEditor
             var b = FileTreeRoot;
         }
 
-        public static void updateTree(IComponent component, string aValue, TreeNode root)
+        public static void updateTree(IComponent component, TreeNode root)
         {
             if (root == null)
                 root = FileTreeRoot;
 
             if(root.Tag == component)
             {
-                root.Text = aValue;
+                root.Text = component.Name;
                 return;
             }
 
             foreach(TreeNode node in root.Nodes)
             {
-                updateTree(component, aValue, node);
+                updateTree(component, node);
+            }
+        }
+
+        public static void updateComposite(IComponent node, IComponent component, string aValue)
+        {
+            if (node == null)
+                node = composite;
+
+            if (node == component)
+            {
+                node.setName(aValue);
+                return;
+            }
+
+            foreach (IComponent n in node.getChildren())
+            {
+                updateComposite(n, component, aValue);
             }
         }
     }

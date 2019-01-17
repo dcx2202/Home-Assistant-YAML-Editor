@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using YamlDotNet.RepresentationModel;
+using YAMLEditor;
+using YAMLEditor.Commands;
+using YAMLEditor.Patterns;
 
 namespace YAMLEditor
 {
@@ -21,8 +25,17 @@ namespace YAMLEditor
             }
             set
             {
+                // Keep the old name
+                string oldvalue = this.name;
+
+                // Update the name (updates the composite)
                 this.name = value;
-                YAMLEditorForm.updateTree(this, this.name, null);
+
+                // Create a new command with a reference to the component that changed, the old value and the new
+                ICommand command = new Command(this, oldvalue, this.name);
+
+                // Execute the command (adds it to the undo queue and updates the tree and composite
+                YAMLEditorForm.Manager.Execute(command);
             }
         }
 
@@ -75,6 +88,11 @@ namespace YAMLEditor
             }
 
             filename = aFileName;
+        }
+
+        public void setName(string aName)
+        {
+            name = aName;
         }
     }
 }
