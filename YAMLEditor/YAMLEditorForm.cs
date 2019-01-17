@@ -314,5 +314,16 @@ namespace YAMLEditor
                 updateComposite(n, component, aValue);
             }
         }
+
+        public static void getComponentFromFile(string filename)
+        {
+            IComponent newcomponent = new Component("root", filename, null);
+            TreeNode newtree = new TreeNode();
+
+            var temp = new YAMLEditorForm();
+            temp.currentParent = newcomponent;
+
+            temp.LoadFile(newtree, filename);
+        }
     }
 }
