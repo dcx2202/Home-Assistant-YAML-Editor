@@ -342,15 +342,23 @@ namespace YAMLEditor
 
         public static Dictionary<IComponent, TreeNode> getComponentFromFile(string filename)
         {
-            // Get composite and tree from the opened component file
-            IComponent newcomponent = new Component("root", filename, null);
-            TreeNode newtree = new TreeNode();
+            if (File.ReadAllText(filename).Trim() != "")
+            {
+                // Get composite and tree from the opened component file
+                IComponent newcomponent = new Component("root", filename, null);
+                TreeNode newtree = new TreeNode();
 
-            currentParent = newcomponent;
-            LoadFile(newtree, filename);
-            currentParent = composite;
+                currentParent = newcomponent;
+                LoadFile(newtree, filename);
+                currentParent = composite;
 
-            return new Dictionary<IComponent, TreeNode> { { newcomponent, newtree } };
+                return new Dictionary<IComponent, TreeNode> { { newcomponent, newtree } };
+            }
+            else
+            {
+                MessageBox.Show("The file opened is empty.", "Error");
+                return null;
+            }
         }
 
         public static void addComponent(IComponent aComponent, TreeNode aTree)

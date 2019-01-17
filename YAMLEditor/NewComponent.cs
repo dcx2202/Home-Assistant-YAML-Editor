@@ -50,21 +50,25 @@ namespace YAMLEditor
         private void OkButton(object sender, EventArgs e)
         {
             Dictionary<IComponent, TreeNode> component = YAMLEditorForm.getComponentFromFile(filename);
-            YAMLEditorForm.checkIfComponentExists(null, component.Keys.First().getChild(0));
 
-            if(YAMLEditorForm.componentexists)
+            if (component != null)
             {
-                // Show error popup
-                MessageBox.Show("This component already exists in the file currently open.", "Error");
-            }
-            else
-            {
-                // Add component to main composite/tree
-                YAMLEditorForm.addComponent(component.Keys.First().getChild(0), component.Values.First().Nodes[0]);
-                MessageBox.Show("Component added.", "Success");
+                YAMLEditorForm.checkIfComponentExists(null, component.Keys.First().getChild(0));
 
-                YAMLEditorForm.componentexists = false;
-                this.Close();
+                if (YAMLEditorForm.componentexists)
+                {
+                    // Show error popup
+                    MessageBox.Show("This component already exists in the file currently open.", "Error");
+                }
+                else
+                {
+                    // Add component to main composite/tree
+                    YAMLEditorForm.addComponent(component.Keys.First().getChild(0), component.Values.First().Nodes[0]);
+                    MessageBox.Show("Component added.", "Success");
+
+                    YAMLEditorForm.componentexists = false;
+                    this.Close();
+                }
             }
 
             YAMLEditorForm.componentexists = false;
