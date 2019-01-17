@@ -34,7 +34,7 @@ namespace YAMLEditor
                 // Create a new command with a reference to the component that changed, the old value and the new
                 ICommand command = new Command(this, oldvalue, this.name);
 
-                // Execute the command (adds it to the undo queue and updates the tree and composite
+                // Execute the command (adds it to the undo queue and updates the tree and composite)
                 YAMLEditorForm.Manager.Execute(command);
             }
         }
