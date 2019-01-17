@@ -25,6 +25,7 @@ namespace YAMLEditor
         public IComponent currentParent;
         public string filename;
         public string openedfilename;
+        static TreeNode FileTreeRoot;
 
         public YAMLEditorForm()
         {
@@ -50,32 +51,15 @@ namespace YAMLEditor
                 Directory.SetCurrentDirectory(Path.GetDirectoryName(dialog.FileName) ?? "");
 
                 mainTreeView.Nodes.Clear();
-                var root = mainTreeView.Nodes.Add(Path.GetFileName(dialog.FileName));
-                root.ImageIndex = root.SelectedImageIndex = 3;
+                FileTreeRoot = mainTreeView.Nodes.Add(Path.GetFileName(dialog.FileName));
+                FileTreeRoot.ImageIndex = FileTreeRoot.SelectedImageIndex = 3;
 
                 openedfilename = dialog.FileName;
                 filename = openedfilename;
-                LoadFile(root, dialog.FileName);
-                root.Expand();
-
-                // Print the composite
-                //PrintComposite(composite, "", true);
+                LoadFile(FileTreeRoot, dialog.FileName);
+                FileTreeRoot.Expand();
             }
         }
-
-        // Prints the composite
-        /*public void PrintComposite(IComponent aRoot, String indent, bool last)
-        {
-            mLogger.WriteLine(indent + "+- " + aRoot.getName());
-            indent += last ? "   " : "|    ";
-
-            var nchildren = aRoot.getChildren().Count;
-
-            for (int i = 0; i < nchildren; i++)
-            {
-                PrintComposite(aRoot.getChild(i), indent, i == nchildren - 1);
-            }
-        }*/
 
         private void LoadFile(TreeNode node, string filename)
         {
@@ -289,5 +273,29 @@ namespace YAMLEditor
 				"Francisco Teixeira, " +
 				"Marco Lima", "About");
 		}
-	}
+
+        private void newToolStripButton_Click(object sender, EventArgs e)
+        {
+            // Using this for debugging
+            var a = composite;
+            var b = FileTreeRoot;
+        }
+
+        public static void updateTree(IComponent component, string aValue, TreeNode root)
+        {
+            if (root == null)
+                root = FileTreeRoot;
+
+            if(root.Tag == component)
+            {
+                root.Text = aValue;
+                return;
+            }
+
+            foreach(TreeNode node in root.Nodes)
+            {
+                updateTree(component, aValue, node);
+            }
+        }
+    }
 }

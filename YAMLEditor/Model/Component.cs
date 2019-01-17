@@ -11,8 +11,20 @@ namespace YAMLEditor
     {
         public List<IComponent> children;
         public string filename;
-        public string name { get; set; }
+        private string name;
         public IComponent parent;
+        public string Name
+        {
+            get
+            {
+                return this.name;
+            }
+            set
+            {
+                this.name = value;
+                YAMLEditorForm.updateTree(this, this.name, null);
+            }
+        }
 
         public Component(string aName, string aFileName, IComponent aParent)
         {
