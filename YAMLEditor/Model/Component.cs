@@ -25,22 +25,24 @@ namespace YAMLEditor
             }
             set
             {
-                if(!YAMLEditorForm.changedComponents.Keys.Contains(this))
-                {
-                    List<IComponent> parents = new List<IComponent>();
-                    YAMLEditorForm.GetParents(parents, this);
-                    YAMLEditorForm.changedComponents.Add(this, parents);
-                }
-                else
-                {
-                    YAMLEditorForm.changedComponents.Remove(this);
-                    List<IComponent> parents = new List<IComponent>();
-                    YAMLEditorForm.GetParents(parents, this);
-                    YAMLEditorForm.changedComponents.Add(this, parents);
-                }
-
                 // Keep the old name
                 string oldvalue = this.name;
+
+                Dictionary<string, List<IComponent>> parents = new Dictionary<string, List<IComponent>>();
+                YAMLEditorForm.GetParents(parents.Values.First(), this);
+                parents.Values.First().RemoveAt(0);
+                //parents.Values.First().Reverse(); - no need anymore because we are looping from the end
+                YAMLEditorForm.changedComponents.Add(this, new Dictionary<string, List<IComponent>> { { oldvalue, parents.Values.First() } });
+
+
+                //var a =
+                //{
+                //    IComponent changedcomponent: this,
+                //    List<IComponent> parents: getparentsthing,
+                //    string oldvalue: oldvalue, - 
+                //};
+
+
 
                 // Update the name (updates the composite)
                 this.name = value;

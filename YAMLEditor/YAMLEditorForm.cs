@@ -27,7 +27,8 @@ namespace YAMLEditor
         public static string openedfilename;
         public static bool componentexists { get; set; } = false;
         public static TreeNode FileTreeRoot { get; set; }
-        public static Dictionary<IComponent, List<IComponent>> changedComponents { get; set; }
+        //public static Dictionary<IComponent, List<IComponent>> changedComponents1 { get; set; }
+        public static Dictionary<IComponent, Dictionary<string, List<IComponent>>> changedComponents { get; set; }
 
         public YAMLEditorForm()
         {
@@ -394,234 +395,83 @@ namespace YAMLEditor
             }
         }
 
-        // Update the components' filenames
-        public void save(string filename)
+        public void save()
         {
-            // Used to get the files directory which is the same as the opened file's directory
-            var splitpath = filename.Split('\\').ToList();
-
-            // List that holds the names of the files that are to be parsed for the components' names
-            List<string> files = new List<string>() { splitpath.ElementAt(splitpath.Count() - 1) };
-
-            // Read all the lines of the opened file
-            var lines = File.ReadAllLines(filename);
-
-            // For each line in the file check if it includes another file
-            // If so then add that file to the list of files
-            foreach (string line in lines)
-            {
-                if (line.Contains("!include"))
-                {
-                    var a = line.Split(' ');
-                    foreach (string s in a)
-                    {
-                        if (s.Contains(".yaml"))
-                            files.Add(s); // Add the directory + filename
-                    }
-                }
-            }
-
             // For each component that suffered changes we look for it in the files (opened and !included)
-            foreach (KeyValuePair<IComponent, List<IComponent>> comp in changedComponents)
+            foreach (KeyValuePair<IComponent, Dictionary<string, List<IComponent>>> comp in changedComponents)
             {
+                // changed component
                 var node = comp.Key;
-                var nodeparents = comp.Value;
 
-                // For each file to be checked, read all of its lines and look for the components' names
-                foreach (string file in files)
+                // its parents
+                var nodeparents = comp.Value.Values.First();
+
+                // its old value
+                var oldvalue = comp.Value.Keys.First();
+
+                string newvalue = null;
+
+                #region update newvalue with the most recent value
+                changedComponents.Reverse();
+
+                foreach (KeyValuePair<IComponent, Dictionary<string, List<IComponent>>> c in changedComponents)
                 {
-                    try
-                    {
-                        lines = File.ReadAllLines(file);
-                    }
-                    catch (IOException e)
-                    {
-                        mLogger.WriteLine(e.ToString());
-                    }
+                    if (c.Key == node)
+                        newvalue = c.Key.Name;
+                }
+
+                changedComponents.Reverse();
+
+                if (newvalue == null)
+                    newvalue = node.Name;
+                #endregion
 
 
-                    // down here still needs changes - gotta look for each parent in the next lines starting from the higher level- same component if all parents present before end of component
+                List<string> lines = new List<string>();
 
+                try
+                {
+                    lines = File.ReadAllLines(node.getFileName()).ToList();
+                }
+                catch (IOException e)
+                {
+                    mLogger.WriteLine(e.ToString());
+                }
 
+                int ln = 0;
+
+                var aux = false;
+                for (var j = nodeparents.Count - 1; j >= 0; j--)// IComponent parent in nodeparents)
+                {
                     // For each line of this file we look for the component
-                    foreach (string line in lines)
+                    for (var i = ln; i < lines.Count; i++)
                     {
-                        // If this component is in this file then set this component and its children's file names correctly
-                        if (line.Contains(node.Name + ":"))
+                        if (lines[i].Contains(nodeparents[j].Name))
                         {
-                            // Make sure the component in the file is the one we are checking
-                            // If this component has children then check if they are also in this file (in the next lines)
-                            if (node.getChildren().Count > 0)
-                            {
-                                var aux = false;
-
-                                // For each child, check if their name is in the next lines
-                                foreach (IComponent child in node.getChildren())
-                                {
-                                    aux = false;
-                                    for (var i = lines.ToList().IndexOf(line); i < lines.Count(); i++)
-                                    {
-                                        // If the next line is just whitespace then we reached the end of the component and don't need to check further
-                                        if (lines[i].Trim().Count() == 0)
-                                            break;
-
-                                        if (lines[i].Trim().StartsWith("#"))
-                                            continue;
-
-                                        // If this line contains this child's name then move on to the next child
-                                        if (lines[i].Trim().StartsWith(child.Name) || lines[i].Trim().StartsWith("-"))
-                                        {
-                                            aux = true;
-                                            break;
-                                        }
-                                    }
-
-                                // If this child isn't in the next lines (before reaching a whitespace only line) then the components aren't the same
-                                if (aux == false)
-                                    break;
-                            }
-
-                            // If every child is in the next lines then the components are the same and we update the filename
-                            if (aux == true)
-                            {
-                                // SAVE STUFF HERE <----------------------
-                            }
-                        }
-
-                        // If this component has no children then check if the next line is whitespace only or the end of the file (end of component - no children)
-                        else
-                        {
-                            int index = lines.ToList().IndexOf(line) + 1;
-
-                            if (lines.Count() == index || lines[index].Trim().Count() == 0 || lines[index].Trim().StartsWith("#"))
-                            {
-                                // If we found the end of the file then we reached the component's end
-                                if (lines.Count() == lines.ToList().IndexOf(line) + 1)
-                                {
-                                    // SAVE STUFF HERE <----------------------
-                                    break;
-                                }
-                                // If we found a line that is whitespace only then we reached the component's end
-                                else if (lines[index].Trim().Count() == 0)
-                                    // SAVE STUFF HERE <----------------------
-
-                                // If we found another comment line then keep checking the next lines until we either find the end of the file, a whitespace line or the rest of the component
-                                else
-                                {
-                                    int currentline = lines.ToList().IndexOf(line) + 2;
-
-                                    for (; ; )
-                                    {
-                                        // If we reached the end of the file or found a whitespace line then the component's over
-                                        if (lines.Count() == currentline || lines[currentline].Trim().Count() == 0)
-                                        {
-                                            // SAVE STUFF HERE <----------------------
-                                            break;
-                                        }
-
-                                        // If the component isn't over then the components aren't the same one
-                                        else if (!lines[currentline].Trim().StartsWith("#"))
-                                            break;
-
-                                        currentline++;
-                                    }
-                                }
-                            }
+                            aux = true;
+                            ln = i;
+                            nodeparents.RemoveAt(j);
+                            break;
                         }
                     }
 
+                    if (aux == false)
+                        break; // didn't find the component - should never happen
+                }
+
+                if (aux == false)
+                    continue; // didn't find the component - should never happen
 
 
-                    //foreach (string line in lines)
-                    //{
-                    //    foreach (IComponent component in changedComponents)
-                    //    {
-                    //        // If this component is in this file then set this component and its children's file names correctly
-                    //        if (line.Contains(component.Name + ":"))
-                    //        {
-                    //            // Make sure the component in the file is the one we are checking
 
-                    //            // If this component has children then check if they are also in this file (in the next lines)
-                    //            if (component.getChildren().Count > 0)
-                    //            {
-                    //                var aux = false;
-
-                    //                // For each child, check if their name is in the next lines
-                    //                foreach (IComponent child in component.getChildren())
-                    //                {
-                    //                    aux = false;
-                    //                    for (var i = lines.ToList().IndexOf(line); i < lines.Count(); i++)
-                    //                    {
-                    //                        // If the next line is just whitespace then we reached the end of the component and don't need to check further
-                    //                        if (lines[i].Trim().Count() == 0)
-                    //                            break;
-
-                    //                        if (lines[i].Trim().StartsWith("#"))
-                    //                            continue;
-
-                    //                        // If this line contains this child's name then move on to the next child
-                    //                        if (lines[i].Trim().StartsWith(child.getName()) || lines[i].Trim().StartsWith("-"))
-                    //                        {
-                    //                            aux = true;
-                    //                            break;
-                    //                        }
-                    //                    }
-
-                    //                    // If this child isn't in the next lines (before reaching a whitespace only line) then the components aren't the same
-                    //                    if (aux == false)
-                    //                        break;
-                    //                }
-
-                    //                // If every child is in the next lines then the components are the same and we update the filename
-                    //                if (aux == true)
-                    //                {
-                    //                    components[component].setFileName(file);
-                    //                }
-                    //            }
-
-                    //            // If this component has no children then check if the next line is whitespace only or the end of the file (end of component - no children)
-                    //            else
-                    //            {
-                    //                int index = lines.ToList().IndexOf(line) + 1;
-
-                    //                if (lines.Count() == index || lines[index].Trim().Count() == 0 || lines[index].Trim().StartsWith("#"))
-                    //                {
-                    //                    // If we found the end of the file then we reached the component's end
-                    //                    if (lines.Count() == lines.ToList().IndexOf(line) + 1)
-                    //                    {
-                    //                        components[component].setFileName(file);
-                    //                        break;
-                    //                    }
-                    //                    // If we found a line that is whitespace only then we reached the component's end
-                    //                    else if (lines[index].Trim().Count() == 0)
-                    //                        components[component].setFileName(file);
-
-                    //                    // If we found another comment line then keep checking the next lines until we either find the end of the file, a whitespace line or the rest of the component
-                    //                    else
-                    //                    {
-                    //                        int currentline = lines.ToList().IndexOf(line) + 2;
-
-                    //                        for (; ; )
-                    //                        {
-                    //                            // If we reached the end of the file or found a whitespace line then the component's over
-                    //                            if (lines.Count() == currentline || lines[currentline].Trim().Count() == 0)
-                    //                            {
-                    //                                components[component].setFileName(file);
-                    //                                break;
-                    //                            }
-
-                    //                            // If the component isn't over then the components aren't the same one
-                    //                            else if (!lines[currentline].Trim().StartsWith("#"))
-                    //                                break;
-
-                    //                            currentline++;
-                    //                        }
-                    //                    }
-                    //                }
-                    //            }
-                    //        }
-                    //    }
-                    //}
+                // temos a linha do pai direto do no
+                for (var i = ln; i < lines.Count; i++)
+                {
+                    if (lines[i].Contains(oldvalue))
+                    {
+                        lines[i].Replace(oldvalue, newvalue);
+                        break;
+                    }
                 }
             }
         }
