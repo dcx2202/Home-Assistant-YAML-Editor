@@ -39,6 +39,11 @@ namespace YAMLEditor
             }
         }
 
+        public string Filename
+        {
+            get { return this.filename; }
+        }
+
         public Component(string aName, string aFileName, IComponent aParent)
         {
             children = new List<IComponent> { };

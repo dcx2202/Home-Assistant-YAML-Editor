@@ -260,7 +260,11 @@ namespace YAMLEditor
 
 		private void NewComponent(object sender, EventArgs e)
 		{
-			
+			if(openedfilename == null)
+            {
+                MessageBox.Show("There is no file currently open.", "Error");
+                return;
+            }
 			NewComponent nc = new NewComponent();
 			nc.ShowDialog();
 		}
@@ -276,7 +280,12 @@ namespace YAMLEditor
 
         private void NewComponent2(object sender, EventArgs e)
         {
-			NewComponent nc = new NewComponent();
+            if (openedfilename == null)
+            {
+                MessageBox.Show("There is no file currently open.", "Error");
+                return;
+            }
+            NewComponent nc = new NewComponent();
 			nc.ShowDialog();
 		}
 
