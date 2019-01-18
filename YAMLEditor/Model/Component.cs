@@ -50,6 +50,7 @@ namespace YAMLEditor
         public string Filename
         {
             get { return this.filename; }
+            set { this.filename = value; }
         }
 
         public Component(string aName, string aFileName, IComponent aParent)

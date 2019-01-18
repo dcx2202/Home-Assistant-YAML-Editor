@@ -9,6 +9,7 @@ namespace YAMLEditor
     public interface IComponent
     {
         string Name { get; set; }
+        string Filename { get; set; }
         void add(IComponent child);
         void remove(IComponent child);
         IComponent getChild(int i);

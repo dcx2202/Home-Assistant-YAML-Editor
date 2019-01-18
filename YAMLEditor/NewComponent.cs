@@ -50,6 +50,10 @@ namespace YAMLEditor
         private void OkButton(object sender, EventArgs e)
         {
             Dictionary<IComponent, TreeNode> component = YAMLEditorForm.getComponentFromFile(filename);
+            var splits = filename.Split('\\');
+            var name = splits[splits.Length - 1];
+
+            component.Keys.First().setFileName(name);
 
             if (component != null)
             {

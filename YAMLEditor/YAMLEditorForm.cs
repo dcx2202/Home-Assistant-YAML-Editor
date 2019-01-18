@@ -455,31 +455,12 @@ namespace YAMLEditor
             // For each component that was added we write it to the opened file
             foreach (IComponent comp in addedComponents)
             {
-                var lines = File.ReadAllLines(comp.getFileName()).ToList();
-                lines.Add("");
-                lines.Add("");
 
+                var lines = File.ReadAllLines(filename).ToList();
+                //lines.Add("");
+                lines.Add(comp.Name + ": !include " + comp.getFileName());
 
-                List<IComponent> allChildren = new List<IComponent>();
-                allChildren = GetAllChildren(allChildren, comp);
-
-                if (allChildren.Count == 0)
-                {
-                    lines.Add(comp.Name + ":");
-                    File.WriteAllLines(comp.getFileName(), lines);
-                }
-                else if (allChildren.Count == 1)
-                {
-                    lines.Add(comp.Name + ": " + allChildren.First().Name);
-                    File.WriteAllLines(comp.getFileName(), lines);
-                }
-                else
-                {
-                    lines.Add(comp.Name + ":");
-                    lines = GetAllChildrenstring(lines, comp, "");
-                }
-
-                File.WriteAllLines(comp.getFileName(), lines);
+                File.WriteAllLines(filename, lines);
             }
 
             // For each component that suffered changes we look for it in the files (opened and !included)
@@ -531,7 +512,7 @@ namespace YAMLEditor
                     // For each line of this file we look for the component
                     for (var i = ln; i < lines.Count; i++)
                     {
-                        if (lines[i].Trim().StartsWith(nodeparents[j].Name))//lines[i].Contains(nodeparents[j].Name))
+                        if (lines[i].Trim().StartsWith(nodeparents[j].Name) || lines[i].Trim().StartsWith("- " + nodeparents[j].Name))//lines[i].Contains(nodeparents[j].Name))
                         {
                             aux = true;
                             ln = i;
@@ -569,6 +550,11 @@ namespace YAMLEditor
 
             changedComponents = new Dictionary<Dictionary<string, List<IComponent>>, IComponent>();
             addedComponents = new List<IComponent>();
+            FileTreeRoot.Nodes.Clear();
+            composite = new Component("root", "root", null);
+            currentParent = composite;
+            LoadFile(FileTreeRoot, filename);
+            
         }
     }
 }
