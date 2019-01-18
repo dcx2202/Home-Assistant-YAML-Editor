@@ -28,7 +28,7 @@ namespace YAMLEditor
         public static bool componentexists { get; set; } = false;
         public static TreeNode FileTreeRoot { get; set; }
         //public static Dictionary<IComponent, List<IComponent>> changedComponents1 { get; set; }
-        public static Dictionary<IComponent, Dictionary<string, List<IComponent>>> changedComponents { get; set; }
+        public static Dictionary<Dictionary<string, List<IComponent>>, IComponent> changedComponents { get; set; }
 
         public YAMLEditorForm()
         {
@@ -36,6 +36,7 @@ namespace YAMLEditor
             mLogger.Recorder = new TextBoxRecorder(mainTextBox);
             composite = new Component("root", "root", null);
             currentParent = composite;
+            changedComponents = new Dictionary<Dictionary<string, List<IComponent>>, IComponent>();
         }
 
         private void OnExit(object sender, EventArgs e)
@@ -375,10 +376,7 @@ namespace YAMLEditor
 
         private void SaveButton(object sender, EventArgs e)
         {
-            //foreach(IComponent component in changedComponents)
-            //{
-
-            //}
+            save();
         }
 
 
@@ -398,26 +396,26 @@ namespace YAMLEditor
         public void save()
         {
             // For each component that suffered changes we look for it in the files (opened and !included)
-            foreach (KeyValuePair<IComponent, Dictionary<string, List<IComponent>>> comp in changedComponents)
+            foreach (KeyValuePair< Dictionary<string, List<IComponent>>, IComponent > comp in changedComponents)
             {
                 // changed component
-                var node = comp.Key;
+                var node = comp.Value;
 
                 // its parents
-                var nodeparents = comp.Value.Values.First();
+                var nodeparents = comp.Key.Values.First();
 
                 // its old value
-                var oldvalue = comp.Value.Keys.First();
+                var oldvalue = comp.Key.Keys.First();
 
                 string newvalue = null;
 
                 #region update newvalue with the most recent value
                 changedComponents.Reverse();
 
-                foreach (KeyValuePair<IComponent, Dictionary<string, List<IComponent>>> c in changedComponents)
+                foreach (KeyValuePair< Dictionary<string, List<IComponent>>, IComponent > c in changedComponents)
                 {
                     if (c.Key == node)
-                        newvalue = c.Key.Name;
+                        newvalue = c.Value.Name;
                 }
 
                 changedComponents.Reverse();
@@ -469,7 +467,7 @@ namespace YAMLEditor
                 {
                     if (lines[i].Contains(oldvalue))
                     {
-                        lines[i].Replace(oldvalue, newvalue);
+                        lines[i] = lines[i].Replace(oldvalue, newvalue);
                         break;
                     }
                 }

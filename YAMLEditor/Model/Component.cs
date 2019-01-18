@@ -28,11 +28,16 @@ namespace YAMLEditor
                 // Keep the old name
                 string oldvalue = this.name;
 
-                Dictionary<string, List<IComponent>> parents = new Dictionary<string, List<IComponent>>();
-                YAMLEditorForm.GetParents(parents.Values.First(), this);
-                parents.Values.First().RemoveAt(0);
+                List<IComponent> parents = new List<IComponent>();
+                YAMLEditorForm.GetParents(parents, this);
+                parents.Remove(parents.Last());
+
+                //Dictionary<string, List<IComponent>> parents = new Dictionary<string, List<IComponent>>() { { oldvalue} };
+                //parents.Values.First().RemoveAt(0);
                 //parents.Values.First().Reverse(); - no need anymore because we are looping from the end
-                YAMLEditorForm.changedComponents.Add(this, new Dictionary<string, List<IComponent>> { { oldvalue, parents.Values.First() } });
+                Dictionary<string, List<IComponent>> dic = new Dictionary<string, List<IComponent>> { { oldvalue, parents } };
+
+                YAMLEditorForm.changedComponents.Add(dic, this);
 
 
                 //var a =
@@ -66,8 +71,6 @@ namespace YAMLEditor
             parent = aParent;
             filename = aFileName;
             name = aName;
-            getParents();
-            parents.Reverse();
         }
 
         public void add(IComponent child)
@@ -95,15 +98,6 @@ namespace YAMLEditor
         public IComponent getParent()
         {
             return parent;
-        }
-
-        public void getParents()
-        {
-            if(getParent() != null)
-            {
-                parents.Add(getParent());
-                getParent().getParents();
-            }
         }
 
         public void setParent(IComponent aParent)
