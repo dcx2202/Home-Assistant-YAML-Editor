@@ -32,22 +32,9 @@ namespace YAMLEditor
                 YAMLEditorForm.GetParents(parents, this);
                 parents.Remove(parents.Last());
 
-                //Dictionary<string, List<IComponent>> parents = new Dictionary<string, List<IComponent>>() { { oldvalue} };
-                //parents.Values.First().RemoveAt(0);
-                //parents.Values.First().Reverse(); - no need anymore because we are looping from the end
                 Dictionary<string, List<IComponent>> dic = new Dictionary<string, List<IComponent>> { { oldvalue, parents } };
 
                 YAMLEditorForm.changedComponents.Add(dic, this);
-
-
-                //var a =
-                //{
-                //    IComponent changedcomponent: this,
-                //    List<IComponent> parents: getparentsthing,
-                //    string oldvalue: oldvalue, - 
-                //};
-
-
 
                 // Update the name (updates the composite)
                 this.name = value;

@@ -29,6 +29,7 @@ namespace YAMLEditor
         public static TreeNode FileTreeRoot { get; set; }
         //public static Dictionary<IComponent, List<IComponent>> changedComponents1 { get; set; }
         public static Dictionary<Dictionary<string, List<IComponent>>, IComponent> changedComponents { get; set; }
+        public static List<IComponent> addedComponents { get; set; }
 
         public YAMLEditorForm()
         {
@@ -37,6 +38,7 @@ namespace YAMLEditor
             composite = new Component("root", "root", null);
             currentParent = composite;
             changedComponents = new Dictionary<Dictionary<string, List<IComponent>>, IComponent>();
+            addedComponents = new List<IComponent>();
         }
 
         private void OnExit(object sender, EventArgs e)
@@ -365,6 +367,7 @@ namespace YAMLEditor
         {
             aComponent.setParent(currentParent);
             composite.add(aComponent);
+            addedComponents.Add(aComponent);
             FileTreeRoot.Nodes.Add(aTree);
         }
 
@@ -393,8 +396,92 @@ namespace YAMLEditor
             }
         }
 
+        public static List<IComponent> GetAllChildren(List<IComponent> children, IComponent node)
+        {
+            if(node.getChildren().Count == 0)
+            {
+                return children;
+            }
+            else
+            {
+                foreach(IComponent child in node.getChildren())
+                {
+                    children.Add(child);
+                    GetAllChildren(children, child);
+                }
+            }
+
+            return children;
+        }
+
+        public static List<string> GetAllChildrenstring(List<string> lines, IComponent comp, string ident)
+        {
+            List<IComponent> allChildren = new List<IComponent>();
+            allChildren = GetAllChildren(allChildren, comp);
+
+            if (allChildren.Count == 0)
+            {
+                lines.Add(ident + comp.Name);
+            }
+            /*else if (allChildren.Count == 1)
+            {
+                lines.Add(ident + comp.Name + ":  " + allChildren.First().Name);
+            }*/
+            else
+            {
+                ident += "  ";
+                foreach (IComponent child in comp.getChildren())
+                {
+                    List<IComponent> siblings = new List<IComponent>();
+                    GetAllChildren(siblings, child.getParent());
+
+                    if (siblings.Count == 1)
+                        continue;
+
+                    lines.Add(ident + child.Name + ":");
+
+                    //ident += "  ";
+
+                    GetAllChildrenstring(lines, child, ident);
+                }
+                return lines;
+            }
+
+            return lines;
+        }
+
         public void save()
         {
+            // For each component that was added we write it to the opened file
+            foreach (IComponent comp in addedComponents)
+            {
+                var lines = File.ReadAllLines(comp.getFileName()).ToList();
+                lines.Add("");
+                lines.Add("");
+
+
+                List<IComponent> allChildren = new List<IComponent>();
+                allChildren = GetAllChildren(allChildren, comp);
+
+                if (allChildren.Count == 0)
+                {
+                    lines.Add(comp.Name + ":");
+                    File.WriteAllLines(comp.getFileName(), lines);
+                }
+                else if (allChildren.Count == 1)
+                {
+                    lines.Add(comp.Name + ": " + allChildren.First().Name);
+                    File.WriteAllLines(comp.getFileName(), lines);
+                }
+                else
+                {
+                    lines.Add(comp.Name + ":");
+                    lines = GetAllChildrenstring(lines, comp, "");
+                }
+
+                File.WriteAllLines(comp.getFileName(), lines);
+            }
+
             // For each component that suffered changes we look for it in the files (opened and !included)
             foreach (KeyValuePair< Dictionary<string, List<IComponent>>, IComponent > comp in changedComponents)
             {
@@ -444,7 +531,7 @@ namespace YAMLEditor
                     // For each line of this file we look for the component
                     for (var i = ln; i < lines.Count; i++)
                     {
-                        if (lines[i].Contains(nodeparents[j].Name))
+                        if (lines[i].Trim().StartsWith(nodeparents[j].Name))//lines[i].Contains(nodeparents[j].Name))
                         {
                             aux = true;
                             ln = i;
@@ -465,15 +552,23 @@ namespace YAMLEditor
                 // temos a linha do pai direto do no
                 for (var i = ln; i < lines.Count; i++)
                 {
-                    if (lines[i].Contains(oldvalue))
+                    if (lines[i].Contains(oldvalue) && !lines[i].Trim().StartsWith("#"))
                     {
-                        lines[i] = lines[i].Replace(oldvalue, newvalue);
+                        if (oldvalue == "")
+                            lines[i] = lines[i] + " " + newvalue;
+                        else if(lines[i].Contains(oldvalue + ":"))
+                            lines[i] = lines[i].Split(':')[0].Replace(oldvalue, newvalue) + ":";
+                        else
+                            lines[i] = lines[i].Split(':')[0] + ":";
                         break;
                     }
                 }
 
                 File.WriteAllLines(node.getFileName(), lines);
             }
+
+            changedComponents = new Dictionary<Dictionary<string, List<IComponent>>, IComponent>();
+            addedComponents = new List<IComponent>();
         }
     }
 }
