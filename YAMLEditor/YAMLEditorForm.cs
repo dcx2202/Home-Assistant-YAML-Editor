@@ -377,9 +377,9 @@ namespace YAMLEditor
             var b = FileTreeRoot;
         }
 
-        private void SaveButton(object sender, EventArgs e)
+        private void OnSaveButton(object sender, EventArgs e)
         {
-            save();
+            Save();
         }
 
 
@@ -450,7 +450,7 @@ namespace YAMLEditor
             return lines;
         }
 
-        public void save()
+        public void Save()
         {
             // For each component that was added we write it to the opened file
             foreach (IComponent comp in addedComponents)
@@ -530,17 +530,15 @@ namespace YAMLEditor
 
 
 
-                // temos a linha do pai direto do no
+                // after we've got the parent's exact line
                 for (var i = ln; i < lines.Count; i++)
                 {
                     if (lines[i].Contains(oldvalue) && !lines[i].Trim().StartsWith("#"))
                     {
-                        if (oldvalue == "")
-                            lines[i] = lines[i] + " " + newvalue;
-                        else if(lines[i].Contains(oldvalue + ":"))
+                        if(lines[i].Contains(oldvalue + ":"))
                             lines[i] = lines[i].Split(':')[0].Replace(oldvalue, newvalue) + ":";
-                        else
-                            lines[i] = lines[i].Split(':')[0] + ":";
+                        else //replace value (text after the : with newvalue)
+                            lines[i] = lines[i].Split(':')[0] + ": " + newvalue; 
                         break;
                     }
                 }

@@ -400,7 +400,7 @@
             this.saveToolStripButton.Name = "saveToolStripButton";
             this.saveToolStripButton.Size = new System.Drawing.Size(24, 24);
             this.saveToolStripButton.Text = "&Save";
-            this.saveToolStripButton.Click += new System.EventHandler(this.SaveButton);
+            this.saveToolStripButton.Click += new System.EventHandler(this.OnSaveButton);
             // 
             // printToolStripButton
             // 
