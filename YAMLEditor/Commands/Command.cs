@@ -24,6 +24,7 @@ namespace YAMLEditor.Commands
 
         public void Execute()
         {
+            //YAMLEditor.
             YAMLEditorForm.UpdateComposite(null, component, newvalue);
             YAMLEditorForm.UpdateTree(component, YAMLEditorForm.FileTreeRoot);
         }

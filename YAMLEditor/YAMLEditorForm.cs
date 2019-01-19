@@ -27,9 +27,17 @@ namespace YAMLEditor
         public static string openedfilename;
         public static bool componentexists { get; set; } = false;
         public static TreeNode FileTreeRoot { get; set; }
-        public static Dictionary<Dictionary<string, List<IComponent>>, IComponent> changedComponents { get; set; } // {K, V}, K -> {oldvalue, parents at the time}, V -> component that changed
+
+        /// <summary>
+        /// {K, V}, K -> {oldvalue, parents at the time}, V -> component that changed
+        /// </summary>
+        public static Dictionary<Dictionary<string, List<IComponent>>, IComponent> changedComponents { get; set; }
         public static List<IComponent> addedComponents { get; set; }
-        public static Dictionary<IComponent, List<IComponent>> removedComponents { get; set; } // {K, V}, K -> component that got removed, V -> parents at the time
+
+        /// <summary>
+        /// {K, V}, K -> component that got removed, V -> parents at the time
+        /// </summary>
+        public static Dictionary<IComponent, List<IComponent>> removedComponents { get; set; }
 
         public YAMLEditorForm()
         {
@@ -358,10 +366,35 @@ namespace YAMLEditor
             if (node == null)
                 node = composite;
 
-            if (node == component)
+            var parents1 = new List<IComponent>();
+            var parents2 = new List<IComponent>();
+
+            parents1 = GetParents(parents1, node);
+            parents2 = GetParents(parents2, component);
+
+            if(parents1.Count == parents2.Count && parents1.Count == 0)
             {
-                node.setName(aValue);
-                return;
+                if(node.Name.Equals(component.Name))
+                {
+                    YAMLEditorForm.changedComponents.Add(new Dictionary<string, List<IComponent>>() { { node.Name, parents1 } }, component);
+                    node.setName(aValue);
+                    return;
+                }
+            }
+            else if(parents1.Count == parents2.Count)
+            {
+                for(var i = 0; i < parents1.Count; i++)
+                {
+                    if (!parents1[i].Name.Equals(parents2[i].Name))
+                        return;
+                }
+
+                if (node.Name.Equals(component.Name))
+                {
+                    YAMLEditorForm.changedComponents.Add(new Dictionary<string, List<IComponent>>() { { node.Name, parents1 } }, component);
+                    node.setName(aValue);
+                    return;
+                }
             }
 
             foreach (IComponent n in node.getChildren())
