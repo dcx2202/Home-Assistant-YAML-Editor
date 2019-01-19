@@ -27,7 +27,6 @@ namespace YAMLEditor
         public static string openedfilename;
         public static bool componentexists { get; set; } = false;
         public static TreeNode FileTreeRoot { get; set; }
-        //public static Dictionary<IComponent, List<IComponent>> changedComponents1 { get; set; }
         public static Dictionary<Dictionary<string, List<IComponent>>, IComponent> changedComponents { get; set; }
         public static List<IComponent> addedComponents { get; set; }
 
@@ -517,29 +516,33 @@ namespace YAMLEditor
 
                 int ln = 0;
 
-                var aux = false;
-                for (var j = nodeparents.Count - 1; j >= 0; j--)// IComponent parent in nodeparents)
+                // if it's a level 0 component, the parent will be null
+                // and as such, the "parent's" line will 0 (as if the
+                // hypothetical parent was the whole file)
+                if (nodeparents.Count != 0)
                 {
-                    // For each line of this file we look for the component
-                    for (var i = ln; i < lines.Count; i++)
+                    var aux = false;
+                    for (var j = nodeparents.Count - 1; j >= 0; j--)// IComponent parent in nodeparents)
                     {
-                        if (lines[i].Trim().StartsWith(nodeparents[j].Name) || lines[i].Trim().StartsWith("- " + nodeparents[j].Name))//lines[i].Contains(nodeparents[j].Name))
+                        // For each line of this file we look for the component
+                        for (var i = ln; i < lines.Count; i++)
                         {
-                            aux = true;
-                            ln = i;
-                            nodeparents.RemoveAt(j);
-                            break;
+                            if (lines[i].Trim().StartsWith(nodeparents[j].Name) || lines[i].Trim().StartsWith("- " + nodeparents[j].Name))//lines[i].Contains(nodeparents[j].Name))
+                            {
+                                aux = true;
+                                ln = i;
+                                nodeparents.RemoveAt(j);
+                                break;
+                            }
                         }
+
+                        if (aux == false)
+                            break; // didn't find the component - should never happen
                     }
 
                     if (aux == false)
-                        break; // didn't find the component - should never happen
+                        continue; // didn't find the component - should never happen
                 }
-
-                if (aux == false)
-                    continue; // didn't find the component - should never happen
-
-
 
                 // after we've got the parent's exact line
                 for (var i = ln; i < lines.Count; i++)

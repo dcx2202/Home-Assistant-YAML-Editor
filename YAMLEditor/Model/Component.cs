@@ -25,7 +25,7 @@ namespace YAMLEditor
             }
             set
             {
-                // Keep the old name
+                // Cache the old name
                 string oldvalue = this.name;
 
                 List<IComponent> parents = new List<IComponent>();
