@@ -57,7 +57,7 @@ namespace YAMLEditor
 
             if (component != null)
             {
-                YAMLEditorForm.checkIfComponentExists(null, component.Keys.First().getChild(0));
+                YAMLEditorForm.CheckIfComponentExists(null, component.Keys.First().getChild(0));
 
                 if (YAMLEditorForm.componentexists)
                 {
@@ -67,7 +67,7 @@ namespace YAMLEditor
                 else
                 {
                     // Add component to main composite/tree
-                    YAMLEditorForm.addComponent(component.Keys.First().getChild(0), component.Values.First().Nodes[0]);
+                    YAMLEditorForm.AddComponent(component.Keys.First().getChild(0), component.Values.First().Nodes[0]);
                     MessageBox.Show("Component added.", "Success");
 
                     YAMLEditorForm.componentexists = false;

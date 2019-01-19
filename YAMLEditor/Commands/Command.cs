@@ -24,8 +24,8 @@ namespace YAMLEditor.Commands
 
         public void Execute()
         {
-            YAMLEditorForm.updateComposite(null, component, newvalue);
-            YAMLEditorForm.updateTree(component, YAMLEditorForm.FileTreeRoot);
+            YAMLEditorForm.UpdateComposite(null, component, newvalue);
+            YAMLEditorForm.UpdateTree(component, YAMLEditorForm.FileTreeRoot);
         }
 
         public void Redo()
@@ -35,8 +35,8 @@ namespace YAMLEditor.Commands
 
         public void Undo()
         {
-            YAMLEditorForm.updateComposite(null, component, oldvalue);
-            YAMLEditorForm.updateTree(component, YAMLEditorForm.FileTreeRoot);
+            YAMLEditorForm.UpdateComposite(null, component, oldvalue);
+            YAMLEditorForm.UpdateTree(component, YAMLEditorForm.FileTreeRoot);
         }
     }
 }

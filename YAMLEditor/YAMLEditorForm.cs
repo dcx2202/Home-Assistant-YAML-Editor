@@ -41,6 +41,8 @@ namespace YAMLEditor
             addedComponents = new List<IComponent>();
         }
 
+
+        #region Button Actions
         private void OnExit(object sender, EventArgs e)
         {
             Application.Exit();
@@ -52,6 +54,13 @@ namespace YAMLEditor
             { Filter = @"Yaml files (*.yaml)|*.yaml|All files (*.*)|*.*", DefaultExt = "yaml" };
             if(dialog.ShowDialog() == DialogResult.OK)
             {
+                changedComponents = new Dictionary<Dictionary<string, List<IComponent>>, IComponent>();
+                addedComponents = new List<IComponent>();
+                if(FileTreeRoot != null)
+                    FileTreeRoot.Nodes.Clear();
+                composite = new Component("root", "root", null);
+                currentParent = composite;
+
                 mLogger.WriteLine($"Filename: {dialog.FileName}");
                 System.Diagnostics.Trace.WriteLine($"Filename: {dialog.FileName}");
                 Directory.SetCurrentDirectory(Path.GetDirectoryName(dialog.FileName) ?? "");
@@ -66,6 +75,39 @@ namespace YAMLEditor
                 FileTreeRoot.Expand();
             }
         }
+
+        private void OnPasteToolStripButton_Click(object sender, EventArgs e)
+        {
+            var a = composite;
+            var b = FileTreeRoot;
+        }
+
+        private void OnSaveButton(object sender, EventArgs e)
+        {
+            Save();
+        }
+
+        private void OnUndo(object sender, EventArgs e)
+        {
+            Manager.Undo();
+        }
+
+        private void OnRedo(object sender, EventArgs e)
+        {
+            Manager.Redo();
+        }
+
+        private void OnAboutButton(object sender, EventArgs e)
+        {
+            MessageBox.Show("Made by: " +
+                "Diogo Cruz, " +
+                "Diogo Nóbrega, " +
+                "Francisco Teixeira, " +
+                "Marco Lima", "About");
+        }
+        #endregion
+
+
 
         private static void LoadFile(TreeNode node, string filename)
         {
@@ -250,16 +292,6 @@ namespace YAMLEditor
             return mapping?.Children;
         }
 
-		private void OnUndo(object sender, EventArgs e)
-		{
-			Manager.Undo();
-		}
-
-		private void OnRedo(object sender, EventArgs e)
-		{
-			Manager.Redo();
-		}
-
 		private void NewComponent(object sender, EventArgs e)
 		{
 			if(openedfilename == null)
@@ -269,15 +301,6 @@ namespace YAMLEditor
             }
 			NewComponent nc = new NewComponent();
 			nc.ShowDialog();
-		}
-
-		private void AboutButton(object sender, EventArgs e)
-		{
-			MessageBox.Show("Made by: " +
-				"Diogo Cruz, " +
-				"Diogo Nóbrega, " +
-				"Francisco Teixeira, " +
-				"Marco Lima", "About");
 		}
 
         private void NewComponent2(object sender, EventArgs e)
@@ -291,7 +314,7 @@ namespace YAMLEditor
 			nc.ShowDialog();
 		}
 
-        public static void updateTree(IComponent component, TreeNode root)
+        public static void UpdateTree(IComponent component, TreeNode root)
         {
             if (root == null)
                 root = FileTreeRoot;
@@ -304,11 +327,11 @@ namespace YAMLEditor
 
             foreach(TreeNode node in root.Nodes)
             {
-                updateTree(component, node);
+                UpdateTree(component, node);
             }
         }
 
-        public static void updateComposite(IComponent node, IComponent component, string aValue)
+        public static void UpdateComposite(IComponent node, IComponent component, string aValue)
         {
             if (node == null)
                 node = composite;
@@ -321,11 +344,11 @@ namespace YAMLEditor
 
             foreach (IComponent n in node.getChildren())
             {
-                updateComposite(n, component, aValue);
+                UpdateComposite(n, component, aValue);
             }
         }
 
-        public static void checkIfComponentExists(IComponent node, IComponent component)
+        public static void CheckIfComponentExists(IComponent node, IComponent component)
         {
             if (node == null)
                 node = composite;
@@ -338,7 +361,7 @@ namespace YAMLEditor
 
             foreach (IComponent n in node.getChildren())
             {
-                checkIfComponentExists(n, component);
+                CheckIfComponentExists(n, component);
             }
         }
 
@@ -363,25 +386,13 @@ namespace YAMLEditor
             }
         }
 
-        public static void addComponent(IComponent aComponent, TreeNode aTree)
+        public static void AddComponent(IComponent aComponent, TreeNode aTree)
         {
             aComponent.setParent(currentParent);
             composite.add(aComponent);
             addedComponents.Add(aComponent);
             FileTreeRoot.Nodes.Add(aTree);
         }
-
-        private void pasteToolStripButton_Click(object sender, EventArgs e)
-        {
-            var a = composite;
-            var b = FileTreeRoot;
-        }
-
-        private void OnSaveButton(object sender, EventArgs e)
-        {
-            Save();
-        }
-
 
         public static List<IComponent> GetParents(List<IComponent> parents, IComponent node)
         {
