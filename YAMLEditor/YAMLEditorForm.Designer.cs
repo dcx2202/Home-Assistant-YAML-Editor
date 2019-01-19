@@ -511,7 +511,6 @@
             this.mainTreeView.Size = new System.Drawing.Size(375, 241);
             this.mainTreeView.TabIndex = 0;
             this.mainTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnAfterSelect);
-            this.mainTreeView.DoubleClick += new System.EventHandler(this.OnDoubleClick);
             // 
             // mainImageList
             // 

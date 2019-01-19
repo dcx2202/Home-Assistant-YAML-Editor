@@ -294,22 +294,6 @@ namespace YAMLEditor
             LoadHelpPage();
         }
 
-        private void OnDoubleClick(object sender, EventArgs e)
-        {
-            if(mainTreeView.SelectedNode == null) return;
-            var selected = mainTreeView.SelectedNode;
-
-            if(selected.Tag is YamlMappingNode node)
-            {
-                if(node.Children.Any(p => ((YamlScalarNode)p.Key).Value == "platform"))
-                {
-                    var platform = node.Children.FirstOrDefault(p => ((YamlScalarNode)p.Key).Value == "platform");
-                    webBrowser.Url = new Uri($@"https://www.home-assistant.io/components/{ selected.Text }.{ platform.Value }");
-                    mainTabControl.SelectTab(helpTabPage);
-                }
-            }
-        }
-
         private IDictionary<YamlNode, YamlNode> getDataStructure(string filename)
         {
             // Read file
@@ -503,6 +487,12 @@ namespace YAMLEditor
 
         public void Save()
         {
+            if(filename == null)
+            {
+                MessageBox.Show("There is no file currently open", "Error");
+                return;
+            }
+
             // For each component that was added we write it to the opened file
             foreach (IComponent comp in addedComponents)
             {
@@ -675,6 +665,17 @@ namespace YAMLEditor
 
         private void RemoveComponent(object sender, EventArgs e)
         {
+            if (filename == null)
+            {
+                MessageBox.Show("There is no file currently open", "Error");
+                return;
+            }
+            else if(mainTreeView.SelectedNode == null)
+            {
+                MessageBox.Show("There is no node currently selected", "Error");
+                return;
+            }
+
             var treenode = mainTreeView.SelectedNode;
             var node = (Component) treenode.Tag;
 
