@@ -110,6 +110,14 @@ namespace YAMLEditor
                 filename = openedfilename;
                 LoadFile(FileTreeRoot, dialog.FileName);
                 FileTreeRoot.Expand();
+
+                // After opening a file we enable these buttons
+                newToolStripButton.Enabled = true;
+                newToolStripMenuItem.Enabled = true;
+                cutToolStripButton.Enabled = true;
+                cutToolStripMenuItem.Enabled = true;
+                saveToolStripButton.Enabled = true;
+                saveToolStripMenuItem.Enabled = true;
             }
         }
 
@@ -318,22 +326,12 @@ namespace YAMLEditor
 
 		private void NewComponent(object sender, EventArgs e)
 		{
-			if(openedfilename == null)
-            {
-                MessageBox.Show("There is no file currently open.", "Error");
-                return;
-            }
 			NewComponent nc = new NewComponent();
 			nc.ShowDialog();
 		}
 
         private void NewComponent2(object sender, EventArgs e)
         {
-            if (openedfilename == null)
-            {
-                MessageBox.Show("There is no file currently open.", "Error");
-                return;
-            }
             NewComponent nc = new NewComponent();
 			nc.ShowDialog();
 		}
@@ -487,12 +485,6 @@ namespace YAMLEditor
 
         public void Save()
         {
-            if(filename == null)
-            {
-                MessageBox.Show("There is no file currently open", "Error");
-                return;
-            }
-
             // For each component that was added we write it to the opened file
             foreach (IComponent comp in addedComponents)
             {
@@ -570,7 +562,13 @@ namespace YAMLEditor
 
                         // "oldvalue:?" --> "newvalue:?"
                         else if (lines[i].Contains(oldvalue + ":") && oldvalue != "" && newvalue != "")
-                            lines[i] = lines[i].Split(':')[0].Replace(oldvalue, newvalue) + ":";
+                        {
+                            var splits = lines[i].Split(':');
+                            if (splits.Length == 2)
+                                lines[i] = splits[0].Replace(oldvalue, newvalue) + ":" + splits[1];
+                            else
+                                lines[i] = splits[0].Replace(oldvalue, newvalue) + ":";
+                        }
                         else
                         {
                             // "parent: oldvalue" --> "parent:"
@@ -665,14 +663,20 @@ namespace YAMLEditor
 
         private void RemoveComponent(object sender, EventArgs e)
         {
-            if (filename == null)
-            {
-                MessageBox.Show("There is no file currently open", "Error");
-                return;
-            }
-            else if(mainTreeView.SelectedNode == null)
+            if(mainTreeView.SelectedNode == null)
             {
                 MessageBox.Show("There is no node currently selected", "Error");
+                return;
+            }
+
+            var component = mainTreeView.SelectedNode.Tag as Component;
+
+            DialogResult result = MessageBox.Show("Do you really want to remove " + component.Name + "?", "Warning",
+            MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+            if (result == DialogResult.No)
+            {
+                MessageBox.Show("Removal cancelled");
                 return;
             }
 
