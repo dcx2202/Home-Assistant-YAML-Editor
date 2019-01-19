@@ -27,8 +27,9 @@ namespace YAMLEditor
         public static string openedfilename;
         public static bool componentexists { get; set; } = false;
         public static TreeNode FileTreeRoot { get; set; }
-        public static Dictionary<Dictionary<string, List<IComponent>>, IComponent> changedComponents { get; set; }
+        public static Dictionary<Dictionary<string, List<IComponent>>, IComponent> changedComponents { get; set; } // {K, V}, K -> {oldvalue, parents at the time}, V -> component that changed
         public static List<IComponent> addedComponents { get; set; }
+        public static Dictionary<IComponent, List<IComponent>> removedComponents { get; set; } // {K, V}, K -> component that got removed, V -> parents at the time
 
         public YAMLEditorForm()
         {
@@ -467,10 +468,73 @@ namespace YAMLEditor
             {
 
                 var lines = File.ReadAllLines(filename).ToList();
-                //lines.Add("");
+                lines.Add("");
                 lines.Add(comp.Name + ": !include " + comp.getFileName());
 
                 File.WriteAllLines(filename, lines);
+            }
+
+            // For each component that was removed we remove it from the opened file
+            foreach (KeyValuePair<IComponent, List<IComponent>> comp in removedComponents)
+            {
+                var nodeparents = comp.Value;
+                var node = comp.Key;
+
+
+                List<string> lines = File.ReadAllLines(node.getFileName()).ToList();
+
+
+                int ln = 0;
+
+                var aux = false;
+
+                if (nodeparents.Count > 1)
+                {
+                    for (var j = nodeparents.Count - 1; j >= 0; j--)// IComponent parent in nodeparents)
+                    {
+                        // For each line of this file we look for the component
+                        for (var i = ln; i < lines.Count; i++)
+                        {
+                            if (lines[i].Trim().StartsWith(nodeparents[j].Name) || lines[i].Trim().StartsWith("- " + nodeparents[j].Name))//lines[i].Contains(nodeparents[j].Name))
+                            {
+                                aux = true;
+                                ln = i;
+                                nodeparents.RemoveAt(j);
+                                break;
+                            }
+                        }
+
+                        if (aux == false)
+                            break; // didn't find the component - should never happen
+                    }
+                }
+
+                // temos a linha do pai direto do no
+                aux = false;
+                for (var i = ln; i < lines.Count; i++)
+                {
+                    if (lines[i].Contains(node.Name) && !lines[i].Trim().StartsWith("#"))
+                    {
+                        lines.RemoveAt(i);
+                        aux = true;
+                    }
+
+                    if (aux && node.getChildren().Count > 1)
+                    {
+                        foreach (IComponent child in node.getChildren())
+                        {
+                            if (lines[i].Contains(child.Name) && !lines[i].Trim().StartsWith("#"))
+                            {
+                                lines.RemoveAt(i);
+                            }
+                        }
+                    }
+
+                    if (aux && lines[i].Trim() == "")
+                        break;
+                }
+
+                File.WriteAllLines(node.getFileName(), lines);
             }
 
             // For each component that suffered changes we look for it in the files (opened and !included)
@@ -485,22 +549,7 @@ namespace YAMLEditor
                 // its old value
                 var oldvalue = comp.Key.Keys.First();
 
-                string newvalue = null;
-
-                #region update newvalue with the most recent value
-                changedComponents.Reverse();
-
-                foreach (KeyValuePair< Dictionary<string, List<IComponent>>, IComponent > c in changedComponents)
-                {
-                    if (c.Key == node)
-                        newvalue = c.Value.Name;
-                }
-
-                changedComponents.Reverse();
-
-                if (newvalue == null)
-                    newvalue = node.Name;
-                #endregion
+                string newvalue = node.Name;
 
 
                 List<string> lines = new List<string>();
@@ -549,10 +598,23 @@ namespace YAMLEditor
                 {
                     if (lines[i].Contains(oldvalue) && !lines[i].Trim().StartsWith("#"))
                     {
-                        if(lines[i].Contains(oldvalue + ":"))
+                        // "parent:" --> "parent: newvalue"
+                        if (oldvalue == "" && newvalue != "")
+                            lines[i] = lines[i] + " " + newvalue;
+
+                        // "oldvalue:?" --> "newvalue:?"
+                        else if (lines[i].Contains(oldvalue + ":") && oldvalue != "" && newvalue != "")
                             lines[i] = lines[i].Split(':')[0].Replace(oldvalue, newvalue) + ":";
-                        else //replace value (text after the : with newvalue)
-                            lines[i] = lines[i].Split(':')[0] + ": " + newvalue; 
+                        else
+                        {
+                            // "parent: oldvalue" --> "parent:"
+                            if (newvalue == "")
+                                lines[i] = lines[i].Split(':')[0] + ":";
+
+                            // "parent: oldvalue" --> "parent: newvalue"
+                            else
+                                lines[i] = lines[i].Split(':')[0] + ": " + newvalue;
+                        }
                         break;
                     }
                 }
@@ -567,6 +629,21 @@ namespace YAMLEditor
             currentParent = composite;
             LoadFile(FileTreeRoot, filename);
             
+        }
+
+        private void RemoveComponent(object sender, EventArgs e)
+        {
+            var treenode = mainTreeView.SelectedNode;
+            var node = (Component) treenode.Tag;
+
+            List<IComponent> nodeparents = new List<IComponent>();
+            nodeparents = GetParents(nodeparents, node);
+            nodeparents.Remove(nodeparents.Last());
+
+            treenode.Parent.Nodes.Remove(treenode);
+            node.getParent().getChildren().Remove(node);
+
+            removedComponents.Add(node, nodeparents);
         }
     }
 }

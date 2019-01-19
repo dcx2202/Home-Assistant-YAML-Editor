@@ -25,25 +25,37 @@ namespace YAMLEditor
             }
             set
             {
-                // Cache the old name
-                string oldvalue = this.name;
+                if(value.All(c => Char.IsLetterOrDigit(c) || c.Equals('_') || c.Equals("") || c.Equals(' ')))
+                {
+                    if (children.Count != 0 && value == "")
+                    {
+                        MessageBox.Show("Can't set this node's value as empty", "Error");
+                    }
+                    else
+                    {
+                        // Cache the old name
+                        string oldvalue = this.name;
 
-                List<IComponent> parents = new List<IComponent>();
-                YAMLEditorForm.GetParents(parents, this);
-                parents.Remove(parents.Last());
+                        List<IComponent> parents = new List<IComponent>();
+                        YAMLEditorForm.GetParents(parents, this);
+                        parents.Remove(parents.Last());
 
-                Dictionary<string, List<IComponent>> dic = new Dictionary<string, List<IComponent>> { { oldvalue, parents } };
+                        Dictionary<string, List<IComponent>> dic = new Dictionary<string, List<IComponent>> { { oldvalue, parents } };
 
-                YAMLEditorForm.changedComponents.Add(dic, this);
+                        YAMLEditorForm.changedComponents.Add(dic, this);
 
-                // Update the name (updates the composite)
-                this.name = value;
+                        // Update the name (updates the composite)
+                        this.name = value;
 
-                // Create a new command with a reference to the component that changed, the old value and the new
-                ICommand command = new Command(this, oldvalue, this.name);
+                        // Create a new command with a reference to the component that changed, the old value and the new
+                        ICommand command = new Command(this, oldvalue, this.name);
 
-                // Execute the command (adds it to the undo queue and updates the tree and composite
-                YAMLEditorForm.Manager.Execute(command);
+                        // Execute the command (adds it to the undo queue and updates the tree and composite
+                        YAMLEditorForm.Manager.Execute(command);
+                    }
+                }
+                else
+                    MessageBox.Show("Please use only letters, numbers, spaces, underscores or nothing (to delete)", "Error");
             }
         }
 

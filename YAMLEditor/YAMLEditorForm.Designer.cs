@@ -424,6 +424,7 @@
             this.cutToolStripButton.Name = "cutToolStripButton";
             this.cutToolStripButton.Size = new System.Drawing.Size(24, 24);
             this.cutToolStripButton.Text = "C&ut";
+            this.cutToolStripButton.Click += new System.EventHandler(this.RemoveComponent);
             // 
             // copyToolStripButton
             // 
