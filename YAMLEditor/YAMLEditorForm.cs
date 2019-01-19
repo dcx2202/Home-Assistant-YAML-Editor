@@ -39,6 +39,7 @@ namespace YAMLEditor
             currentParent = composite;
             changedComponents = new Dictionary<Dictionary<string, List<IComponent>>, IComponent>();
             addedComponents = new List<IComponent>();
+            removedComponents = new Dictionary<IComponent, List<IComponent>>();
         }
 
 
@@ -264,7 +265,7 @@ namespace YAMLEditor
                 if(node.Children.Any(p => ((YamlScalarNode)p.Key).Value == "platform"))
                 {
                     var platform = node.Children.FirstOrDefault(p => ((YamlScalarNode)p.Key).Value == "platform");
-                    mainWebBrowser.Url = new Uri($@"https://www.home-assistant.io/components/{ selected.Text }.{ platform.Value }");
+                    webBrowser.Url = new Uri($@"https://www.home-assistant.io/components/{ selected.Text }.{ platform.Value }");
                     mainTabControl.SelectTab(helpTabPage);
                 }
             }
@@ -474,69 +475,6 @@ namespace YAMLEditor
                 File.WriteAllLines(filename, lines);
             }
 
-            // For each component that was removed we remove it from the opened file
-            foreach (KeyValuePair<IComponent, List<IComponent>> comp in removedComponents)
-            {
-                var nodeparents = comp.Value;
-                var node = comp.Key;
-
-
-                List<string> lines = File.ReadAllLines(node.getFileName()).ToList();
-
-
-                int ln = 0;
-
-                var aux = false;
-
-                if (nodeparents.Count > 1)
-                {
-                    for (var j = nodeparents.Count - 1; j >= 0; j--)// IComponent parent in nodeparents)
-                    {
-                        // For each line of this file we look for the component
-                        for (var i = ln; i < lines.Count; i++)
-                        {
-                            if (lines[i].Trim().StartsWith(nodeparents[j].Name) || lines[i].Trim().StartsWith("- " + nodeparents[j].Name))//lines[i].Contains(nodeparents[j].Name))
-                            {
-                                aux = true;
-                                ln = i;
-                                nodeparents.RemoveAt(j);
-                                break;
-                            }
-                        }
-
-                        if (aux == false)
-                            break; // didn't find the component - should never happen
-                    }
-                }
-
-                // temos a linha do pai direto do no
-                aux = false;
-                for (var i = ln; i < lines.Count; i++)
-                {
-                    if (lines[i].Contains(node.Name) && !lines[i].Trim().StartsWith("#"))
-                    {
-                        lines.RemoveAt(i);
-                        aux = true;
-                    }
-
-                    if (aux && node.getChildren().Count > 1)
-                    {
-                        foreach (IComponent child in node.getChildren())
-                        {
-                            if (lines[i].Contains(child.Name) && !lines[i].Trim().StartsWith("#"))
-                            {
-                                lines.RemoveAt(i);
-                            }
-                        }
-                    }
-
-                    if (aux && lines[i].Trim() == "")
-                        break;
-                }
-
-                File.WriteAllLines(node.getFileName(), lines);
-            }
-
             // For each component that suffered changes we look for it in the files (opened and !included)
             foreach (KeyValuePair< Dictionary<string, List<IComponent>>, IComponent > comp in changedComponents)
             {
@@ -550,7 +488,6 @@ namespace YAMLEditor
                 var oldvalue = comp.Key.Keys.First();
 
                 string newvalue = node.Name;
-
 
                 List<string> lines = new List<string>();
 
@@ -622,8 +559,74 @@ namespace YAMLEditor
                 File.WriteAllLines(node.getFileName(), lines);
             }
 
+            // For each component that was removed we remove it from the opened file
+            foreach (KeyValuePair<IComponent, List<IComponent>> comp in removedComponents)
+            {
+                var nodeparents = comp.Value;
+                var node = comp.Key;
+
+                List<string> lines = File.ReadAllLines(node.getFileName()).ToList();
+
+                int ln = 0;
+
+                var aux = false;
+
+                if (nodeparents.Count > 1)
+                {
+                    for (var j = nodeparents.Count - 1; j >= 0; j--)// IComponent parent in nodeparents)
+                    {
+                        // For each line of this file we look for the component
+                        for (var i = ln; i < lines.Count; i++)
+                        {
+                            if (lines[i].Trim().StartsWith(nodeparents[j].Name) || lines[i].Trim().StartsWith("- " + nodeparents[j].Name))//lines[i].Contains(nodeparents[j].Name))
+                            {
+                                aux = true;
+                                ln = i;
+                                nodeparents.RemoveAt(j);
+                                break;
+                            }
+                        }
+
+                        if (aux == false)
+                            break; // didn't find the component - should never happen
+                    }
+                }
+
+                // temos a linha do pai direto do no
+                aux = false;
+                for (var i = ln; i < lines.Count; i++)
+                {
+                    if (lines[i].Contains(node.Name) && !lines[i].Trim().StartsWith("#") && !aux)
+                    {
+                        lines.RemoveAt(i);
+                        if(i > 0)
+                            i--;
+                        aux = true;
+                    }
+
+                    if (aux && node.getChildren().Count > 1)
+                    {
+                        foreach (IComponent child in node.getChildren())
+                        {
+                            if (lines[i].Contains(child.Name) && !lines[i].Trim().StartsWith("#"))
+                            {
+                                lines.RemoveAt(i);
+                                if (i > 0)
+                                    i--;
+                            }
+                        }
+                    }
+
+                    if (aux && lines[i].Trim() == "")
+                        break;
+                }
+
+                File.WriteAllLines(node.getFileName(), lines);
+            }
+
             changedComponents = new Dictionary<Dictionary<string, List<IComponent>>, IComponent>();
             addedComponents = new List<IComponent>();
+            removedComponents = new Dictionary<IComponent, List<IComponent>>();
             FileTreeRoot.Nodes.Clear();
             composite = new Component("root", "root", null);
             currentParent = composite;

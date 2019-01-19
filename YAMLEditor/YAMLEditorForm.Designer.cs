@@ -81,7 +81,7 @@
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.mainPropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.helpTabPage = new System.Windows.Forms.TabPage();
-            this.mainWebBrowser = new System.Windows.Forms.WebBrowser();
+            this.webBrowser = new System.Windows.Forms.WebBrowser();
             this.mainTextBox = new System.Windows.Forms.TextBox();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.mainMenuStrip.SuspendLayout();
@@ -560,7 +560,7 @@
             // 
             // helpTabPage
             // 
-            this.helpTabPage.Controls.Add(this.mainWebBrowser);
+            this.helpTabPage.Controls.Add(this.webBrowser);
             this.helpTabPage.Location = new System.Drawing.Point(4, 22);
             this.helpTabPage.Margin = new System.Windows.Forms.Padding(2);
             this.helpTabPage.Name = "helpTabPage";
@@ -570,15 +570,15 @@
             this.helpTabPage.Text = "Help";
             this.helpTabPage.UseVisualStyleBackColor = true;
             // 
-            // mainWebBrowser
+            // webBrowser
             // 
-            this.mainWebBrowser.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mainWebBrowser.Location = new System.Drawing.Point(2, 2);
-            this.mainWebBrowser.Margin = new System.Windows.Forms.Padding(2);
-            this.mainWebBrowser.MinimumSize = new System.Drawing.Size(11, 11);
-            this.mainWebBrowser.Name = "mainWebBrowser";
-            this.mainWebBrowser.Size = new System.Drawing.Size(412, 211);
-            this.mainWebBrowser.TabIndex = 0;
+            this.webBrowser.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.webBrowser.Location = new System.Drawing.Point(2, 2);
+            this.webBrowser.Margin = new System.Windows.Forms.Padding(2);
+            this.webBrowser.MinimumSize = new System.Drawing.Size(11, 11);
+            this.webBrowser.Name = "webBrowser";
+            this.webBrowser.Size = new System.Drawing.Size(412, 211);
+            this.webBrowser.TabIndex = 0;
             // 
             // mainTextBox
             // 
@@ -693,7 +693,7 @@
         private System.Windows.Forms.TabControl mainTabControl;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage helpTabPage;
-        private System.Windows.Forms.WebBrowser mainWebBrowser;
+        private System.Windows.Forms.WebBrowser webBrowser;
         private System.Windows.Forms.TextBox mainTextBox;
 		private System.Windows.Forms.ToolStripButton toolStripButton1;
 		private System.Windows.Forms.ToolStripButton toolStripButton2;
