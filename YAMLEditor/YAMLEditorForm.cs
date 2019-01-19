@@ -34,6 +34,8 @@ namespace YAMLEditor
         public YAMLEditorForm()
         {
             InitializeComponent();
+            mainTabControl.SelectedIndexChanged += new EventHandler(LoadHelpPageEvent);
+
             mLogger.Recorder = new TextBoxRecorder(mainTextBox);
             composite = new Component("root", "root", null);
             currentParent = composite;
@@ -42,6 +44,40 @@ namespace YAMLEditor
             removedComponents = new Dictionary<IComponent, List<IComponent>>();
         }
 
+
+        public void LoadHelpPageEvent(object sender, EventArgs e)
+        {
+            try
+            {
+                LoadHelpPage();
+            }
+            catch (Exception exception)
+            {
+                mLogger.WriteLine(exception.StackTrace);
+            }
+        }
+
+        public void LoadHelpPage()
+        {
+            if (mainTabControl.SelectedTab.Text == "Help")
+            {
+                if (mainTreeView.SelectedNode == null || filename == null)
+                    return;
+
+                else if (mainTreeView.SelectedNode.Tag == null)
+                    return;
+
+                var node = (Component)mainTreeView.SelectedNode.Tag;
+
+                if (node.getParent().Name != "root")
+                {
+                    List<IComponent> parents = new List<IComponent>();
+                    node = GetParents(parents, node).ElementAt(parents.Count - 2) as Component;
+                }
+
+                webBrowser.Navigate("https://www.home-assistant.io/components/" + node.Name);
+            }
+        }
 
         #region Button Actions
         private void OnExit(object sender, EventArgs e)
@@ -81,6 +117,8 @@ namespace YAMLEditor
         {
             var a = composite;
             var b = FileTreeRoot;
+            var c = mainTabControl.SelectedTab;
+            var d = mainTabControl.SelectedTab;
         }
 
         private void OnSaveButton(object sender, EventArgs e)
@@ -253,6 +291,7 @@ namespace YAMLEditor
         private void OnAfterSelect(object sender, TreeViewEventArgs e)
         {
             mainPropertyGrid.SelectedObject = e.Node.Tag;
+            LoadHelpPage();
         }
 
         private void OnDoubleClick(object sender, EventArgs e)
