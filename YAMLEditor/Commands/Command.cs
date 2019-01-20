@@ -26,18 +26,29 @@ namespace YAMLEditor.Commands
         {
             //YAMLEditor.
             YAMLEditorForm.UpdateComposite(null, component, newvalue);
-            YAMLEditorForm.UpdateTree(component, YAMLEditorForm.FileTreeRoot);
+            YAMLEditorForm.UpdateTree(component, YAMLEditorForm.FileTreeRoot, newvalue);
         }
 
         public void Redo()
         {
-            Execute();
+            YAMLEditorForm.UpdateTree(component, YAMLEditorForm.FileTreeRoot, newvalue);
+            YAMLEditorForm.UpdateComposite(null, component, newvalue);
+            var parents = new List<IComponent>();
+            parents = YAMLEditorForm.GetParents(parents, component);
+            parents.Remove(parents.Last());
+            component.setName(newvalue);
+            YAMLEditorForm.changedComponents.Add(new Dictionary<string, List<IComponent>>() { { oldvalue, parents } }, component);
         }
 
         public void Undo()
         {
+            YAMLEditorForm.UpdateTree(component, YAMLEditorForm.FileTreeRoot, oldvalue);
             YAMLEditorForm.UpdateComposite(null, component, oldvalue);
-            YAMLEditorForm.UpdateTree(component, YAMLEditorForm.FileTreeRoot);
+            var parents = new List<IComponent>();
+            parents = YAMLEditorForm.GetParents(parents, component);
+            parents.Remove(parents.Last());
+            component.setName(oldvalue);
+            YAMLEditorForm.changedComponents.Add(new Dictionary<string, List<IComponent>>() { { newvalue, parents } }, component);
         }
     }
 }

@@ -115,8 +115,11 @@ namespace YAMLEditor
                 FileTreeRoot.ImageIndex = FileTreeRoot.SelectedImageIndex = 3;
 
                 openedfilename = dialog.FileName;
+                var splits = openedfilename.Split('\\');
+                openedfilename = splits[splits.Length - 1];
                 filename = openedfilename;
-                LoadFile(FileTreeRoot, dialog.FileName);
+
+                LoadFile(FileTreeRoot, filename);
                 FileTreeRoot.Expand();
 
                 // After opening a file we enable these buttons
@@ -344,20 +347,66 @@ namespace YAMLEditor
 			nc.ShowDialog();
 		}
 
-        public static void UpdateTree(IComponent component, TreeNode root)
+        public static void UpdateTree(IComponent component, TreeNode root, string aValue)
         {
             if (root == null)
                 root = FileTreeRoot;
 
-            if(root.Tag == component)
+            var parents1 = new List<IComponent>();
+            var parents2 = new List<TreeNode>();
+
+            parents1 = GetParents(parents1, component);
+            parents2 = GetParents(parents2, root);
+
+            if(parents1.Count > 1)
+                parents1.Remove(parents1.Last());
+            if (parents2.Count > 1)
+                parents2.Remove(parents2.Last());
+
+            if (parents1.Count == 0 && parents1.Count == parents2.Count)
+            {
+                if (component.Name.Equals(root.Name))
+                {
+                    //parents1.Remove(parents1.Last());
+                    //YAMLEditorForm.changedComponents.Add(new Dictionary<string, List<IComponent>>() { { node.Name, parents1 } }, component);
+                    root.Name = aValue;
+                    root.Text = aValue;
+                    return;
+                }
+            }
+            else if (parents1.Count == parents2.Count)
+            {
+                for (var i = 0; i < parents1.Count; i++)
+                {
+                    if (parents1[i].Name != parents2[i].Text && parents2[i].Tag != null)
+                        return;
+                }
+
+                var treecomp = root.Tag as Component;
+
+                if (component.Name.Equals(root.Name) || component.Name.Equals(treecomp.Name))
+                {
+                    //parents1.Remove(parents1.Last());
+                    //YAMLEditorForm.changedComponents.Add(new Dictionary<string, List<IComponent>>() { { node.Name, parents1 } }, component);
+                    root.Name = aValue;
+                    root.Text = aValue;
+                    return;
+                }
+            }
+
+
+            /*if (root == null)
+                root = FileTreeRoot;
+
+            if (root.Tag == component)
             {
                 root.Text = component.Name;
                 return;
-            }
+            }*/
 
-            foreach(TreeNode node in root.Nodes)
+            foreach (TreeNode node in root.Nodes)
             {
-                UpdateTree(component, node);
+                UpdateTree(component, node, aValue);
             }
         }
 
@@ -372,11 +421,17 @@ namespace YAMLEditor
             parents1 = GetParents(parents1, node);
             parents2 = GetParents(parents2, component);
 
-            if(parents1.Count == parents2.Count && parents1.Count == 0)
+            if(parents1.Count > 0)
+                parents1.Remove(parents1.Last());
+            if (parents2.Count > 0)
+                parents2.Remove(parents2.Last());
+
+            if (parents1.Count == 0 && parents1.Count == parents2.Count)
             {
                 if(node.Name.Equals(component.Name))
                 {
-                    YAMLEditorForm.changedComponents.Add(new Dictionary<string, List<IComponent>>() { { node.Name, parents1 } }, component);
+                    //parents1.Remove(parents1.Last());
+                    //YAMLEditorForm.changedComponents.Add(new Dictionary<string, List<IComponent>>() { { node.Name, parents1 } }, component);
                     node.setName(aValue);
                     return;
                 }
@@ -391,7 +446,8 @@ namespace YAMLEditor
 
                 if (node.Name.Equals(component.Name))
                 {
-                    YAMLEditorForm.changedComponents.Add(new Dictionary<string, List<IComponent>>() { { node.Name, parents1 } }, component);
+                    //parents1.Remove(parents1.Last());
+                    //YAMLEditorForm.changedComponents.Add(new Dictionary<string, List<IComponent>>() { { node.Name, parents1 } }, component);
                     node.setName(aValue);
                     return;
                 }
@@ -459,6 +515,19 @@ namespace YAMLEditor
             {
                 parents.Add(node.getParent());
                 return GetParents(parents, node.getParent());
+            }
+        }
+
+        public static List<TreeNode> GetParents(List<TreeNode> parents, TreeNode node)
+        {
+            if (node.Parent == null)
+            {
+                return parents;
+            }
+            else
+            {
+                parents.Add(node.Parent);
+                return GetParents(parents, node.Parent);
             }
         }
 
