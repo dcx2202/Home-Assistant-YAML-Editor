@@ -61,7 +61,7 @@ namespace YAMLEditor
             }
             catch (Exception exception)
             {
-                mLogger.WriteLine(exception.StackTrace);
+                mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - " + exception.StackTrace);
             }
         }
 
@@ -106,7 +106,7 @@ namespace YAMLEditor
                 composite = new Component("root", "root", null);
                 currentParent = composite;
 
-                mLogger.WriteLine($"Filename: {dialog.FileName}");
+                mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Opened " + $"Filename: {dialog.FileName}");
                 System.Diagnostics.Trace.WriteLine($"Filename: {dialog.FileName}");
                 Directory.SetCurrentDirectory(Path.GetDirectoryName(dialog.FileName) ?? "");
 
@@ -165,8 +165,6 @@ namespace YAMLEditor
         }
         #endregion
 
-
-
         private static void LoadFile(TreeNode node, string filename)
         {
             var yaml = new YamlStream();
@@ -179,7 +177,7 @@ namespace YAMLEditor
             }
             catch(Exception exception)
             {
-                mLogger.WriteLine(exception.Message);
+                mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - " + exception.Message);
             }
 
             if(yaml.Documents.Count == 0) return;
@@ -326,7 +324,7 @@ namespace YAMLEditor
             }
             catch (Exception exception)
             {
-                mLogger.WriteLine(exception.Message);
+                mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - " + exception.Message);
             }
 
             if (yaml.Documents.Count == 0) return null;
@@ -503,6 +501,8 @@ namespace YAMLEditor
             composite.add(aComponent);
             addedComponents.Add(aComponent);
             FileTreeRoot.Nodes.Add(aTree);
+
+            mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Added " + aComponent.Name);
         }
 
         public static List<IComponent> GetParents(List<IComponent> parents, IComponent node)
@@ -620,7 +620,7 @@ namespace YAMLEditor
                 }
                 catch (IOException e)
                 {
-                    mLogger.WriteLine(e.ToString());
+                    mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - " + e.ToString());
                 }
 
                 int ln = 0;
@@ -760,7 +760,8 @@ namespace YAMLEditor
             composite = new Component("root", "root", null);
             currentParent = composite;
             LoadFile(FileTreeRoot, filename);
-            
+
+            mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Saved");
         }
 
         private void RemoveComponent(object sender, EventArgs e)
@@ -779,6 +780,7 @@ namespace YAMLEditor
             if (result == DialogResult.No)
             {
                 MessageBox.Show("Removal cancelled");
+                mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - " + "Removal cancelled");
                 return;
             }
 
@@ -793,6 +795,13 @@ namespace YAMLEditor
             node.getParent().getChildren().Remove(node);
 
             removedComponents.Add(node, nodeparents);
+
+            mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Removed " + component.Name);
+        }
+
+        public static void WriteToTextBox(string aMessage)
+        {
+            mLogger.WriteLine(aMessage);
         }
     }
 }

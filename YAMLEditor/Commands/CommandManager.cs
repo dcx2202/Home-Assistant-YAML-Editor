@@ -42,7 +42,8 @@ namespace YAMLEditor.Patterns
 			Commands[Position].Undo();
 			Position = Position - 1;
 			Notify();
-		}
+            YAMLEditorForm.WriteToTextBox(DateTime.Now.ToString("HH:mm:ss") + " - " + "Undone");
+        }
 
 		/// <summary>
 		/// Redo the previous undoed command.
@@ -53,6 +54,7 @@ namespace YAMLEditor.Patterns
 			Position = Position + 1;
 			Commands[Position].Redo();
 			Notify();
+            YAMLEditorForm.WriteToTextBox(DateTime.Now.ToString("HH:mm:ss") + " - " + "Redone");
 		}
 
 		/// <summary>
