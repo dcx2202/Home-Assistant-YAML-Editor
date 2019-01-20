@@ -367,7 +367,7 @@ namespace YAMLEditor
                 {
                     //parents1.Remove(parents1.Last());
                     //YAMLEditorForm.changedComponents.Add(new Dictionary<string, List<IComponent>>() { { node.Name, parents1 } }, component);
-                    root.Name = aValue;
+                    //root.Name = aValue;
                     root.Text = aValue;
                     return;
                 }
@@ -382,11 +382,20 @@ namespace YAMLEditor
 
                 var treecomp = root.Tag as Component;
 
-                if (component.Name.Equals(root.Name) || component.Name.Equals(treecomp.Name))
+                /*if (component.Name.Equals(root.Name) || component.Name.Equals(treecomp.Name))
                 {
                     //parents1.Remove(parents1.Last());
                     //YAMLEditorForm.changedComponents.Add(new Dictionary<string, List<IComponent>>() { { node.Name, parents1 } }, component);
-                    root.Name = aValue;
+                    //root.Name = aValue;
+                    root.Text = aValue;
+                    return;
+                }*/
+
+                if (component.Name.Equals(treecomp.Name))
+                {
+                    //parents1.Remove(parents1.Last());
+                    //YAMLEditorForm.changedComponents.Add(new Dictionary<string, List<IComponent>>() { { node.Name, parents1 } }, component);
+                    //root.Name = aValue;
                     root.Text = aValue;
                     return;
                 }
