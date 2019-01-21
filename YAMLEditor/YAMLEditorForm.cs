@@ -12,6 +12,8 @@ using YamlDotNet.RepresentationModel;
 using YAMLEditor.Logging;
 using YAMLEditor.Patterns;
 using Microsoft.VisualBasic;
+using WebSocketSharp;
+using Newtonsoft.Json;
 
 namespace YAMLEditor
 {
@@ -20,7 +22,7 @@ namespace YAMLEditor
         public static CommandManager Manager = new CommandManager();
 
         //use mLogger.Write(string message) to log to the textbox
-        private static ILogger mLogger = Logger.Instance;
+        private static ILogger mLogger = Logging.Logger.Instance;
         public static IComponent composite {get; set;}
         public static IComponent currentParent;
         public static string filename;
@@ -811,6 +813,27 @@ namespace YAMLEditor
         public static void WriteToTextBox(string aMessage)
         {
             mLogger.WriteLine(aMessage);
+        }
+
+        private void RestartHomeassistant(object sender, EventArgs e)
+        {
+            using (var ws = new WebSocket("ws://saved_user_ha_address/api/websocket"))
+            {
+                ws.Connect();
+
+                Dictionary<string, string> auth = new Dictionary<string, string>() { { "type", "auth" }, { "access_token", "saved_user_token" } };
+                string json = JsonConvert.SerializeObject(auth);
+
+                ws.Send(json);
+
+                var service = new Dictionary<object, object>() { { "type", "call_service" }, { "domain", "homeassistant" }, { "service", "restart" }, { "service_data", new Dictionary<string, string>() { } }, { "id", "14" } };
+
+                json = JsonConvert.SerializeObject(service);
+
+                ws.Send(json);
+
+                mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Restarting HomeAssistant");
+            }
         }
     }
 }
