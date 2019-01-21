@@ -14,6 +14,7 @@ using YAMLEditor.Patterns;
 using Microsoft.VisualBasic;
 using WebSocketSharp;
 using Newtonsoft.Json;
+using YAMLEditor.Properties;
 
 namespace YAMLEditor
 {
@@ -817,23 +818,45 @@ namespace YAMLEditor
 
         private void RestartHomeassistant(object sender, EventArgs e)
         {
-            using (var ws = new WebSocket("ws://saved_user_ha_address/api/websocket"))
+            string user_ha_address = (string) Settings.Default["ha_address"];
+            string user_access_token = (string)Settings.Default["access_token"];
+
+            if (user_ha_address == "" || user_access_token == "")
             {
-                ws.Connect();
-
-                Dictionary<string, string> auth = new Dictionary<string, string>() { { "type", "auth" }, { "access_token", "saved_user_token" } };
-                string json = JsonConvert.SerializeObject(auth);
-
-                ws.Send(json);
-
-                var service = new Dictionary<object, object>() { { "type", "call_service" }, { "domain", "homeassistant" }, { "service", "restart" }, { "service_data", new Dictionary<string, string>() { } }, { "id", "14" } };
-
-                json = JsonConvert.SerializeObject(service);
-
-                ws.Send(json);
-
-                mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Restarting HomeAssistant");
+                mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - You need to specify your details. Check settings.");
+                return;
             }
+
+            try
+            {
+                using (var ws = new WebSocket("ws://" + user_ha_address + "/api/websocket"))
+                {
+                    ws.Connect();
+
+                    Dictionary<string, string> auth = new Dictionary<string, string>() { { "type", "auth" }, { "access_token", user_access_token } };
+                    string json = JsonConvert.SerializeObject(auth);
+
+                    ws.Send(json);
+
+                    var service = new Dictionary<object, object>() { { "type", "call_service" }, { "domain", "homeassistant" }, { "service", "restart" }, { "service_data", new Dictionary<string, string>() { } }, { "id", "14" } };
+
+                    json = JsonConvert.SerializeObject(service);
+
+                    ws.Send(json);
+
+                    mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Restarting HomeAssistant on address " + user_ha_address);
+                }
+            }
+            catch(Exception exc)
+            {
+                mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Couldn't restart HomeAssistant. Check settings.");
+            }
+        }
+
+        private void optionsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OptionsWindow options = new OptionsWindow();
+            options.ShowDialog();
         }
     }
 }

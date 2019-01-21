@@ -78,6 +78,9 @@
     </Compile>
     <Compile Include="Observer\ISubject.cs" />
     <Compile Include="Observer\Subject.cs" />
+    <Compile Include="OptionsWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Saver\Saver.cs" />
     <Compile Include="YAMLEditorForm.cs">
       <SubType>Form</SubType>
@@ -89,6 +92,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="NewComponent.resx">
       <DependentUpon>NewComponent.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OptionsWindow.resx">
+      <DependentUpon>OptionsWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="YAMLEditorForm.resx">
       <DependentUpon>YAMLEditorForm.cs</DependentUpon>
