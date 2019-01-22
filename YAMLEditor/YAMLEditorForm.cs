@@ -22,6 +22,7 @@ namespace YAMLEditor
     public partial class YAMLEditorForm : Form
     {
         public static CommandManager Manager = new CommandManager();
+        public static TreeNode parentNode = new TreeNode();
 
         //use mLogger.Write(string message) to log to the textbox
         private static ILogger mLogger = Logging.Logger.Instance;
@@ -63,7 +64,12 @@ namespace YAMLEditor
         #region Button Actions
         private void OnNewComponent(object sender, EventArgs e)
         {
-            NewComponent nc = new NewComponent();
+            NewComponent nc;
+            if (mainTreeView.SelectedNode == null)
+                nc = new NewComponent(composite);
+            else
+                nc = new NewComponent(mainTreeView.SelectedNode.Tag as Component);
+
             nc.ShowDialog();
         }
 
@@ -669,6 +675,24 @@ namespace YAMLEditor
             }
         }
 
+        public static void FindTreeNode(IComponent component, TreeNode root)
+        {
+
+            if (root == null)
+                root = FileTreeRoot;
+
+            if (root.Tag == component || (root.Tag == null && component == composite))
+            {
+                parentNode = root;
+                return;
+            }
+
+            foreach (TreeNode node in root.Nodes)
+            {
+                FindTreeNode(component, node);
+            }
+        }
+
         public static void UpdateComposite(IComponent node, IComponent component, string aValue)
         {
             if (node == null)
@@ -756,12 +780,14 @@ namespace YAMLEditor
             }
         }
 
-        public static void AddComponent(IComponent aComponent, TreeNode aTree)
+        public static void AddComponentToData(IComponent aComponent, TreeNode aTree, IComponent aParent)
         {
-            aComponent.setParent(currentParent);
-            composite.add(aComponent);
+            aComponent.setParent(aParent);
+            aParent.add(aComponent);
             addedComponents.Add(aComponent);
-            FileTreeRoot.Nodes.Add(aTree);
+            //var parentNode = new TreeNode();
+            FindTreeNode(aParent, null);
+            parentNode.Nodes.Add(aTree);
 
             mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Added " + aComponent.Name);
         }
@@ -1030,5 +1056,31 @@ namespace YAMLEditor
             mLogger.WriteLine(aMessage);
         }
 
+        public static void AddComponent(IComponent aParent, string aFilename)
+        {
+            Dictionary<IComponent, TreeNode> fileRoot = YAMLEditorForm.getComponentFromFile(aFilename);
+            var splits = aFilename.Split('\\');
+            var name = splits[splits.Length - 1];
+
+            fileRoot.Keys.First().setFileName(name);
+
+            if (fileRoot != null)
+            {
+                //Check if this component already exists where we are trying to add
+                YAMLEditorForm.componentExists = false;
+                YAMLEditorForm.CheckIfComponentExists(aParent, fileRoot.Keys.First().getChild(0));
+
+                if (YAMLEditorForm.componentExists)
+                {
+                    MessageBox.Show(fileRoot.Keys.First().getChild(0).Name + " already exists under " + aParent.Name + ".", "Error");
+                }
+                else
+                {
+                    MessageBox.Show(fileRoot.Keys.First().getChild(0).Name + " added successfully under " + aParent.Name + ".", "Success");
+                    AddComponentToData(fileRoot.Keys.First().getChild(0), fileRoot.Values.First().Nodes[0], aParent);
+                }
+                YAMLEditorForm.componentExists = false;
+            }
+        }
     }
 }
