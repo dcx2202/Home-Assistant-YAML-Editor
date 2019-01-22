@@ -15,13 +15,13 @@ using Microsoft.VisualBasic;
 using WebSocketSharp;
 using Newtonsoft.Json;
 using YAMLEditor.Properties;
-using Renci.SshNet;
 
 namespace YAMLEditor
 {
     public partial class YAMLEditorForm : Form
     {
         public static CommandManager Manager = new CommandManager();
+        public static TreeNode parentNode = new TreeNode();
 
         //use mLogger.Write(string message) to log to the textbox
         private static ILogger mLogger = Logging.Logger.Instance;
@@ -29,7 +29,6 @@ namespace YAMLEditor
         public static IComponent currentParent;
         public static string filename;
         public static string openedfilename;
-        public static string workingdir;
         public static bool componentExists { get; set; } = false;
         public static TreeNode FileTreeRoot { get; set; }
 
@@ -55,15 +54,19 @@ namespace YAMLEditor
             changedComponents = new Dictionary<Dictionary<string, List<IComponent>>, IComponent>();
             addedComponents = new List<IComponent>();
             removedComponents = new Dictionary<IComponent, List<IComponent>>();
-
-            workingdir = Environment.CurrentDirectory;
         }
-
+        
 
         #region Button Actions
+
         private void OnNewComponent(object sender, EventArgs e)
         {
-            NewComponent nc = new NewComponent();
+            NewComponent nc;
+            if (mainTreeView.SelectedNode == null)
+                nc = new NewComponent(composite);
+            else
+                nc = new NewComponent(mainTreeView.SelectedNode.Tag as Component);
+            
             nc.ShowDialog();
         }
 
@@ -74,7 +77,6 @@ namespace YAMLEditor
 
         private void OnOpen(object sender, EventArgs e)
         {
-            Directory.SetCurrentDirectory(workingdir);
             var dialog = new OpenFileDialog()
             { Filter = @"Yaml files (*.yaml)|*.yaml|All files (*.*)|*.*", DefaultExt = "yaml" };
             if(dialog.ShowDialog() == DialogResult.OK)
@@ -109,7 +111,6 @@ namespace YAMLEditor
                 cutToolStripMenuItem.Enabled = true;
                 saveToolStripButton.Enabled = true;
                 saveToolStripMenuItem.Enabled = true;
-                uploadtourl.Enabled = true;
             }
         }
 
@@ -187,7 +188,6 @@ namespace YAMLEditor
 
             if (user_ha_address == "" || user_access_token == "")
             {
-
                 mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - You need to specify your details. Check settings.");
                 return;
             }
@@ -230,107 +230,6 @@ namespace YAMLEditor
             LoadHelpPage();
         }
 
-        private void OnOpenFromURL(object sender, EventArgs e)
-        {
-            string rh_address = (string) Settings.Default["rh_address"];
-            string username = (string)Settings.Default["username"];
-            string password = (string)Settings.Default["password"];
-            string remote_dir = (string)Settings.Default["remote_directory"];
-
-            if (rh_address == "" || username == "" || remote_dir == "") // no password -> ""
-            {
-                MessageBox.Show("Please check your remote host file editing settings.", "Error");
-                mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Please check your remote host file editing settings before trying to open from URL.");
-                return;
-            }
-            else
-            {
-                DialogResult result = MessageBox.Show("Starting download of files from remote host on " + rh_address, "Open from URL",
-                MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
-
-                if (result == DialogResult.Cancel)
-                    return;
-
-                Directory.SetCurrentDirectory(workingdir);
-
-                DownloadRemoteFiles(rh_address, username, password, remote_dir, "./RemoteFiles/", "yaml");
-
-                result = MessageBox.Show("Download complete. Open a file...", "Success",
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                var dialog = new OpenFileDialog()
-                { Filter = @"Yaml files (*.yaml)|*.yaml|All files (*.*)|*.*", DefaultExt = "yaml" };
-
-                dialog.InitialDirectory = "./RemoteFiles/";
-
-                if (dialog.ShowDialog() == DialogResult.OK)
-                {
-                    changedComponents = new Dictionary<Dictionary<string, List<IComponent>>, IComponent>();
-                    addedComponents = new List<IComponent>();
-                    if (FileTreeRoot != null)
-                        FileTreeRoot.Nodes.Clear();
-                    composite = new Component("root", "root", null);
-                    currentParent = composite;
-
-                    mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Opened " + $"Filename: {dialog.FileName}");
-                    System.Diagnostics.Trace.WriteLine($"Filename: {dialog.FileName}");
-
-                    Directory.SetCurrentDirectory(Path.GetDirectoryName(dialog.FileName) ?? "");
-
-                    mainTreeView.Nodes.Clear();
-                    FileTreeRoot = mainTreeView.Nodes.Add(Path.GetFileName(dialog.FileName));
-                    FileTreeRoot.ImageIndex = FileTreeRoot.SelectedImageIndex = 3;
-
-                    openedfilename = dialog.FileName;
-                    var splits = openedfilename.Split('\\');
-                    openedfilename = splits[splits.Length - 1];
-                    filename = openedfilename;
-
-                    LoadFile(FileTreeRoot, filename);
-                    FileTreeRoot.Expand();
-
-                    // After opening a file we enable these buttons
-                    newToolStripButton.Enabled = true;
-                    newToolStripMenuItem.Enabled = true;
-                    cutToolStripButton.Enabled = true;
-                    cutToolStripMenuItem.Enabled = true;
-                    saveToolStripButton.Enabled = true;
-                    saveToolStripMenuItem.Enabled = true;
-                    uploadtourl.Enabled = true;
-                }
-            }
-        }
-
-        private void OnUploadToURL(object sender, EventArgs e)
-        {
-            string rh_address = (string)Settings.Default["rh_address"];
-            string username = (string)Settings.Default["username"];
-            string password = (string)Settings.Default["password"];
-            string remote_dir = (string)Settings.Default["remote_directory"];
-
-            if (rh_address == "" || username == "" || remote_dir == "") // no password -> ""
-            {
-                MessageBox.Show("Please check your remote host file editing settings.", "Error");
-                mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Please check your remote host file editing settings before trying to open from URL.");
-                return;
-            }
-            else
-            {
-                DialogResult result = MessageBox.Show("Starting upload of files to remote host on " + rh_address, "Uploading to Remote",
-                MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
-
-                if (result == DialogResult.Cancel)
-                    return;
-
-                Directory.SetCurrentDirectory(workingdir);
-
-                UploadToRemote(rh_address, username, password, "./RemoteFiles/", remote_dir, "yaml");
-
-                result = MessageBox.Show("Upload complete.", "Success",
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-        }
-
         public void LoadHelpPageEvent(object sender, EventArgs e)
         {
             try
@@ -342,77 +241,11 @@ namespace YAMLEditor
                 mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - " + exception.StackTrace);
             }
         }
+
         #endregion
 
-
-
-
-        public static void DownloadRemoteFiles(string address, string username, string password, string origindir, string targetdir, string extension)
-        {
-            var sftp = new SftpClient(address, username, password);
-            sftp.Connect();
-
-
-            var files = sftp.ListDirectory(origindir);
-            foreach (var file in files)
-            {
-                var fileextension = "";
-                var splits = file.Name.Split('.');
-
-                if (splits.Length < 2)
-                    continue;
-
-                fileextension = splits[splits.Length - 1];
-
-                if (fileextension != extension)
-                    continue;
-
-                if (!Directory.Exists(targetdir))
-                    Directory.CreateDirectory(targetdir);
-
-                using (Stream filestream = File.Create(targetdir + file.Name))
-                {
-                    sftp.DownloadFile(origindir + file.Name, filestream);
-                }
-            }
-        }
-
-        public static void UploadToRemote(string address, string username, string password, string origindir, string targetdir, string extension)
-        {
-            var sftp = new SftpClient(address, username, password);
-            sftp.Connect();
-
-
-            var files = Directory.EnumerateFiles(origindir, "*." + extension);
-
-            foreach (var file in files)
-            {
-                var fileextension = "";
-                var splits = file.Split('.');
-
-                if (splits.Length < 2)
-                    continue;
-
-                fileextension = splits[splits.Length - 1];
-
-                if (fileextension != extension)
-                    continue;
-
-                splits = file.Split('/');
-                var filename = splits[splits.Length - 1];
-
-                using (FileStream stream = new FileStream(file, FileMode.Open))
-                {
-                    sftp.UploadFile(stream, targetdir + filename);
-                }
-            }
-        }
-
-
-
-
-
-
+        
+        
         public void LoadHelpPage()
         {
             if (mainTabControl.SelectedTab.Text == "Help")
@@ -653,19 +486,27 @@ namespace YAMLEditor
                 }
             }
 
-
-            /*if (root == null)
-                root = FileTreeRoot;
-
-            if (root.Tag == component)
-            {
-                root.Text = component.Name;
-                return;
-            }*/
-
             foreach (TreeNode node in root.Nodes)
             {
                 UpdateTree(component, node, aValue);
+            }
+        }
+
+        public static void FindTreeNode(IComponent component, TreeNode root)
+        {
+            
+            if (root == null)
+                root = FileTreeRoot;
+            
+            if (root.Tag == component || (root.Tag == null && component == composite))
+            {
+                parentNode = root;
+                return;
+            }
+
+            foreach (TreeNode node in root.Nodes)
+            {
+                FindTreeNode(component, node);
             }
         }
 
@@ -756,12 +597,14 @@ namespace YAMLEditor
             }
         }
 
-        public static void AddComponent(IComponent aComponent, TreeNode aTree)
+        public static void AddComponentToData(IComponent aComponent, TreeNode aTree, IComponent aParent)
         {
-            aComponent.setParent(currentParent);
-            composite.add(aComponent);
+            aComponent.setParent(aParent);
+            aParent.add(aComponent);
             addedComponents.Add(aComponent);
-            FileTreeRoot.Nodes.Add(aTree);
+            //var parentNode = new TreeNode();
+            FindTreeNode(aParent, null);
+            parentNode.Nodes.Add(aTree);
 
             mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Added " + aComponent.Name);
         }
@@ -1028,6 +871,33 @@ namespace YAMLEditor
         public static void WriteToTextBox(string aMessage)
         {
             mLogger.WriteLine(aMessage);
+        }
+
+        public static void AddComponent(IComponent aParent, string aFilename)
+        {
+            Dictionary<IComponent, TreeNode> fileRoot = YAMLEditorForm.getComponentFromFile(aFilename);
+            var splits = aFilename.Split('\\');
+            var name = splits[splits.Length - 1];
+
+            fileRoot.Keys.First().setFileName(name);
+
+            if (fileRoot != null)
+            {
+                //Check if this component already exists where we are trying to add
+                YAMLEditorForm.componentExists = false;
+                YAMLEditorForm.CheckIfComponentExists(aParent, fileRoot.Keys.First().getChild(0));
+
+                if (YAMLEditorForm.componentExists)
+                {
+                    MessageBox.Show(fileRoot.Keys.First().getChild(0).Name + " already exists under " + aParent.Name + ".", "Error");
+                }
+                else
+                {
+                    MessageBox.Show(fileRoot.Keys.First().getChild(0).Name + " added successfully under " + aParent.Name + ".", "Success");
+                    AddComponentToData(fileRoot.Keys.First().getChild(0), fileRoot.Values.First().Nodes[0], aParent);
+                }
+                YAMLEditorForm.componentExists = false;
+            }
         }
 
     }
