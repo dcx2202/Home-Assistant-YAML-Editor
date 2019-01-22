@@ -346,7 +346,7 @@ namespace YAMLEditor
 
 
 
-
+        // Downloads files from remote host
         public static void DownloadRemoteFiles(string address, string username, string password, string origindir, string targetdir, string extension)
         {
             var sftp = new SftpClient(address, username, password);
