@@ -57,6 +57,12 @@ namespace YAMLEditor
 
 
         #region Button Actions
+        private void OnNewComponent(object sender, EventArgs e)
+        {
+            NewComponent nc = new NewComponent();
+            nc.ShowDialog();
+        }
+
         private void OnExit(object sender, EventArgs e)
         {
             Application.Exit();
@@ -124,6 +130,41 @@ namespace YAMLEditor
             Manager.Redo();
         }
 
+        private void OnRemoveComponent(object sender, EventArgs e)
+        {
+            if (mainTreeView.SelectedNode == null)
+            {
+                MessageBox.Show("There is no node currently selected", "Error");
+                return;
+            }
+
+            var component = mainTreeView.SelectedNode.Tag as Component;
+
+            DialogResult result = MessageBox.Show("Do you really want to remove " + component.Name + "?", "Warning",
+            MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+            if (result == DialogResult.No)
+            {
+                MessageBox.Show("Removal cancelled");
+                mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - " + "Removal cancelled");
+                return;
+            }
+
+            var treenode = mainTreeView.SelectedNode;
+            var node = (Component)treenode.Tag;
+
+            List<IComponent> nodeparents = new List<IComponent>();
+            nodeparents = GetParents(nodeparents, node);
+            nodeparents.Remove(nodeparents.Last());
+
+            treenode.Parent.Nodes.Remove(treenode);
+            node.getParent().getChildren().Remove(node);
+
+            removedComponents.Add(node, nodeparents);
+
+            mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Removed " + component.Name);
+        }
+
         private void OnAboutButton(object sender, EventArgs e)
         {
             MessageBox.Show("Made by: " +
@@ -175,7 +216,12 @@ namespace YAMLEditor
             OptionsWindow options = new OptionsWindow();
             options.ShowDialog();
         }
-        #endregion
+
+        private void OnAfterSelect(object sender, TreeViewEventArgs e)
+        {
+            mainPropertyGrid.SelectedObject = e.Node.Tag;
+            LoadHelpPage();
+        }
 
         public void LoadHelpPageEvent(object sender, EventArgs e)
         {
@@ -188,7 +234,10 @@ namespace YAMLEditor
                 mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - " + exception.StackTrace);
             }
         }
+        #endregion
 
+
+        
         public void LoadHelpPage()
         {
             if (mainTabControl.SelectedTab.Text == "Help")
@@ -351,12 +400,6 @@ namespace YAMLEditor
                 currentParent = currentParent.getParent();
         }
 
-        private void OnAfterSelect(object sender, TreeViewEventArgs e)
-        {
-            mainPropertyGrid.SelectedObject = e.Node.Tag;
-            LoadHelpPage();
-        }
-
         private IDictionary<YamlNode, YamlNode> GetDataStructure(string filename)
         {
             // Read file
@@ -378,18 +421,6 @@ namespace YAMLEditor
             YamlMappingNode mapping = yaml.Documents[0].RootNode as YamlMappingNode;
             return mapping?.Children;
         }
-
-		private void NewComponent(object sender, EventArgs e)
-		{
-			NewComponent nc = new NewComponent();
-			nc.ShowDialog();
-		}
-
-        private void NewComponent2(object sender, EventArgs e)
-        {
-            NewComponent nc = new NewComponent();
-			nc.ShowDialog();
-		}
 
         public static void UpdateTree(IComponent component, TreeNode root, string aValue)
         {
@@ -817,41 +848,6 @@ namespace YAMLEditor
             LoadFile(FileTreeRoot, filename);
 
             mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Saved");
-        }
-
-        private void RemoveComponent(object sender, EventArgs e)
-        {
-            if(mainTreeView.SelectedNode == null)
-            {
-                MessageBox.Show("There is no node currently selected", "Error");
-                return;
-            }
-
-            var component = mainTreeView.SelectedNode.Tag as Component;
-
-            DialogResult result = MessageBox.Show("Do you really want to remove " + component.Name + "?", "Warning",
-            MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-
-            if (result == DialogResult.No)
-            {
-                MessageBox.Show("Removal cancelled");
-                mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - " + "Removal cancelled");
-                return;
-            }
-
-            var treenode = mainTreeView.SelectedNode;
-            var node = (Component) treenode.Tag;
-
-            List<IComponent> nodeparents = new List<IComponent>();
-            nodeparents = GetParents(nodeparents, node);
-            nodeparents.Remove(nodeparents.Last());
-
-            treenode.Parent.Nodes.Remove(treenode);
-            node.getParent().getChildren().Remove(node);
-
-            removedComponents.Add(node, nodeparents);
-
-            mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Removed " + component.Name);
         }
 
         public static void WriteToTextBox(string aMessage)
