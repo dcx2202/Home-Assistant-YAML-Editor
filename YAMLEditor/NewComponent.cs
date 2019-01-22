@@ -14,11 +14,13 @@ namespace YAMLEditor
 	{
 		public string filename;
 		public string openedfilename;
+        private IComponent mParent;
 
-		public NewComponent()
+		public NewComponent(IComponent parent)
 		{
 			InitializeComponent();
-		}
+            this.mParent = parent;
+        }
 
 		private void pictureBox1_Click(object sender, EventArgs e)
 		{
@@ -49,33 +51,8 @@ namespace YAMLEditor
 
         private void OkButton(object sender, EventArgs e)
         {
-            Dictionary<IComponent, TreeNode> component = YAMLEditorForm.getComponentFromFile(filename);
-            var splits = filename.Split('\\');
-            var name = splits[splits.Length - 1];
-
-            component.Keys.First().setFileName(name);
-
-            if (component != null)
-            {
-                YAMLEditorForm.CheckIfComponentExists(null, component.Keys.First().getChild(0));
-
-                if (YAMLEditorForm.componentExists)
-                {
-                    // Show error popup
-                    MessageBox.Show("This component already exists in the file currently open.", "Error");
-                }
-                else
-                {
-                    // Add component to main composite/tree
-                    YAMLEditorForm.AddComponent(component.Keys.First().getChild(0), component.Values.First().Nodes[0]);
-                    MessageBox.Show("Component added.", "Success");
-
-                    YAMLEditorForm.componentExists = false;
-                    this.Close();
-                }
-            }
-
-            YAMLEditorForm.componentExists = false;
+            YAMLEditorForm.AddComponent(mParent, filename);
+            this.Close();
         }
     }
 }
