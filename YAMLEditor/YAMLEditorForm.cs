@@ -56,40 +56,6 @@ namespace YAMLEditor
         }
 
 
-        public void LoadHelpPageEvent(object sender, EventArgs e)
-        {
-            try
-            {
-                LoadHelpPage();
-            }
-            catch (Exception exception)
-            {
-                mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - " + exception.StackTrace);
-            }
-        }
-
-        public void LoadHelpPage()
-        {
-            if (mainTabControl.SelectedTab.Text == "Help")
-            {
-                if (mainTreeView.SelectedNode == null || filename == null)
-                    return;
-
-                else if (mainTreeView.SelectedNode.Tag == null)
-                    return;
-
-                var node = (Component)mainTreeView.SelectedNode.Tag;
-
-                if (node.getParent().Name != "root")
-                {
-                    List<IComponent> parents = new List<IComponent>();
-                    node = GetParents(parents, node).ElementAt(parents.Count - 2) as Component;
-                }
-
-                webBrowser.Navigate("https://www.home-assistant.io/components/" + node.Name);
-            }
-        }
-
         #region Button Actions
         private void OnExit(object sender, EventArgs e)
         {
@@ -167,6 +133,40 @@ namespace YAMLEditor
                 "Marco Lima", "About");
         }
         #endregion
+
+        public void LoadHelpPageEvent(object sender, EventArgs e)
+        {
+            try
+            {
+                LoadHelpPage();
+            }
+            catch (Exception exception)
+            {
+                mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - " + exception.StackTrace);
+            }
+        }
+
+        public void LoadHelpPage()
+        {
+            if (mainTabControl.SelectedTab.Text == "Help")
+            {
+                if (mainTreeView.SelectedNode == null || filename == null)
+                    return;
+
+                else if (mainTreeView.SelectedNode.Tag == null)
+                    return;
+
+                var node = (Component)mainTreeView.SelectedNode.Tag;
+
+                if (node.getParent().Name != "root")
+                {
+                    List<IComponent> parents = new List<IComponent>();
+                    node = GetParents(parents, node).ElementAt(parents.Count - 2) as Component;
+                }
+
+                webBrowser.Navigate("https://www.home-assistant.io/components/" + node.Name);
+            }
+        }
 
         private static void LoadFile(TreeNode node, string filename)
         {
