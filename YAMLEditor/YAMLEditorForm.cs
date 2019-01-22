@@ -15,6 +15,7 @@ using Microsoft.VisualBasic;
 using WebSocketSharp;
 using Newtonsoft.Json;
 using YAMLEditor.Properties;
+using Renci.SshNet;
 
 namespace YAMLEditor
 {
@@ -28,6 +29,7 @@ namespace YAMLEditor
         public static IComponent currentParent;
         public static string filename;
         public static string openedfilename;
+        public static string workingdir;
         public static bool componentExists { get; set; } = false;
         public static TreeNode FileTreeRoot { get; set; }
 
@@ -53,6 +55,8 @@ namespace YAMLEditor
             changedComponents = new Dictionary<Dictionary<string, List<IComponent>>, IComponent>();
             addedComponents = new List<IComponent>();
             removedComponents = new Dictionary<IComponent, List<IComponent>>();
+
+            workingdir = Environment.CurrentDirectory;
         }
 
 
@@ -70,6 +74,7 @@ namespace YAMLEditor
 
         private void OnOpen(object sender, EventArgs e)
         {
+            Directory.SetCurrentDirectory(workingdir);
             var dialog = new OpenFileDialog()
             { Filter = @"Yaml files (*.yaml)|*.yaml|All files (*.*)|*.*", DefaultExt = "yaml" };
             if(dialog.ShowDialog() == DialogResult.OK)
@@ -104,6 +109,7 @@ namespace YAMLEditor
                 cutToolStripMenuItem.Enabled = true;
                 saveToolStripButton.Enabled = true;
                 saveToolStripMenuItem.Enabled = true;
+                uploadtourl.Enabled = true;
             }
         }
 
@@ -181,6 +187,7 @@ namespace YAMLEditor
 
             if (user_ha_address == "" || user_access_token == "")
             {
+
                 mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - You need to specify your details. Check settings.");
                 return;
             }
@@ -223,6 +230,107 @@ namespace YAMLEditor
             LoadHelpPage();
         }
 
+        private void OnOpenFromURL(object sender, EventArgs e)
+        {
+            string rh_address = (string) Settings.Default["rh_address"];
+            string username = (string)Settings.Default["username"];
+            string password = (string)Settings.Default["password"];
+            string remote_dir = (string)Settings.Default["remote_directory"];
+
+            if (rh_address == "" || username == "" || remote_dir == "") // no password -> ""
+            {
+                MessageBox.Show("Please check your remote host file editing settings.", "Error");
+                mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Please check your remote host file editing settings before trying to open from URL.");
+                return;
+            }
+            else
+            {
+                DialogResult result = MessageBox.Show("Starting download of files from remote host on " + rh_address, "Open from URL",
+                MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+
+                if (result == DialogResult.Cancel)
+                    return;
+
+                Directory.SetCurrentDirectory(workingdir);
+
+                DownloadRemoteFiles(rh_address, username, password, remote_dir, "./RemoteFiles/", "yaml");
+
+                result = MessageBox.Show("Download complete. Open a file...", "Success",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                var dialog = new OpenFileDialog()
+                { Filter = @"Yaml files (*.yaml)|*.yaml|All files (*.*)|*.*", DefaultExt = "yaml" };
+
+                dialog.InitialDirectory = "./RemoteFiles/";
+
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    changedComponents = new Dictionary<Dictionary<string, List<IComponent>>, IComponent>();
+                    addedComponents = new List<IComponent>();
+                    if (FileTreeRoot != null)
+                        FileTreeRoot.Nodes.Clear();
+                    composite = new Component("root", "root", null);
+                    currentParent = composite;
+
+                    mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Opened " + $"Filename: {dialog.FileName}");
+                    System.Diagnostics.Trace.WriteLine($"Filename: {dialog.FileName}");
+
+                    Directory.SetCurrentDirectory(Path.GetDirectoryName(dialog.FileName) ?? "");
+
+                    mainTreeView.Nodes.Clear();
+                    FileTreeRoot = mainTreeView.Nodes.Add(Path.GetFileName(dialog.FileName));
+                    FileTreeRoot.ImageIndex = FileTreeRoot.SelectedImageIndex = 3;
+
+                    openedfilename = dialog.FileName;
+                    var splits = openedfilename.Split('\\');
+                    openedfilename = splits[splits.Length - 1];
+                    filename = openedfilename;
+
+                    LoadFile(FileTreeRoot, filename);
+                    FileTreeRoot.Expand();
+
+                    // After opening a file we enable these buttons
+                    newToolStripButton.Enabled = true;
+                    newToolStripMenuItem.Enabled = true;
+                    cutToolStripButton.Enabled = true;
+                    cutToolStripMenuItem.Enabled = true;
+                    saveToolStripButton.Enabled = true;
+                    saveToolStripMenuItem.Enabled = true;
+                    uploadtourl.Enabled = true;
+                }
+            }
+        }
+
+        private void OnUploadToURL(object sender, EventArgs e)
+        {
+            string rh_address = (string)Settings.Default["rh_address"];
+            string username = (string)Settings.Default["username"];
+            string password = (string)Settings.Default["password"];
+            string remote_dir = (string)Settings.Default["remote_directory"];
+
+            if (rh_address == "" || username == "" || remote_dir == "") // no password -> ""
+            {
+                MessageBox.Show("Please check your remote host file editing settings.", "Error");
+                mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Please check your remote host file editing settings before trying to open from URL.");
+                return;
+            }
+            else
+            {
+                DialogResult result = MessageBox.Show("Starting upload of files to remote host on " + rh_address, "Uploading to Remote",
+                MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+
+                if (result == DialogResult.Cancel)
+                    return;
+
+                Directory.SetCurrentDirectory(workingdir);
+
+                UploadToRemote(rh_address, username, password, "./RemoteFiles/", remote_dir, "yaml");
+
+                result = MessageBox.Show("Upload complete.", "Success",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
         public void LoadHelpPageEvent(object sender, EventArgs e)
         {
             try
@@ -237,7 +345,74 @@ namespace YAMLEditor
         #endregion
 
 
-        
+
+
+        public static void DownloadRemoteFiles(string address, string username, string password, string origindir, string targetdir, string extension)
+        {
+            var sftp = new SftpClient(address, username, password);
+            sftp.Connect();
+
+
+            var files = sftp.ListDirectory(origindir);
+            foreach (var file in files)
+            {
+                var fileextension = "";
+                var splits = file.Name.Split('.');
+
+                if (splits.Length < 2)
+                    continue;
+
+                fileextension = splits[splits.Length - 1];
+
+                if (fileextension != extension)
+                    continue;
+
+                if (!Directory.Exists(targetdir))
+                    Directory.CreateDirectory(targetdir);
+
+                using (Stream filestream = File.Create(targetdir + file.Name))
+                {
+                    sftp.DownloadFile(origindir + file.Name, filestream);
+                }
+            }
+        }
+
+        public static void UploadToRemote(string address, string username, string password, string origindir, string targetdir, string extension)
+        {
+            var sftp = new SftpClient(address, username, password);
+            sftp.Connect();
+
+
+            var files = Directory.EnumerateFiles(origindir, "*." + extension);
+
+            foreach (var file in files)
+            {
+                var fileextension = "";
+                var splits = file.Split('.');
+
+                if (splits.Length < 2)
+                    continue;
+
+                fileextension = splits[splits.Length - 1];
+
+                if (fileextension != extension)
+                    continue;
+
+                splits = file.Split('/');
+                var filename = splits[splits.Length - 1];
+
+                using (FileStream stream = new FileStream(file, FileMode.Open))
+                {
+                    sftp.UploadFile(stream, targetdir + filename);
+                }
+            }
+        }
+
+
+
+
+
+
         public void LoadHelpPage()
         {
             if (mainTabControl.SelectedTab.Text == "Help")

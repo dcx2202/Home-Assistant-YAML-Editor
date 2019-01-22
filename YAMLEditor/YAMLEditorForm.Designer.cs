@@ -61,6 +61,7 @@
             this.mainToolStrip = new System.Windows.Forms.ToolStrip();
             this.newToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.openToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.openfromurl = new System.Windows.Forms.ToolStripButton();
             this.saveToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this.cutToolStripButton = new System.Windows.Forms.ToolStripButton();
@@ -80,6 +81,7 @@
             this.webBrowser = new System.Windows.Forms.WebBrowser();
             this.mainTextBox = new System.Windows.Forms.TextBox();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.uploadtourl = new System.Windows.Forms.ToolStripButton();
             this.mainMenuStrip.SuspendLayout();
             this.mainToolStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.mainSplitContainer)).BeginInit();
@@ -132,7 +134,7 @@
             this.newToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
             this.newToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(192, 34);
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(176, 34);
             this.newToolStripMenuItem.Text = "&New";
             this.newToolStripMenuItem.Click += new System.EventHandler(this.OnNewComponent);
             // 
@@ -142,14 +144,14 @@
             this.openToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
             this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(192, 34);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(176, 34);
             this.openToolStripMenuItem.Text = "&Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.OnOpen);
             // 
             // toolStripSeparator
             // 
             this.toolStripSeparator.Name = "toolStripSeparator";
-            this.toolStripSeparator.Size = new System.Drawing.Size(189, 6);
+            this.toolStripSeparator.Size = new System.Drawing.Size(173, 6);
             // 
             // saveToolStripMenuItem
             // 
@@ -158,25 +160,25 @@
             this.saveToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(192, 34);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(176, 34);
             this.saveToolStripMenuItem.Text = "&Save";
             // 
             // saveAsToolStripMenuItem
             // 
             this.saveAsToolStripMenuItem.Enabled = false;
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(192, 34);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(176, 34);
             this.saveAsToolStripMenuItem.Text = "Save &As";
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(189, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(173, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(192, 34);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(176, 34);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.OnExit);
             // 
@@ -333,6 +335,8 @@
             this.mainToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newToolStripButton,
             this.openToolStripButton,
+            this.openfromurl,
+            this.uploadtourl,
             this.saveToolStripButton,
             this.toolStripSeparator6,
             this.cutToolStripButton,
@@ -369,6 +373,17 @@
             this.openToolStripButton.Text = "&Open";
             this.openToolStripButton.Click += new System.EventHandler(this.OnOpen);
             // 
+            // openfromurl
+            // 
+            this.openfromurl.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.openfromurl.Image = ((System.Drawing.Image)(resources.GetObject("openfromurl.Image")));
+            this.openfromurl.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.openfromurl.Name = "openfromurl";
+            this.openfromurl.Size = new System.Drawing.Size(24, 24);
+            this.openfromurl.Text = "&Open From URL";
+            this.openfromurl.ToolTipText = "Open From URL";
+            this.openfromurl.Click += new System.EventHandler(this.OnOpenFromURL);
+            // 
             // saveToolStripButton
             // 
             this.saveToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -394,6 +409,7 @@
             this.cutToolStripButton.Name = "cutToolStripButton";
             this.cutToolStripButton.Size = new System.Drawing.Size(24, 24);
             this.cutToolStripButton.Text = "C&ut";
+            this.cutToolStripButton.ToolTipText = "Remove";
             this.cutToolStripButton.Click += new System.EventHandler(this.OnRemoveComponent);
             // 
             // copyToolStripButton
@@ -448,13 +464,14 @@
             this.toolStripButton3.Name = "toolStripButton3";
             this.toolStripButton3.Size = new System.Drawing.Size(24, 24);
             this.toolStripButton3.Text = "toolStripButton3";
+            this.toolStripButton3.ToolTipText = "Restart Home Assistant";
             this.toolStripButton3.Click += new System.EventHandler(this.OnRestartHomeassistant);
             // 
             // mainSplitContainer
             // 
             this.mainSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mainSplitContainer.Location = new System.Drawing.Point(0, 0);
-            this.mainSplitContainer.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.mainSplitContainer.Margin = new System.Windows.Forms.Padding(2);
             this.mainSplitContainer.Name = "mainSplitContainer";
             // 
             // mainSplitContainer.Panel1
@@ -477,7 +494,7 @@
             this.mainTreeView.ImageIndex = 0;
             this.mainTreeView.ImageList = this.mainImageList;
             this.mainTreeView.Location = new System.Drawing.Point(0, 0);
-            this.mainTreeView.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.mainTreeView.Margin = new System.Windows.Forms.Padding(2);
             this.mainTreeView.Name = "mainTreeView";
             this.mainTreeView.SelectedImageIndex = 0;
             this.mainTreeView.Size = new System.Drawing.Size(375, 240);
@@ -503,7 +520,7 @@
             this.mainTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mainTabControl.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.mainTabControl.Location = new System.Drawing.Point(0, 0);
-            this.mainTabControl.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.mainTabControl.Margin = new System.Windows.Forms.Padding(2);
             this.mainTabControl.Name = "mainTabControl";
             this.mainTabControl.SelectedIndex = 0;
             this.mainTabControl.Size = new System.Drawing.Size(424, 240);
@@ -513,9 +530,9 @@
             // 
             this.tabPage1.Controls.Add(this.mainPropertyGrid);
             this.tabPage1.Location = new System.Drawing.Point(4, 25);
-            this.tabPage1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tabPage1.Margin = new System.Windows.Forms.Padding(2);
             this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(2);
             this.tabPage1.Size = new System.Drawing.Size(416, 211);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Properties";
@@ -526,7 +543,7 @@
             this.mainPropertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mainPropertyGrid.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.mainPropertyGrid.Location = new System.Drawing.Point(2, 2);
-            this.mainPropertyGrid.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.mainPropertyGrid.Margin = new System.Windows.Forms.Padding(2);
             this.mainPropertyGrid.Name = "mainPropertyGrid";
             this.mainPropertyGrid.Size = new System.Drawing.Size(412, 207);
             this.mainPropertyGrid.TabIndex = 0;
@@ -535,10 +552,10 @@
             // 
             this.helpTabPage.Controls.Add(this.webBrowser);
             this.helpTabPage.Location = new System.Drawing.Point(4, 25);
-            this.helpTabPage.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.helpTabPage.Margin = new System.Windows.Forms.Padding(2);
             this.helpTabPage.Name = "helpTabPage";
-            this.helpTabPage.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.helpTabPage.Size = new System.Drawing.Size(416, 221);
+            this.helpTabPage.Padding = new System.Windows.Forms.Padding(2);
+            this.helpTabPage.Size = new System.Drawing.Size(416, 211);
             this.helpTabPage.TabIndex = 1;
             this.helpTabPage.Text = "Help";
             this.helpTabPage.UseVisualStyleBackColor = true;
@@ -547,10 +564,10 @@
             // 
             this.webBrowser.Dock = System.Windows.Forms.DockStyle.Fill;
             this.webBrowser.Location = new System.Drawing.Point(2, 2);
-            this.webBrowser.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.webBrowser.Margin = new System.Windows.Forms.Padding(2);
             this.webBrowser.MinimumSize = new System.Drawing.Size(11, 11);
             this.webBrowser.Name = "webBrowser";
-            this.webBrowser.Size = new System.Drawing.Size(412, 211);
+            this.webBrowser.Size = new System.Drawing.Size(412, 207);
             this.webBrowser.TabIndex = 0;
             // 
             // mainTextBox
@@ -582,6 +599,17 @@
             this.splitContainer2.SplitterDistance = 240;
             this.splitContainer2.TabIndex = 4;
             // 
+            // uploadtourl
+            // 
+            this.uploadtourl.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.uploadtourl.Enabled = false;
+            this.uploadtourl.Image = ((System.Drawing.Image)(resources.GetObject("uploadtourl.Image")));
+            this.uploadtourl.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.uploadtourl.Name = "uploadtourl";
+            this.uploadtourl.Size = new System.Drawing.Size(24, 24);
+            this.uploadtourl.Text = "&Upload To URL";
+            this.uploadtourl.Click += new System.EventHandler(this.OnUploadToURL);
+            // 
             // YAMLEditorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -594,7 +622,7 @@
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.mainMenuStrip;
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "YAMLEditorForm";
             this.Text = "YAML Editor";
             this.mainMenuStrip.ResumeLayout(false);
@@ -670,6 +698,8 @@
         private System.Windows.Forms.SplitContainer splitContainer2;
         private System.Windows.Forms.TreeView mainTreeView;
         private System.Windows.Forms.ToolStripButton toolStripButton3;
+        private System.Windows.Forms.ToolStripButton openfromurl;
+        private System.Windows.Forms.ToolStripButton uploadtourl;
     }
 }
 
