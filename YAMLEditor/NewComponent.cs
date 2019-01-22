@@ -59,7 +59,7 @@ namespace YAMLEditor
             {
                 YAMLEditorForm.CheckIfComponentExists(null, component.Keys.First().getChild(0));
 
-                if (YAMLEditorForm.componentexists)
+                if (YAMLEditorForm.componentExists)
                 {
                     // Show error popup
                     MessageBox.Show("This component already exists in the file currently open.", "Error");
@@ -70,12 +70,12 @@ namespace YAMLEditor
                     YAMLEditorForm.AddComponent(component.Keys.First().getChild(0), component.Values.First().Nodes[0]);
                     MessageBox.Show("Component added.", "Success");
 
-                    YAMLEditorForm.componentexists = false;
+                    YAMLEditorForm.componentExists = false;
                     this.Close();
                 }
             }
 
-            YAMLEditorForm.componentexists = false;
+            YAMLEditorForm.componentExists = false;
         }
     }
 }

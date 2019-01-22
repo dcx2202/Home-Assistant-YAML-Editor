@@ -273,7 +273,7 @@
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
             this.optionsToolStripMenuItem.Size = new System.Drawing.Size(142, 24);
             this.optionsToolStripMenuItem.Text = "&Options";
-            this.optionsToolStripMenuItem.Click += new System.EventHandler(this.optionsToolStripMenuItem_Click);
+            this.optionsToolStripMenuItem.Click += new System.EventHandler(this.OnOptionsToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -448,7 +448,7 @@
             this.toolStripButton3.Name = "toolStripButton3";
             this.toolStripButton3.Size = new System.Drawing.Size(24, 24);
             this.toolStripButton3.Text = "toolStripButton3";
-            this.toolStripButton3.Click += new System.EventHandler(this.RestartHomeassistant);
+            this.toolStripButton3.Click += new System.EventHandler(this.OnRestartHomeassistant);
             // 
             // mainSplitContainer
             // 

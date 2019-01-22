@@ -8,14 +8,10 @@ namespace YAMLEditor.Patterns
 {
 	public class CommandManager : ICommandManager, ISubject
 	{
-		#region Fields
-
 		protected List<ICommand> Commands { get; } = new List<ICommand>();
 		protected int Position { get; set; } = -1;
 
 		public event UpdateEventHandler OnUpdate;
-
-		#endregion
 
 		/// <summary>
 		/// Determines if exists commands to be undoed.
