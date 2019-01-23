@@ -14,18 +14,13 @@ namespace YAMLEditor
 	{
 		public string filename;
 		public string openedfilename;
-        private IComponent mParent;
+        public IComponent mParent;
 
 		public NewComponent(IComponent parent)
 		{
 			InitializeComponent();
             this.mParent = parent;
         }
-
-		private void pictureBox1_Click(object sender, EventArgs e)
-		{
-
-		}
 
 		private void FileExplorer(object sender, EventArgs e)
 		{

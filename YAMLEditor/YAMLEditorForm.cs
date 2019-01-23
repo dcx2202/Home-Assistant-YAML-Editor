@@ -87,11 +87,30 @@ namespace YAMLEditor
         #region Button Actions
         private void OnNewComponent(object sender, EventArgs e)
         {
-            NewComponent nc;
-            if (mainTreeView.SelectedNode == null)
-                nc = new NewComponent(composite);
+            IComponent component;
+
+            if (mainTreeView.SelectedNode == null || mainTreeView.SelectedNode.Tag == null)
+                component = composite;
             else
-                nc = new NewComponent(mainTreeView.SelectedNode.Tag as Component);
+                component = mainTreeView.SelectedNode.Tag as Component;
+
+            if (component.Name != "root")
+            {
+                List<IComponent> allchildren = new List<IComponent>();
+                allchildren = GetAllChildren(allchildren, component);
+
+                if ((allchildren.Count == 1 && allchildren.First().Name != "") || allchildren.Count == 0)
+                {
+                    if(component.Name == "")
+                        MessageBox.Show("Can't add a new component to this node. Try adding to " + component.getParent().Name + ".");
+                    else
+                        MessageBox.Show("Can't add a new component to this node.");
+                    return;
+                }
+            }
+
+            NewComponent nc = new NewComponent(component);
+
 
             nc.ShowDialog();
         }
@@ -202,7 +221,7 @@ namespace YAMLEditor
 
         private void OnAboutButton(object sender, EventArgs e)
         {
-            MessageBox.Show("Made by: " +
+            MessageBox.Show("Developed by: " +
                 "Diogo Cruz, " +
                 "Diogo Nóbrega, " +
                 "Francisco Teixeira, " +
@@ -839,7 +858,9 @@ namespace YAMLEditor
 
         public static Dictionary<IComponent, TreeNode> getComponentFromFile(string filename)
         {
-            if (File.ReadAllText(filename).Trim() != "")
+            string content = File.ReadAllText(filename);
+
+            if (content.Trim() != "" && !content.Trim().StartsWith("#"))
             {
                 // Get composite and tree from the opened component file
                 IComponent newcomponent = new Component("root", filename, null);
@@ -914,51 +935,112 @@ namespace YAMLEditor
             return children;
         }
 
-        public static List<string> GetAllChildrenstring(List<string> lines, IComponent comp, string ident)
-        {
-            List<IComponent> allChildren = new List<IComponent>();
-            allChildren = GetAllChildren(allChildren, comp);
-
-            if (allChildren.Count == 0)
-            {
-                lines.Add(ident + comp.Name);
-            }
-            /*else if (allChildren.Count == 1)
-            {
-                lines.Add(ident + comp.Name + ":  " + allChildren.First().Name);
-            }*/
-            else
-            {
-                ident += "  ";
-                foreach (IComponent child in comp.getChildren())
-                {
-                    List<IComponent> siblings = new List<IComponent>();
-                    GetAllChildren(siblings, child.getParent());
-
-                    if (siblings.Count == 1)
-                        continue;
-
-                    lines.Add(ident + child.Name + ":");
-
-                    //ident += "  ";
-
-                    GetAllChildrenstring(lines, child, ident);
-                }
-                return lines;
-            }
-
-            return lines;
-        }
-
         public void Save()
         {
             // For each component that was added we write it to the opened file
             foreach (IComponent comp in addedComponents)
             {
-
                 var lines = File.ReadAllLines(filename).ToList();
-                lines.Add("");
-                lines.Add(comp.Name + ": !include " + comp.getFileName());
+
+                if (comp.getParent().Name == "root")
+                {
+                    lines.Add("");
+                    lines.Add(comp.Name + ": !include " + comp.getFileName());
+                }
+                else
+                {
+                    List<IComponent> nodeparents = new List<IComponent>();
+                    nodeparents = GetParents(nodeparents, comp);
+                    nodeparents.Remove(nodeparents.Last());
+
+                    string ident = "";
+
+                    for(var i = 0; i < nodeparents.Count - 1; i++)
+                    {
+                        ident += "  ";
+                    }
+
+                    int ln = 0;
+
+                    // if it's a level 0 component, the parent will be null
+                    // and as such, the "parent's" line will 0 (as if the
+                    // hypothetical parent was the whole file)
+                    if (nodeparents.Count != 0)
+                    {
+                        var aux = false;
+                        for (var j = nodeparents.Count - 1; j >= 0; j--)// IComponent parent in nodeparents)
+                        {
+                            // For each line of this file we look for the component
+                            for (var i = ln; i < lines.Count; i++)
+                            {
+                                if (lines[i].Trim().StartsWith(nodeparents[j].Name) || lines[i].Trim().StartsWith("- " + nodeparents[j].Name))//lines[i].Contains(nodeparents[j].Name))
+                                {
+                                    aux = true;
+                                    ln = i;
+                                    nodeparents.RemoveAt(j);
+                                    break;
+                                }
+                            }
+
+                            if (aux == false)
+                                break; // didn't find the component - should never happen
+                        }
+
+                        if (aux == false)
+                            continue; // didn't find the component - should never happen
+                    }
+
+
+                    List<IComponent> siblings = new List<IComponent>();
+                    siblings = GetAllChildren(siblings, comp.getParent());
+
+                    if (siblings.Count == 1 && siblings.First().Name == "")
+                    {
+                        comp.getParent().getChildren().RemoveAt(0);
+                        lines[ln] = lines[ln] + " !include " + comp.getFileName();
+                        break;
+                    }
+                    else
+                    {
+                        // after we've got the parent's exact line
+                        for (var i = ln + 1; i < lines.Count; i++)
+                        {
+                            string line_ident = "";
+
+                            foreach(Char c in lines[i])
+                            {
+                                if (c.Equals(' '))
+                                    line_ident += " ";
+                                else if (c.Equals('#'))
+                                {
+                                    line_ident = "#";
+                                    break;
+                                }
+                                else
+                                    break;
+                            }
+
+                            if (line_ident == "#")
+                                continue;
+
+                            if (lines[i].Trim() == "")
+                            {
+                                lines.Insert(i, ident + "  " + comp.Name + ": !include " + comp.getFileName());
+                                break;
+                            }
+                            else if (ident == line_ident && !lines[i].Trim().StartsWith("#"))
+                            {
+                                lines.Insert(i - 1, ident + "  " + comp.Name + ": !include " + comp.getFileName());
+                                break;
+                            }
+                            else if(i == lines.Count)
+                            {
+                                lines.Add(ident + "  " + comp.Name + ": !include " + comp.getFileName());
+                                break;
+                            }
+                        }
+                    }
+                }
 
                 File.WriteAllLines(filename, lines);
             }
@@ -1140,10 +1222,10 @@ namespace YAMLEditor
             var splits = aFilename.Split('\\');
             var name = splits[splits.Length - 1];
 
-            fileRoot.Keys.First().setFileName(name);
-
             if (fileRoot != null)
             {
+                fileRoot.Keys.First().setFileName(name);
+
                 //Check if this component already exists where we are trying to add
                 YAMLEditorForm.componentExists = false;
                 YAMLEditorForm.CheckIfComponentExists(aParent, fileRoot.Keys.First().getChild(0));
