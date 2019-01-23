@@ -297,6 +297,11 @@ namespace YAMLEditor
                     }
                 }
 
+                if (!remote_dir.StartsWith("/"))
+                    remote_dir = "/" + remote_dir;
+                if (!remote_dir.EndsWith("/"))
+                    remote_dir = remote_dir + "/";
+
                 try
                 {
                     DownloadRemoteFiles(rh_address, username, password, remote_dir, "./RemoteFiles/", "yaml");
@@ -315,7 +320,7 @@ namespace YAMLEditor
                 var dialog = new OpenFileDialog()
                 { Filter = @"Yaml files (*.yaml)|*.yaml|All files (*.*)|*.*", DefaultExt = "yaml" };
 
-                dialog.InitialDirectory = "./RemoteFiles/";
+                dialog.InitialDirectory = workingdir + "\\RemoteFiles\\";
 
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {

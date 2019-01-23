@@ -541,6 +541,13 @@ namespace YAMLEditor
                 if (files_directory_field.Text == "/C:/path/to/files/") return;
                 if (files_directory_field.Text == Settings.Default["remote_directory"] as string) return;
 
+                if(!files_directory_field.Text.StartsWith("/") && files_directory_field.Text != "")
+                {
+                    MessageBox.Show("Remote directories must start and end with forward slashes.", "Error");
+                    //files_directory_field.Text = files_directory_field.Text.Substring(0, files_directory_field.Text.Length - 1);
+                    files_directory_field.Text = "";
+                }
+
                 // update
                 Settings.Default["remote_directory"] = files_directory_field.Text;
 
@@ -549,8 +556,8 @@ namespace YAMLEditor
             }
             else
             {
-                MessageBox.Show("Remote directories can only consist of letters, numbers, forward slashes, back slashes, underscores, colon or nothing (to delete)", "Error");
-                files_directory_field.Text = files_directory_field.Text.Substring(0, files_directory_field.Text.Length - 1);
+                MessageBox.Show("Remote directories can only consist of letters, numbers, forward slashes, back slashes, underscores, colon or nothing (to delete). Must start and end with forward slashes.", "Error");
+                files_directory_field.Text = "";
             }
         }
     }
