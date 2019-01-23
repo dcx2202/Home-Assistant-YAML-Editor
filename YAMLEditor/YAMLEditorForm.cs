@@ -58,6 +58,29 @@ namespace YAMLEditor
             removedComponents = new Dictionary<IComponent, List<IComponent>>();
 
             workingdir = Environment.CurrentDirectory;
+
+            Application.ApplicationExit += new EventHandler(this.OnApplicationExit);
+        }
+
+        private void OnApplicationExit(object sender, EventArgs e)
+        {
+            Directory.SetCurrentDirectory(workingdir);
+
+            if (Directory.Exists("./RemoteFiles/"))
+            {
+                DirectoryInfo d = new DirectoryInfo("./RemoteFiles/");
+
+                foreach (FileInfo file in d.GetFiles())
+                {
+                    file.Delete();
+                }
+                foreach (DirectoryInfo dir in d.GetDirectories())
+                {
+                    dir.Delete(true);
+                }
+
+                d.Delete();
+            }
         }
 
 
@@ -253,16 +276,41 @@ namespace YAMLEditor
             {
                 DialogResult result = MessageBox.Show("Starting download of files from remote host on " + rh_address, "Open from URL",
                 MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+                mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Starting download of files from remote host on " + rh_address);
 
                 if (result == DialogResult.Cancel)
                     return;
 
                 Directory.SetCurrentDirectory(workingdir);
 
-                DownloadRemoteFiles(rh_address, username, password, remote_dir, "./RemoteFiles/", "yaml");
+                if (Directory.Exists("./RemoteFiles/"))
+                {
+                    DirectoryInfo d = new DirectoryInfo("./RemoteFiles/");
+
+                    foreach (FileInfo file in d.GetFiles())
+                    {
+                        file.Delete();
+                    }
+                    foreach (DirectoryInfo dir in d.GetDirectories())
+                    {
+                        dir.Delete(true);
+                    }
+                }
+
+                try
+                {
+                    DownloadRemoteFiles(rh_address, username, password, remote_dir, "./RemoteFiles/", "yaml");
+                }
+                catch(Exception exc)
+                {
+                    MessageBox.Show("Couldn't download files from remote host.", "Error");
+                    mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Couldn't download files from remote host.");
+                    return;
+                }
 
                 result = MessageBox.Show("Download complete. Open a file...", "Success",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
+                mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Download complete.");
 
                 var dialog = new OpenFileDialog()
                 { Filter = @"Yaml files (*.yaml)|*.yaml|All files (*.*)|*.*", DefaultExt = "yaml" };
@@ -278,7 +326,6 @@ namespace YAMLEditor
                     composite = new Component("root", "root", null);
                     currentParent = composite;
 
-                    mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Opened " + $"Filename: {dialog.FileName}");
                     System.Diagnostics.Trace.WriteLine($"Filename: {dialog.FileName}");
 
                     Directory.SetCurrentDirectory(Path.GetDirectoryName(dialog.FileName) ?? "");
@@ -291,6 +338,8 @@ namespace YAMLEditor
                     var splits = openedfilename.Split('\\');
                     openedfilename = splits[splits.Length - 1];
                     filename = openedfilename;
+
+                    mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Opened " + $"Filename: " + filename + " from remote host on " + rh_address);
 
                     LoadFile(FileTreeRoot, filename);
                     FileTreeRoot.Expand();
@@ -317,23 +366,34 @@ namespace YAMLEditor
             if (rh_address == "" || username == "" || remote_dir == "") // no password -> ""
             {
                 MessageBox.Show("Please check your remote host file editing settings.", "Error");
-                mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Please check your remote host file editing settings before trying to open from URL.");
+                mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Please check your remote host file editing settings before trying to upload to remote host.");
                 return;
             }
             else
             {
                 DialogResult result = MessageBox.Show("Starting upload of files to remote host on " + rh_address, "Uploading to Remote",
                 MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+                mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Starting upload of files to remote host on " + rh_address);
 
                 if (result == DialogResult.Cancel)
                     return;
 
                 Directory.SetCurrentDirectory(workingdir);
 
-                UploadToRemote(rh_address, username, password, "./RemoteFiles/", remote_dir, "yaml");
+                try
+                {
+                    UploadToRemote(rh_address, username, password, "./RemoteFiles/", remote_dir, "yaml");
+                }
+                catch(Exception exc)
+                {
+                    MessageBox.Show("Couldn't upload files to remote host.", "Error");
+                    mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Couldn't upload files to remote host.");
+                    return;
+                }
 
                 result = MessageBox.Show("Upload complete.", "Success",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
+                mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Upload complete.");
             }
         }
 
