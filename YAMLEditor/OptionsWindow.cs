@@ -69,6 +69,7 @@ namespace YAMLEditor
             // 
             // ha_address_field
             // 
+            this.ha_address_field.BackColor = System.Drawing.SystemColors.ControlDark;
             this.ha_address_field.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.ha_address_field.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ha_address_field.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(120)))), ((int)(((byte)(120)))), ((int)(((byte)(120)))));
@@ -100,6 +101,7 @@ namespace YAMLEditor
             // 
             // token_field
             // 
+            this.token_field.BackColor = System.Drawing.SystemColors.ControlDark;
             this.token_field.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.token_field.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.token_field.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(120)))), ((int)(((byte)(120)))), ((int)(((byte)(120)))));
@@ -118,7 +120,6 @@ namespace YAMLEditor
                 this.token_field.Text = Settings.Default["access_token"] as string;
                 this.token_field.ForeColor = Color.Black;
             }
-
             // 
             // panel1
             // 
@@ -163,6 +164,7 @@ namespace YAMLEditor
             // 
             // rh_address_field
             // 
+            this.rh_address_field.BackColor = System.Drawing.SystemColors.ControlDark;
             this.rh_address_field.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.rh_address_field.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rh_address_field.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(120)))), ((int)(((byte)(120)))), ((int)(((byte)(120)))));
@@ -194,6 +196,7 @@ namespace YAMLEditor
             // 
             // username_field
             // 
+            this.username_field.BackColor = System.Drawing.SystemColors.ControlDark;
             this.username_field.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.username_field.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.username_field.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(120)))), ((int)(((byte)(120)))), ((int)(((byte)(120)))));
@@ -215,6 +218,7 @@ namespace YAMLEditor
             // 
             // password_field
             // 
+            this.password_field.BackColor = System.Drawing.SystemColors.ControlDark;
             this.password_field.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.password_field.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.password_field.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(120)))), ((int)(((byte)(120)))), ((int)(((byte)(120)))));
@@ -265,6 +269,7 @@ namespace YAMLEditor
             // 
             // files_directory_field
             // 
+            this.files_directory_field.BackColor = System.Drawing.SystemColors.ControlDark;
             this.files_directory_field.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.files_directory_field.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.files_directory_field.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(120)))), ((int)(((byte)(120)))), ((int)(((byte)(120)))));
@@ -296,6 +301,7 @@ namespace YAMLEditor
             // 
             // OptionsWindow
             // 
+            this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.ClientSize = new System.Drawing.Size(397, 438);
             this.Controls.Add(this.files_directory_field);
             this.Controls.Add(this.files_directory_label);

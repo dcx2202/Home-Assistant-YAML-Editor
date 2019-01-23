@@ -135,7 +135,7 @@ namespace YAMLEditor
                 newToolStripButton.Enabled = true;
                 newToolStripMenuItem.Enabled = true;
                 cutToolStripButton.Enabled = true;
-                cutToolStripMenuItem.Enabled = true;
+                removeToolStripMenuItem.Enabled = true;
                 saveToolStripButton.Enabled = true;
                 saveToolStripMenuItem.Enabled = true;
                 uploadtourl.Enabled = true;
@@ -261,7 +261,40 @@ namespace YAMLEditor
 
         private void OnOpenFromURL(object sender, EventArgs e)
         {
-            string rh_address = (string) Settings.Default["rh_address"];
+            OpenFromURL();
+        }
+
+        private void OnUploadToURL(object sender, EventArgs e)
+        {
+            UploadToURL();
+        }
+
+        private void OnToolStripOpenFromURL(object sender, EventArgs e)
+        {
+            OpenFromURL();
+        }
+
+        private void OnToolStripUploadToRemote(object sender, EventArgs e)
+        {
+            UploadToURL();
+        }
+
+        public void LoadHelpPageEvent(object sender, EventArgs e)
+        {
+            try
+            {
+                LoadHelpPage();
+            }
+            catch (Exception exception)
+            {
+                mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - " + exception.StackTrace);
+            }
+        }
+        #endregion
+
+        public void OpenFromURL()
+        {
+            string rh_address = (string)Settings.Default["rh_address"];
             string username = (string)Settings.Default["username"];
             string password = (string)Settings.Default["password"];
             string remote_dir = (string)Settings.Default["remote_directory"];
@@ -306,7 +339,7 @@ namespace YAMLEditor
                 {
                     DownloadRemoteFiles(rh_address, username, password, remote_dir, "./RemoteFiles/", "yaml");
                 }
-                catch(Exception exc)
+                catch (Exception exc)
                 {
                     MessageBox.Show("Couldn't download files from remote host.", "Error");
                     mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Couldn't download files from remote host.");
@@ -353,7 +386,7 @@ namespace YAMLEditor
                     newToolStripButton.Enabled = true;
                     newToolStripMenuItem.Enabled = true;
                     cutToolStripButton.Enabled = true;
-                    cutToolStripMenuItem.Enabled = true;
+                    removeToolStripMenuItem.Enabled = true;
                     saveToolStripButton.Enabled = true;
                     saveToolStripMenuItem.Enabled = true;
                     uploadtourl.Enabled = true;
@@ -361,7 +394,7 @@ namespace YAMLEditor
             }
         }
 
-        private void OnUploadToURL(object sender, EventArgs e)
+        public void UploadToURL()
         {
             string rh_address = (string)Settings.Default["rh_address"];
             string username = (string)Settings.Default["username"];
@@ -387,9 +420,9 @@ namespace YAMLEditor
 
                 try
                 {
-                    UploadToRemote(rh_address, username, password, "./RemoteFiles/", remote_dir, "yaml");
+                    UploadRemoteFiles(rh_address, username, password, "./RemoteFiles/", remote_dir, "yaml");
                 }
-                catch(Exception exc)
+                catch (Exception exc)
                 {
                     MessageBox.Show("Couldn't upload files to remote host.", "Error");
                     mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Couldn't upload files to remote host.");
@@ -401,21 +434,6 @@ namespace YAMLEditor
                 mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Upload complete.");
             }
         }
-
-        public void LoadHelpPageEvent(object sender, EventArgs e)
-        {
-            try
-            {
-                LoadHelpPage();
-            }
-            catch (Exception exception)
-            {
-                mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - " + exception.StackTrace);
-            }
-        }
-        #endregion
-
-
 
         // Downloads files from remote host
         public static void DownloadRemoteFiles(string address, string username, string password, string origindir, string targetdir, string extension)
@@ -448,7 +466,7 @@ namespace YAMLEditor
             }
         }
 
-        public static void UploadToRemote(string address, string username, string password, string origindir, string targetdir, string extension)
+        public static void UploadRemoteFiles(string address, string username, string password, string origindir, string targetdir, string extension)
         {
             var sftp = new SftpClient(address, username, password);
             sftp.Connect();
@@ -478,11 +496,6 @@ namespace YAMLEditor
                 }
             }
         }
-
-
-
-
-
 
         public void LoadHelpPage()
         {

@@ -50,7 +50,7 @@
             // 
             this.pictureBox1.Image = global::YAMLEditor.Properties.Resources.ha;
             this.pictureBox1.Location = new System.Drawing.Point(23, 22);
-            this.pictureBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.pictureBox1.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(192, 192);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
@@ -87,7 +87,7 @@
             this.button1.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.button1.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button1.Location = new System.Drawing.Point(337, 253);
-            this.button1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.button1.Margin = new System.Windows.Forms.Padding(2);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(63, 35);
             this.button1.TabIndex = 6;
@@ -100,7 +100,7 @@
             this.button2.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.button2.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button2.Location = new System.Drawing.Point(485, 253);
-            this.button2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.button2.Margin = new System.Windows.Forms.Padding(2);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(68, 35);
             this.button2.TabIndex = 7;
@@ -139,8 +139,10 @@
             // 
             // File
             // 
+            this.File.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.File.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.File.Location = new System.Drawing.Point(277, 169);
-            this.File.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.File.Margin = new System.Windows.Forms.Padding(2);
             this.File.Name = "File";
             this.File.Size = new System.Drawing.Size(289, 20);
             this.File.TabIndex = 11;
@@ -149,7 +151,7 @@
             // 
             this.button3.Image = ((System.Drawing.Image)(resources.GetObject("button3.Image")));
             this.button3.Location = new System.Drawing.Point(569, 162);
-            this.button3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.button3.Margin = new System.Windows.Forms.Padding(2);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(38, 34);
             this.button3.TabIndex = 12;
@@ -185,6 +187,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.ClientSize = new System.Drawing.Size(616, 324);
             this.Controls.Add(this.linkLabel1);
             this.Controls.Add(this.label4);
@@ -197,7 +200,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.pictureBox1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "NewComponent";
             this.Text = "NewComponent";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
