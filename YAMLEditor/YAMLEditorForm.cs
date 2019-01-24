@@ -95,6 +95,8 @@ namespace YAMLEditor
                     setAttributesNormal(dir);
                     dir.Delete(true);
                 }
+
+                d.Delete();
             }
         }
 
