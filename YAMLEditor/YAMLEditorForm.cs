@@ -173,6 +173,7 @@ namespace YAMLEditor
                 saveToolStripButton.Enabled = true;
                 saveToolStripMenuItem.Enabled = true;
                 uploadtourl.Enabled = true;
+                push_toolStrip.Enabled = true;
             }
         }
 
@@ -1061,7 +1062,17 @@ namespace YAMLEditor
             // For each component that was added we write it to the opened file
             foreach (IComponent comp in addedComponents)
             {
-                var lines = File.ReadAllLines(filename).ToList();
+                List<string> lines = new List<string>();
+
+                try
+                {
+                    lines = File.ReadAllLines(filename).ToList();
+                }
+                catch(IOException ioe)
+                {
+                    mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Couldn't save added component " + comp.Name);
+                    continue;
+                }
 
                 if (comp.getParent().Name == "root")
                 {
@@ -1163,7 +1174,14 @@ namespace YAMLEditor
                     }
                 }
 
-                File.WriteAllLines(filename, lines);
+                try
+                {
+                    File.WriteAllLines(filename, lines);
+                }
+                catch(IOException ioe)
+                {
+                    mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Couldn't save added components");
+                }
             }
 
             // For each component that suffered changes we look for it in the files (opened and !included)
@@ -1188,7 +1206,8 @@ namespace YAMLEditor
                 }
                 catch (IOException e)
                 {
-                    mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - " + e.ToString());
+                    mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Couldn't save changed component " + node.Name);
+                    continue;
                 }
 
                 int ln = 0;
@@ -1253,7 +1272,14 @@ namespace YAMLEditor
                     }
                 }
 
-                File.WriteAllLines(node.getFileName(), lines);
+                try
+                {
+                    File.WriteAllLines(node.getFileName(), lines);
+                }
+                catch(IOException ioe)
+                {
+                    mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Couldn't save changed components");
+                }
             }
 
             // For each component that was removed we remove it from the opened file
@@ -1262,7 +1288,17 @@ namespace YAMLEditor
                 var nodeparents = comp.Value;
                 var node = comp.Key;
 
-                List<string> lines = File.ReadAllLines(node.getFileName()).ToList();
+                List<string> lines = new List<string>();
+
+                try
+                {
+                    lines = File.ReadAllLines(node.getFileName()).ToList();
+                }
+                catch(IOException ioe)
+                {
+                    mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Couldn't save removed component " + node.Name);
+                    continue;
+                }
 
                 int ln = 0;
 
@@ -1318,7 +1354,14 @@ namespace YAMLEditor
                         break;
                 }
 
-                File.WriteAllLines(node.getFileName(), lines);
+                try
+                {
+                    File.WriteAllLines(node.getFileName(), lines);
+                }
+                catch(IOException ioe)
+                {
+                    mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Couldn't save removed components");
+                }
             }
 
             changedComponents = new Dictionary<Dictionary<string, List<IComponent>>, IComponent>();

@@ -55,6 +55,8 @@
             this.openToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.openfromurl = new System.Windows.Forms.ToolStripButton();
             this.uploadtourl = new System.Windows.Forms.ToolStripButton();
+            this.pull_toolStrip = new System.Windows.Forms.ToolStripButton();
+            this.push_toolStrip = new System.Windows.Forms.ToolStripButton();
             this.saveToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.cutToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.copyToolStripButton = new System.Windows.Forms.ToolStripButton();
@@ -62,8 +64,6 @@
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
-            this.pull_toolStrip = new System.Windows.Forms.ToolStripButton();
-            this.push_toolStrip = new System.Windows.Forms.ToolStripButton();
             this.mainSplitContainer = new System.Windows.Forms.SplitContainer();
             this.mainTreeView = new System.Windows.Forms.TreeView();
             this.mainImageList = new System.Windows.Forms.ImageList(this.components);
@@ -165,6 +165,7 @@
             // toolStripPullFromRemote
             // 
             this.toolStripPullFromRemote.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.toolStripPullFromRemote.Image = global::YAMLEditor.Properties.Resources.pullremote;
             this.toolStripPullFromRemote.Name = "toolStripPullFromRemote";
             this.toolStripPullFromRemote.Size = new System.Drawing.Size(199, 34);
             this.toolStripPullFromRemote.Text = "Pull from remote";
@@ -173,6 +174,7 @@
             // toolStripPushToRemote
             // 
             this.toolStripPushToRemote.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.toolStripPushToRemote.Image = global::YAMLEditor.Properties.Resources.pushremote;
             this.toolStripPushToRemote.Name = "toolStripPushToRemote";
             this.toolStripPushToRemote.Size = new System.Drawing.Size(199, 34);
             this.toolStripPushToRemote.Text = "Push to remote";
@@ -358,6 +360,27 @@
             this.uploadtourl.Text = "&Upload To URL";
             this.uploadtourl.Click += new System.EventHandler(this.OnUploadToURL);
             // 
+            // pull_toolStrip
+            // 
+            this.pull_toolStrip.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.pull_toolStrip.Image = global::YAMLEditor.Properties.Resources.pullremote;
+            this.pull_toolStrip.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.pull_toolStrip.Name = "pull_toolStrip";
+            this.pull_toolStrip.Size = new System.Drawing.Size(24, 24);
+            this.pull_toolStrip.Text = "Pull from Remote";
+            this.pull_toolStrip.Click += new System.EventHandler(this.OnPullFromRemote);
+            // 
+            // push_toolStrip
+            // 
+            this.push_toolStrip.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.push_toolStrip.Enabled = false;
+            this.push_toolStrip.Image = global::YAMLEditor.Properties.Resources.pushremote;
+            this.push_toolStrip.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.push_toolStrip.Name = "push_toolStrip";
+            this.push_toolStrip.Size = new System.Drawing.Size(24, 24);
+            this.push_toolStrip.Text = "Push to Remote";
+            this.push_toolStrip.Click += new System.EventHandler(this.OnPushToRemote);
+            // 
             // saveToolStripButton
             // 
             this.saveToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -430,27 +453,6 @@
             this.toolStripButton3.Text = "toolStripButton3";
             this.toolStripButton3.ToolTipText = "Restart Home Assistant";
             this.toolStripButton3.Click += new System.EventHandler(this.OnRestartHomeassistant);
-            // 
-            // pull_toolStrip
-            // 
-            this.pull_toolStrip.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.pull_toolStrip.Image = global::YAMLEditor.Properties.Resources.download;
-            this.pull_toolStrip.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.pull_toolStrip.Name = "pull_toolStrip";
-            this.pull_toolStrip.Size = new System.Drawing.Size(24, 24);
-            this.pull_toolStrip.Text = "Pull from Remote";
-            this.pull_toolStrip.Click += new System.EventHandler(this.OnPullFromRemote);
-            // 
-            // push_toolStrip
-            // 
-            this.push_toolStrip.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.push_toolStrip.Enabled = false;
-            this.push_toolStrip.Image = global::YAMLEditor.Properties.Resources.upload;
-            this.push_toolStrip.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.push_toolStrip.Name = "push_toolStrip";
-            this.push_toolStrip.Size = new System.Drawing.Size(24, 24);
-            this.push_toolStrip.Text = "Push to Remote";
-            this.push_toolStrip.Click += new System.EventHandler(this.OnPushToRemote);
             // 
             // mainSplitContainer
             // 
