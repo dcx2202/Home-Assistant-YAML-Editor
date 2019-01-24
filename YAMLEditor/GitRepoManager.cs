@@ -98,7 +98,7 @@ namespace YAMLEditor
                 Signature committer = author;
 
                 // Commit to the repository
-                Commit commit = repo.Commit("", author, committer);
+                Commit commit = repo.Commit("Commit from YAMLEditor", author, committer);
             }
         }
     }
