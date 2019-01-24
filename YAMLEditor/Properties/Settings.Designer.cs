@@ -94,5 +94,41 @@ namespace YAMLEditor.Properties {
                 this["remote_directory"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string gitrepo_username {
+            get {
+                return ((string)(this["gitrepo_username"]));
+            }
+            set {
+                this["gitrepo_username"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string gitrepo_password {
+            get {
+                return ((string)(this["gitrepo_password"]));
+            }
+            set {
+                this["gitrepo_password"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string gitrepo_link {
+            get {
+                return ((string)(this["gitrepo_link"]));
+            }
+            set {
+                this["gitrepo_link"] = value;
+            }
+        }
     }
 }

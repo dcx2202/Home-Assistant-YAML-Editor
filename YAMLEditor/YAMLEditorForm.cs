@@ -356,7 +356,7 @@ namespace YAMLEditor
 
                 try
                 {
-                    DownloadRemoteFiles(rh_address, username, password, remote_dir, "./RemoteFiles/", "yaml");
+                    SFTPManager.DownloadRemoteFiles(rh_address, username, password, remote_dir, "./RemoteFiles/", "yaml");
                 }
                 catch (Exception exc)
                 {
@@ -439,7 +439,7 @@ namespace YAMLEditor
 
                 try
                 {
-                    UploadRemoteFiles(rh_address, username, password, "./RemoteFiles/", remote_dir, "yaml");
+                    SFTPManager.UploadRemoteFiles(rh_address, username, password, "./RemoteFiles/", remote_dir, "yaml");
                 }
                 catch (Exception exc)
                 {
