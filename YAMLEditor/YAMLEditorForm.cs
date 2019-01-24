@@ -1250,5 +1250,158 @@ namespace YAMLEditor
                 YAMLEditorForm.componentExists = false;
             }
         }
+
+        private void pull_toolStrip_Click(object sender, EventArgs e)
+        {
+            string gitrepo_link = (string)Settings.Default["gitrepo_link"];
+            string gitrepo_email = (string)Settings.Default["gitrepo_email"];
+            string gitrepo_password = (string)Settings.Default["gitrepo_password"];
+
+            if (gitrepo_link == "" || gitrepo_email == "") // no password -> ""
+            {
+                MessageBox.Show("Please check your git settings.", "Error");
+                mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Please check your git settings before trying to pull from remote.");
+                return;
+            }
+            else
+            {
+                DialogResult result = MessageBox.Show("Starting pull of files from remote host on " + gitrepo_link, "Pull from Remote",
+                MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+                mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Starting pull of files from remote host on " + gitrepo_link);
+
+                if (result == DialogResult.Cancel)
+                    return;
+
+                Directory.SetCurrentDirectory(workingdir);
+
+                if (Directory.Exists(workingdir + "/GitRepo/"))
+                {
+                    DirectoryInfo d = new DirectoryInfo(workingdir + "/GitRepo/");
+
+                    foreach (FileInfo file in d.GetFiles())
+                    {
+                        file.Delete();
+                    }
+                    foreach (DirectoryInfo dir in d.GetDirectories())
+                    {
+                        setAttributesNormal(dir);
+                        dir.Delete(true);
+                    }
+                }
+
+                try
+                {
+                    GitRepoManager.clone(gitrepo_email, gitrepo_password, gitrepo_link, workingdir + "/GitRepo/");
+                }
+                catch (Exception exc)
+                {
+                    MessageBox.Show("Couldn't pull files from remote.", "Error");
+                    mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Couldn't pull files from remote.");
+                    return;
+                }
+
+                result = MessageBox.Show("Pull complete. Open a file...", "Success",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+                mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Pull complete.");
+
+                var dialog = new OpenFileDialog()
+                { Filter = @"Yaml files (*.yaml)|*.yaml|All files (*.*)|*.*", DefaultExt = "yaml" };
+
+                dialog.InitialDirectory = workingdir + "\\GitRepo\\";
+
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    changedComponents = new Dictionary<Dictionary<string, List<IComponent>>, IComponent>();
+                    addedComponents = new List<IComponent>();
+                    if (FileTreeRoot != null)
+                        FileTreeRoot.Nodes.Clear();
+                    composite = new Component("root", "root", null);
+                    currentParent = composite;
+
+                    System.Diagnostics.Trace.WriteLine($"Filename: {dialog.FileName}");
+
+                    Directory.SetCurrentDirectory(Path.GetDirectoryName(dialog.FileName) ?? "");
+
+                    mainTreeView.Nodes.Clear();
+                    FileTreeRoot = mainTreeView.Nodes.Add(Path.GetFileName(dialog.FileName));
+                    FileTreeRoot.ImageIndex = FileTreeRoot.SelectedImageIndex = 3;
+
+                    openedfilename = dialog.FileName;
+                    var splits = openedfilename.Split('\\');
+                    openedfilename = splits[splits.Length - 1];
+                    filename = openedfilename;
+
+                    mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Opened " + $"Filename: " + filename + " from remote on " + gitrepo_link);
+
+                    LoadFile(FileTreeRoot, filename);
+                    FileTreeRoot.Expand();
+
+                    // After opening a file we enable these buttons
+                    newToolStripButton.Enabled = true;
+                    newToolStripMenuItem.Enabled = true;
+                    cutToolStripButton.Enabled = true;
+                    removeToolStripMenuItem.Enabled = true;
+                    saveToolStripButton.Enabled = true;
+                    saveToolStripMenuItem.Enabled = true;
+                    uploadtourl.Enabled = true;
+                }
+            }
+        }
+
+        private void push_toolStrip_Click(object sender, EventArgs e)
+        {
+            string gitrepo_link = (string)Settings.Default["gitrepo_link"];
+            string gitrepo_email = (string)Settings.Default["gitrepo_email"];
+            string gitrepo_password = (string)Settings.Default["gitrepo_password"];
+
+            if (gitrepo_link == "" || gitrepo_email == "") // no password -> ""
+            {
+                MessageBox.Show("Please check your git settings.", "Error");
+                mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Please check your git settings before trying to push to remote.");
+                return;
+            }
+            else
+            {
+                DialogResult result = MessageBox.Show("Starting push of files to remote on " + gitrepo_link, "Pushing to Remote",
+                MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+                mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Starting push of files to remote on " + gitrepo_link);
+
+                if (result == DialogResult.Cancel)
+                    return;
+
+                Directory.SetCurrentDirectory(workingdir);
+
+                try
+                {
+                    List<string> files_paths = Directory.EnumerateFiles(workingdir + "/GitRepo/").ToList();
+
+                    GitRepoManager.commit(gitrepo_email, workingdir + "/GitRepo/", files_paths);
+                    GitRepoManager.push(gitrepo_email, gitrepo_password, workingdir + "/GitRepo/");
+                }
+                catch (Exception exc)
+                {
+                    MessageBox.Show("Couldn't push files to remote.", "Error");
+                    mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Couldn't push files to remote.");
+                    return;
+                }
+
+                result = MessageBox.Show("Push complete.", "Success",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+                mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Push complete.");
+            }
+        }
+
+        private void setAttributesNormal(DirectoryInfo dir)
+        {
+            foreach (var subDir in dir.GetDirectories())
+            {
+                setAttributesNormal(subDir);
+                subDir.Attributes = FileAttributes.Normal;
+            }
+            foreach (var file in dir.GetFiles())
+            {
+                file.Attributes = FileAttributes.Normal;
+            }
+        }
     }
 }

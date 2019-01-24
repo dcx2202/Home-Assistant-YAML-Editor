@@ -34,6 +34,8 @@
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripOpenFromURL = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripUploadToRemote = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -58,6 +60,7 @@
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
+            this.pull_toolStrip = new System.Windows.Forms.ToolStripButton();
             this.mainSplitContainer = new System.Windows.Forms.SplitContainer();
             this.mainTreeView = new System.Windows.Forms.TreeView();
             this.mainImageList = new System.Windows.Forms.ImageList(this.components);
@@ -68,8 +71,7 @@
             this.webBrowser = new System.Windows.Forms.WebBrowser();
             this.mainTextBox = new System.Windows.Forms.TextBox();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.toolStripOpenFromURL = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripUploadToRemote = new System.Windows.Forms.ToolStripMenuItem();
+            this.push_toolStrip = new System.Windows.Forms.ToolStripButton();
             this.mainMenuStrip.SuspendLayout();
             this.mainToolStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.mainSplitContainer)).BeginInit();
@@ -138,6 +140,24 @@
             this.openToolStripMenuItem.Text = "&Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.OnOpen);
             // 
+            // toolStripOpenFromURL
+            // 
+            this.toolStripOpenFromURL.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.toolStripOpenFromURL.Image = global::YAMLEditor.Properties.Resources.download;
+            this.toolStripOpenFromURL.Name = "toolStripOpenFromURL";
+            this.toolStripOpenFromURL.Size = new System.Drawing.Size(199, 34);
+            this.toolStripOpenFromURL.Text = "Open from URL";
+            this.toolStripOpenFromURL.Click += new System.EventHandler(this.OnToolStripOpenFromURL);
+            // 
+            // toolStripUploadToRemote
+            // 
+            this.toolStripUploadToRemote.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.toolStripUploadToRemote.Image = global::YAMLEditor.Properties.Resources.upload;
+            this.toolStripUploadToRemote.Name = "toolStripUploadToRemote";
+            this.toolStripUploadToRemote.Size = new System.Drawing.Size(199, 34);
+            this.toolStripUploadToRemote.Text = "Upload to remote";
+            this.toolStripUploadToRemote.Click += new System.EventHandler(this.OnToolStripUploadToRemote);
+            // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.BackColor = System.Drawing.SystemColors.ControlDark;
@@ -175,7 +195,7 @@
             this.undoToolStripMenuItem.Image = global::YAMLEditor.Properties.Resources.undo;
             this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
             this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
-            this.undoToolStripMenuItem.Size = new System.Drawing.Size(192, 34);
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size(188, 34);
             this.undoToolStripMenuItem.Text = "&Undo";
             // 
             // redoToolStripMenuItem
@@ -184,7 +204,7 @@
             this.redoToolStripMenuItem.Image = global::YAMLEditor.Properties.Resources.redo;
             this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
             this.redoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
-            this.redoToolStripMenuItem.Size = new System.Drawing.Size(192, 34);
+            this.redoToolStripMenuItem.Size = new System.Drawing.Size(188, 34);
             this.redoToolStripMenuItem.Text = "&Redo";
             // 
             // removeToolStripMenuItem
@@ -195,7 +215,7 @@
             this.removeToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.removeToolStripMenuItem.Name = "removeToolStripMenuItem";
             this.removeToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
-            this.removeToolStripMenuItem.Size = new System.Drawing.Size(192, 34);
+            this.removeToolStripMenuItem.Size = new System.Drawing.Size(188, 34);
             this.removeToolStripMenuItem.Text = "Remove";
             // 
             // copyToolStripMenuItem
@@ -205,7 +225,7 @@
             this.copyToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
             this.copyToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-            this.copyToolStripMenuItem.Size = new System.Drawing.Size(192, 34);
+            this.copyToolStripMenuItem.Size = new System.Drawing.Size(188, 34);
             this.copyToolStripMenuItem.Text = "&Copy";
             // 
             // pasteToolStripMenuItem
@@ -215,7 +235,7 @@
             this.pasteToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
             this.pasteToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
-            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(192, 34);
+            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(188, 34);
             this.pasteToolStripMenuItem.Text = "&Paste";
             // 
             // toolsToolStripMenuItem
@@ -230,7 +250,7 @@
             // 
             this.optionsToolStripMenuItem.BackColor = System.Drawing.SystemColors.ControlDark;
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(180, 24);
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(127, 24);
             this.optionsToolStripMenuItem.Text = "&Options";
             this.optionsToolStripMenuItem.Click += new System.EventHandler(this.OnOptionsToolStripMenuItem_Click);
             // 
@@ -246,7 +266,7 @@
             // 
             this.aboutToolStripMenuItem.BackColor = System.Drawing.SystemColors.ControlDark;
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(180, 24);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(125, 24);
             this.aboutToolStripMenuItem.Text = "&About...";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.OnAboutButton);
             // 
@@ -266,7 +286,9 @@
             this.pasteToolStripButton,
             this.toolStripButton1,
             this.toolStripButton2,
-            this.toolStripButton3});
+            this.toolStripButton3,
+            this.pull_toolStrip,
+            this.push_toolStrip});
             this.mainToolStrip.Location = new System.Drawing.Point(0, 25);
             this.mainToolStrip.Name = "mainToolStrip";
             this.mainToolStrip.Size = new System.Drawing.Size(801, 27);
@@ -388,6 +410,16 @@
             this.toolStripButton3.Text = "toolStripButton3";
             this.toolStripButton3.ToolTipText = "Restart Home Assistant";
             this.toolStripButton3.Click += new System.EventHandler(this.OnRestartHomeassistant);
+            // 
+            // pull_toolStrip
+            // 
+            this.pull_toolStrip.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.pull_toolStrip.Image = global::YAMLEditor.Properties.Resources.download;
+            this.pull_toolStrip.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.pull_toolStrip.Name = "pull_toolStrip";
+            this.pull_toolStrip.Size = new System.Drawing.Size(24, 24);
+            this.pull_toolStrip.Text = "Pull from Remote";
+            this.pull_toolStrip.Click += new System.EventHandler(this.pull_toolStrip_Click);
             // 
             // mainSplitContainer
             // 
@@ -536,23 +568,15 @@
             this.splitContainer2.SplitterDistance = 432;
             this.splitContainer2.TabIndex = 4;
             // 
-            // toolStripOpenFromURL
+            // push_toolStrip
             // 
-            this.toolStripOpenFromURL.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.toolStripOpenFromURL.Image = global::YAMLEditor.Properties.Resources.download;
-            this.toolStripOpenFromURL.Name = "toolStripOpenFromURL";
-            this.toolStripOpenFromURL.Size = new System.Drawing.Size(199, 34);
-            this.toolStripOpenFromURL.Text = "Open from URL";
-            this.toolStripOpenFromURL.Click += new System.EventHandler(this.OnToolStripOpenFromURL);
-            // 
-            // toolStripUploadToRemote
-            // 
-            this.toolStripUploadToRemote.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.toolStripUploadToRemote.Image = global::YAMLEditor.Properties.Resources.upload;
-            this.toolStripUploadToRemote.Name = "toolStripUploadToRemote";
-            this.toolStripUploadToRemote.Size = new System.Drawing.Size(199, 34);
-            this.toolStripUploadToRemote.Text = "Upload to remote";
-            this.toolStripUploadToRemote.Click += new System.EventHandler(this.OnToolStripUploadToRemote);
+            this.push_toolStrip.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.push_toolStrip.Image = global::YAMLEditor.Properties.Resources.upload;
+            this.push_toolStrip.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.push_toolStrip.Name = "push_toolStrip";
+            this.push_toolStrip.Size = new System.Drawing.Size(24, 24);
+            this.push_toolStrip.Text = "Push to Remote";
+            this.push_toolStrip.Click += new System.EventHandler(this.push_toolStrip_Click);
             // 
             // YAMLEditorForm
             // 
@@ -632,6 +656,8 @@
         private System.Windows.Forms.ToolStripButton uploadtourl;
         private System.Windows.Forms.ToolStripMenuItem toolStripOpenFromURL;
         private System.Windows.Forms.ToolStripMenuItem toolStripUploadToRemote;
+        private System.Windows.Forms.ToolStripButton pull_toolStrip;
+        private System.Windows.Forms.ToolStripButton push_toolStrip;
     }
 }
 

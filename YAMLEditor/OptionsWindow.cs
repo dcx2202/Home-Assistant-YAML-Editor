@@ -29,9 +29,9 @@ namespace YAMLEditor
         private Label files_directory_label;
         private Label gitrepo_label;
         private TextBox git_password_field;
-        private Label gitusername_field;
-        private TextBox git_username_field;
-        private Label gitusername_label;
+        private Label gitpassword_label;
+        private TextBox git_email_field;
+        private Label gitemail_label;
         private TextBox gitrepo_link_field;
         private Label gitrepolink_label;
         private TextBox token_field;
@@ -63,9 +63,9 @@ namespace YAMLEditor
             this.files_directory_label = new System.Windows.Forms.Label();
             this.gitrepo_label = new System.Windows.Forms.Label();
             this.git_password_field = new System.Windows.Forms.TextBox();
-            this.gitusername_field = new System.Windows.Forms.Label();
-            this.git_username_field = new System.Windows.Forms.TextBox();
-            this.gitusername_label = new System.Windows.Forms.Label();
+            this.gitpassword_label = new System.Windows.Forms.Label();
+            this.git_email_field = new System.Windows.Forms.TextBox();
+            this.gitemail_label = new System.Windows.Forms.Label();
             this.gitrepo_link_field = new System.Windows.Forms.TextBox();
             this.gitrepolink_label = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
@@ -345,47 +345,47 @@ namespace YAMLEditor
                 this.git_password_field.ForeColor = Color.Black;
             }
             // 
-            // gitusername_field
+            // gitpassword_label
             // 
-            this.gitusername_field.AutoSize = true;
-            this.gitusername_field.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.gitusername_field.Location = new System.Drawing.Point(12, 414);
-            this.gitusername_field.Name = "gitusername_field";
-            this.gitusername_field.Size = new System.Drawing.Size(103, 20);
-            this.gitusername_field.TabIndex = 21;
-            this.gitusername_field.Text = "Git Password";
+            this.gitpassword_label.AutoSize = true;
+            this.gitpassword_label.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.gitpassword_label.Location = new System.Drawing.Point(12, 414);
+            this.gitpassword_label.Name = "gitpassword_label";
+            this.gitpassword_label.Size = new System.Drawing.Size(103, 20);
+            this.gitpassword_label.TabIndex = 21;
+            this.gitpassword_label.Text = "Git Password";
             // 
-            // git_username_field
+            // git_email_field
             // 
-            this.git_username_field.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.git_username_field.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.git_username_field.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.git_username_field.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(120)))), ((int)(((byte)(120)))), ((int)(((byte)(120)))));
-            this.git_username_field.Location = new System.Drawing.Point(199, 385);
-            this.git_username_field.Name = "git_username_field";
-            this.git_username_field.Size = new System.Drawing.Size(180, 22);
-            this.git_username_field.TabIndex = 20;
-            this.git_username_field.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.git_username_field.TextChanged += new System.EventHandler(this.git_username_field_TextChanged);
-            this.git_username_field.Enter += new System.EventHandler(this.git_username_field_Enter);
-            this.git_username_field.Leave += new System.EventHandler(this.git_username_field_Leave);
-            if (Settings.Default["gitrepo_username"] as string == "")
-                this.git_username_field.Text = "git username";
+            this.git_email_field.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.git_email_field.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.git_email_field.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.git_email_field.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(120)))), ((int)(((byte)(120)))), ((int)(((byte)(120)))));
+            this.git_email_field.Location = new System.Drawing.Point(199, 385);
+            this.git_email_field.Name = "git_email_field";
+            this.git_email_field.Size = new System.Drawing.Size(180, 22);
+            this.git_email_field.TabIndex = 20;
+            this.git_email_field.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.git_email_field.TextChanged += new System.EventHandler(this.git_email_field_TextChanged);
+            this.git_email_field.Enter += new System.EventHandler(this.git_email_field_Enter);
+            this.git_email_field.Leave += new System.EventHandler(this.git_email_field_Leave);
+            if (Settings.Default["gitrepo_email"] as string == "")
+                this.git_email_field.Text = "git email";
             else
             {
-                this.git_username_field.Text = Settings.Default["gitrepo_username"] as string;
-                this.git_username_field.ForeColor = Color.Black;
+                this.git_email_field.Text = Settings.Default["gitrepo_email"] as string;
+                this.git_email_field.ForeColor = Color.Black;
             }
             // 
-            // gitusername_label
+            // gitemail_label
             // 
-            this.gitusername_label.AutoSize = true;
-            this.gitusername_label.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.gitusername_label.Location = new System.Drawing.Point(12, 384);
-            this.gitusername_label.Name = "gitusername_label";
-            this.gitusername_label.Size = new System.Drawing.Size(108, 20);
-            this.gitusername_label.TabIndex = 19;
-            this.gitusername_label.Text = "Git Username";
+            this.gitemail_label.AutoSize = true;
+            this.gitemail_label.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.gitemail_label.Location = new System.Drawing.Point(12, 384);
+            this.gitemail_label.Name = "gitemail_label";
+            this.gitemail_label.Size = new System.Drawing.Size(73, 20);
+            this.gitemail_label.TabIndex = 19;
+            this.gitemail_label.Text = "Git Email";
             // 
             // gitrepo_link_field
             // 
@@ -402,7 +402,7 @@ namespace YAMLEditor
             this.gitrepo_link_field.Enter += new System.EventHandler(this.gitrepo_link_field_Enter);
             this.gitrepo_link_field.Leave += new System.EventHandler(this.gitrepo_link_field_Leave);
             if (Settings.Default["gitrepo_link"] as string == "")
-                this.gitrepo_link_field.Text = "git repo link";
+                this.gitrepo_link_field.Text = "github.com/user/repo.git";
             else
             {
                 this.gitrepo_link_field.Text = Settings.Default["gitrepo_link"] as string;
@@ -425,9 +425,9 @@ namespace YAMLEditor
             this.ClientSize = new System.Drawing.Size(397, 562);
             this.Controls.Add(this.gitrepo_label);
             this.Controls.Add(this.git_password_field);
-            this.Controls.Add(this.gitusername_field);
-            this.Controls.Add(this.git_username_field);
-            this.Controls.Add(this.gitusername_label);
+            this.Controls.Add(this.gitpassword_label);
+            this.Controls.Add(this.git_email_field);
+            this.Controls.Add(this.gitemail_label);
             this.Controls.Add(this.gitrepo_link_field);
             this.Controls.Add(this.gitrepolink_label);
             this.Controls.Add(this.files_directory_field);
@@ -696,7 +696,7 @@ namespace YAMLEditor
 
         private void gitrepo_link_field_Enter(object sender, EventArgs e)
         {
-            if (gitrepo_link_field.Text == "git repo link")
+            if (gitrepo_link_field.Text == "github.com/user/repo.git")
                 gitrepo_link_field.Text = "";
 
             gitrepo_link_field.ForeColor = Color.Black;
@@ -706,16 +706,16 @@ namespace YAMLEditor
         {
             if (gitrepo_link_field.Text == "")
             {
-                gitrepo_link_field.Text = "git repo link";
+                gitrepo_link_field.Text = "github.com/user/repo.git";
                 gitrepo_link_field.ForeColor = Color.FromArgb(120, 120, 120);
             }
         }
 
         private void gitrepo_link_field_TextChanged(object sender, EventArgs e)
         {
-            if (gitrepo_link_field.Text.All(c => Char.IsLetterOrDigit(c) || c.Equals("") || c.Equals('/') || c.Equals('_') || c.Equals(':') || c.Equals('.')) || gitrepo_link_field.Text == "" || gitrepo_link_field.Text == "git repo link")
+            if (gitrepo_link_field.Text.All(c => Char.IsLetterOrDigit(c) || c.Equals("") || c.Equals('/') || c.Equals('_') || c.Equals(':') || c.Equals('.')) || gitrepo_link_field.Text == "" || gitrepo_link_field.Text == "github.com/user/repo.git")
             {
-                if (gitrepo_link_field.Text == "git repo link") return;
+                if (gitrepo_link_field.Text == "github.com/user/repo.git") return;
                 if (gitrepo_link_field.Text == Settings.Default["gitrepo_link"] as string) return;
 
                 // update
@@ -733,40 +733,40 @@ namespace YAMLEditor
 
 
 
-        private void git_username_field_Enter(object sender, EventArgs e)
+        private void git_email_field_Enter(object sender, EventArgs e)
         {
-            if (git_username_field.Text == "git username")
-                git_username_field.Text = "";
+            if (git_email_field.Text == "git email")
+                git_email_field.Text = "";
 
-            git_username_field.ForeColor = Color.Black;
+            git_email_field.ForeColor = Color.Black;
         }
 
-        private void git_username_field_Leave(object sender, EventArgs e)
+        private void git_email_field_Leave(object sender, EventArgs e)
         {
-            if (git_username_field.Text == "")
+            if (git_email_field.Text == "")
             {
-                git_username_field.Text = "git username";
-                git_username_field.ForeColor = Color.FromArgb(120, 120, 120);
+                git_email_field.Text = "git email";
+                git_email_field.ForeColor = Color.FromArgb(120, 120, 120);
             }
         }
 
-        private void git_username_field_TextChanged(object sender, EventArgs e)
+        private void git_email_field_TextChanged(object sender, EventArgs e)
         {
-            if (git_username_field.Text.All(c => Char.IsLetterOrDigit(c) || c.Equals("") || c.Equals('_')) || git_username_field.Text == "" || git_username_field.Text == "git username")
+            if (git_email_field.Text.All(c => Char.IsLetterOrDigit(c) || c.Equals("") || c.Equals('_') || c.Equals('@') || c.Equals('.')) || git_email_field.Text == "" || git_email_field.Text == "git email")
             {
-                if (git_username_field.Text == "git username") return;
-                if (git_username_field.Text == Settings.Default["gitrepo_username"] as string) return;
+                if (git_email_field.Text == "git email") return;
+                if (git_email_field.Text == Settings.Default["gitrepo_email"] as string) return;
 
                 // update
-                Settings.Default["gitrepo_username"] = git_username_field.Text;
+                Settings.Default["gitrepo_email"] = git_email_field.Text;
 
                 // save
                 Properties.Settings.Default.Save();
             }
             else
             {
-                MessageBox.Show("Usernames can only consist of letters, numbers, underscores, or nothing (to delete).", "Error");
-                git_username_field.Text = "";
+                MessageBox.Show("Emails can only consist of letters, numbers, underscores, @, dots or nothing (to delete).", "Error");
+                git_email_field.Text = "";
             }
         }
 

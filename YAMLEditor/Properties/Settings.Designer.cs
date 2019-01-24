@@ -98,12 +98,12 @@ namespace YAMLEditor.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string gitrepo_username {
+        public string gitrepo_email {
             get {
-                return ((string)(this["gitrepo_username"]));
+                return ((string)(this["gitrepo_email"]));
             }
             set {
-                this["gitrepo_username"] = value;
+                this["gitrepo_email"] = value;
             }
         }
         
