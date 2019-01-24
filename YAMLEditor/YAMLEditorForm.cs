@@ -582,12 +582,20 @@ namespace YAMLEditor
                     comp = new Component(scalar.Value, filename, currentParent);
                     currentParent.add(comp);
 
-                    node = root.Nodes[root.Nodes.Count - 1].Nodes.Add($"{scalar.Value}");
-                    node.Tag = comp;
-                    node.ImageIndex = node.SelectedImageIndex = GetImageIndex(scalar);
+                    //if it's not another file, then add to tree
+                    if (scalar.Tag != "!include")
+                    {
+                        node = root.Nodes[root.Nodes.Count - 1].Nodes.Add($"{scalar.Value}");
+                        node.Tag = comp;
+                        node.ImageIndex = node.SelectedImageIndex = GetImageIndex(scalar);
+                    }
 
+                    //if it's another file, then load that file
                     if (scalar.Tag == "!include")
                     {
+                        var parentNode = node.Parent;
+                        root.Nodes.Remove(node);
+                        node = parentNode;
                         filename = scalar.Value;
                         LoadFile(node, scalar.Value);
                         filename = openedfilename;
