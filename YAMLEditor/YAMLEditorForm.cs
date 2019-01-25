@@ -861,36 +861,50 @@ namespace YAMLEditor
             }
         }
 
+        /// <summary>
+        /// Reads the designated yaml file and populates the data structures
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="filename"></param>
         private static void LoadFile(TreeNode node, string filename)
         {
             var yaml = new YamlStream();
+
+            // Tries to read the file
             try
             {
-                using(var stream = new StreamReader(filename))
+                using (var stream = new StreamReader(filename))
                 {
                     yaml.Load(stream);
                 }
             }
-            catch(Exception exception)
+            catch (Exception exception)
             {
                 mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - " + exception.Message);
             }
 
-            if(yaml.Documents.Count == 0) return;
+            if (yaml.Documents.Count == 0) return;
+
+            // Loads the children
             LoadChildren(node, yaml.Documents[0].RootNode as YamlMappingNode);
         }
 
+        /// <summary>
+        /// Parsers the yaml file and populates the data structures
+        /// </summary>
+        /// <param name="root"></param>
+        /// <param name="mapping"></param>
         private static void LoadChildren(TreeNode root, YamlMappingNode mapping)
         {
             var children = mapping?.Children;
-            if(children == null) return;
+            if (children == null) return;
 
-            foreach(var child in children)
+            foreach (var child in children)
             {
                 var key = child.Key as YamlScalarNode;
                 System.Diagnostics.Trace.Assert(key != null);
 
-                if(child.Value is YamlScalarNode)
+                if (child.Value is YamlScalarNode)
                 {
                     var scalar = child.Value as YamlScalarNode;
 
@@ -924,7 +938,7 @@ namespace YAMLEditor
                         filename = openedfilename;
                     }
                 }
-                else if(child.Value is YamlSequenceNode)
+                else if (child.Value is YamlSequenceNode)
                 {
                     IComponent comp = new Component(key.Value, filename, currentParent);
                     currentParent.add(comp);
@@ -936,7 +950,7 @@ namespace YAMLEditor
 
                     LoadChildren(node, child.Value as YamlSequenceNode);
                 }
-                else if(child.Value is YamlMappingNode)
+                else if (child.Value is YamlMappingNode)
                 {
                     IComponent comp = new Component(key.Value, filename, currentParent);
                     currentParent.add(comp);
@@ -952,54 +966,70 @@ namespace YAMLEditor
                 if (currentParent.getParent() != null)
                     currentParent = currentParent.getParent();
             }
-            
+
         }
 
+        /// <summary>
+        /// Gets the correct image according to the node type
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
         private static int GetImageIndex(YamlNode node)
         {
-            switch(node.NodeType)
+            switch (node.NodeType)
             {
                 case YamlNodeType.Scalar:
-                    if(node.Tag == "!secret") return 2;
-                    if(node.Tag == "!include") return 1;
+                    if (node.Tag == "!secret") return 2;
+                    if (node.Tag == "!include") return 1;
                     return 0;
                 case YamlNodeType.Sequence: return 3;
                 case YamlNodeType.Mapping:
-                    if(node is YamlMappingNode mapping && mapping.Children.Any(pair => ((YamlScalarNode)pair.Key).Value == "platform")) return 5;
+                    if (node is YamlMappingNode mapping && mapping.Children.Any(pair => ((YamlScalarNode)pair.Key).Value == "platform")) return 5;
                     return 4;
             }
             return 0;
         }
 
+        /// <summary>
+        /// Parsers the yaml file and populates the data structures
+        /// </summary>
+        /// <param name="root"></param>
+        /// <param name="sequence"></param>
         private static void LoadChildren(TreeNode root, YamlSequenceNode sequence)
         {
-            foreach(var child in sequence.Children)
+            foreach (var child in sequence.Children)
             {
-                if(child is YamlSequenceNode)
+                if (child is YamlSequenceNode)
                 {
+                    // Create new component and add it to the composite
                     IComponent comp = new Component(root.Text, filename, currentParent);
                     currentParent.add(comp);
                     currentParent = comp;
 
+                    // Add new node to the tree
                     var node = root.Nodes.Add(root.Text);
+                    // Set the node tag as the respective component
                     node.Tag = comp;
                     node.ImageIndex = node.SelectedImageIndex = GetImageIndex(child);
 
                     LoadChildren(node, child as YamlSequenceNode);
                 }
-                else if(child is YamlMappingNode)
+                else if (child is YamlMappingNode)
                 {
                     LoadChildren(root, child as YamlMappingNode);
                 }
-                else if(child is YamlScalarNode)
+                else if (child is YamlScalarNode)
                 {
-                    var scalar = child as YamlScalarNode; 
+                    var scalar = child as YamlScalarNode;
 
+                    // Create new component and add it to the composite
                     IComponent comp = new Component(root.Text, filename, currentParent);
                     currentParent.add(comp);
                     currentParent = comp;
 
+                    // Add new node to the tree
                     var node = root.Nodes.Add(scalar.Value);
+                    // Set the node tag as the respective component
                     node.Tag = comp;
                     node.ImageIndex = node.SelectedImageIndex = GetImageIndex(child);
                 }
