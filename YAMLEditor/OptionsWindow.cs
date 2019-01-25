@@ -11,7 +11,13 @@ namespace YAMLEditor
 {
     class OptionsWindow : Form
     {
-        private Label ha_address;
+		public OptionsWindow()
+		{
+			InitializeComponent();
+		}
+
+		#region ...
+		private Label ha_address;
         private TextBox ha_address_field;
         private Label access_token_field;
         private Panel panel1;
@@ -35,11 +41,6 @@ namespace YAMLEditor
         private TextBox gitrepo_link_field;
         private Label gitrepolink_label;
         private TextBox token_field;
-
-        public OptionsWindow()
-        {
-            InitializeComponent();
-        }
 
         private void InitializeComponent()
         {
@@ -453,9 +454,17 @@ namespace YAMLEditor
             this.PerformLayout();
 
         }
+		#endregion
 
 
-        private void ha_address_field_Enter(object sender, EventArgs e)
+		#region HomeAssistant Restart
+
+		/// <summary>
+		/// When clicking the text field, the example given will disappear
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void ha_address_field_Enter(object sender, EventArgs e)
         {
             if (ha_address_field.Text == "ipaddress:port")
                 ha_address_field.Text = "";
@@ -463,6 +472,11 @@ namespace YAMLEditor
             ha_address_field.ForeColor = Color.Black;
         }
 
+		/// <summary>
+		/// When leaving this text field, if the field is empty we restore the example given
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
         private void ha_address_field_Leave(object sender, EventArgs e)
         {
             if (ha_address_field.Text == "")
@@ -472,17 +486,23 @@ namespace YAMLEditor
             }
         }
 
+		/// <summary>
+		/// Saves the input of the user in this text field
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
         private void ha_address_field_TextChanged(object sender, EventArgs e)
         {
+			// User input validation
             if (ha_address_field.Text.All(c => Char.IsLetterOrDigit(c) || c.Equals(':') || c.Equals('.') || c.Equals("")) || ha_address_field.Text == "" || ha_address_field.Text == "ipaddress:port")
             {
                 if (ha_address_field.Text == "ipaddress:port") return;
                 if (ha_address_field.Text == Settings.Default["ha_address"] as string) return;
 
-                // update
+                // Update 
                 Settings.Default["ha_address"] = ha_address_field.Text;
 
-                // save
+                // Save
                 Properties.Settings.Default.Save();
             }
             else
@@ -493,8 +513,12 @@ namespace YAMLEditor
         }
 
 
-
-        private void token_field_Enter(object sender, EventArgs e)
+		/// <summary>
+		/// When clicking the text field, the example given will disappear
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void token_field_Enter(object sender, EventArgs e)
         {
             if (token_field.Text == "access token")
                 token_field.Text = "";
@@ -502,7 +526,12 @@ namespace YAMLEditor
             token_field.ForeColor = Color.Black;
         }
 
-        private void token_field_Leave(object sender, EventArgs e)
+		/// <summary>
+		/// When leaving this text field, if the field is empty we restore the example given
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void token_field_Leave(object sender, EventArgs e)
         {
             if (token_field.Text == "")
             {
@@ -511,17 +540,23 @@ namespace YAMLEditor
             }
         }
 
-        private void token_field_TextChanged(object sender, EventArgs e)
+		/// <summary>
+		/// Saves the input of the user in this text field
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void token_field_TextChanged(object sender, EventArgs e)
         {
-            if (token_field.Text.All(c => Char.IsLetterOrDigit(c) || c.Equals('-') || c.Equals('_') || c.Equals('.') || c.Equals("")) || token_field.Text == "" || token_field.Text == "access token")
+			// User input validation
+			if (token_field.Text.All(c => Char.IsLetterOrDigit(c) || c.Equals('-') || c.Equals('_') || c.Equals('.') || c.Equals("")) || token_field.Text == "" || token_field.Text == "access token")
             {
                 if (token_field.Text == "access token") return;
                 if (token_field.Text == Settings.Default["access_token"] as string) return;
 
-                // update
+                // Update
                 Settings.Default["access_token"] = token_field.Text;
 
-                // save
+                // Save
                 Properties.Settings.Default.Save();
             }
             else
@@ -530,10 +565,17 @@ namespace YAMLEditor
                 token_field.Text = token_field.Text.Substring(0, token_field.Text.Length - 1);
             }
         }
+		#endregion
 
 
+		#region Remote Host File Editing
 
-        private void rh_address_field_Enter(object sender, EventArgs e)
+		/// <summary>
+		/// When clicking the text field, the example given will disappear
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void rh_address_field_Enter(object sender, EventArgs e)
         {
             if (rh_address_field.Text == "ipaddress:port")
                 rh_address_field.Text = "";
@@ -541,7 +583,12 @@ namespace YAMLEditor
             rh_address_field.ForeColor = Color.Black;
         }
 
-        private void rh_address_field_Leave(object sender, EventArgs e)
+		/// <summary>
+		/// When leaving this text field, if the field is empty we restore the example given
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void rh_address_field_Leave(object sender, EventArgs e)
         {
             if (rh_address_field.Text == "")
             {
@@ -550,17 +597,23 @@ namespace YAMLEditor
             }
         }
 
-        private void rh_address_field_TextChanged(object sender, EventArgs e)
+		/// <summary>
+		/// Saves the input of the user in this text field
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void rh_address_field_TextChanged(object sender, EventArgs e)
         {
-            if (rh_address_field.Text.All(c => Char.IsLetterOrDigit(c) || c.Equals(':') || c.Equals('.') || c.Equals("")) || rh_address_field.Text == "" || rh_address_field.Text == "ipaddress:port")
+			// User input validation
+			if (rh_address_field.Text.All(c => Char.IsLetterOrDigit(c) || c.Equals(':') || c.Equals('.') || c.Equals("")) || rh_address_field.Text == "" || rh_address_field.Text == "ipaddress:port")
             {
                 if (rh_address_field.Text == "ipaddress:port") return;
                 if (rh_address_field.Text == Settings.Default["rh_address"] as string) return;
 
-                // update
+                // Update
                 Settings.Default["rh_address"] = rh_address_field.Text;
 
-                // save
+                // Save
                 Properties.Settings.Default.Save();
             }
             else
@@ -572,7 +625,12 @@ namespace YAMLEditor
 
 
 
-        private void username_field_Enter(object sender, EventArgs e)
+		/// <summary>
+		/// When clicking the text field, the example given will disappear
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void username_field_Enter(object sender, EventArgs e)
         {
             if (username_field.Text == "username")
                 username_field.Text = "";
@@ -580,7 +638,12 @@ namespace YAMLEditor
             username_field.ForeColor = Color.Black;
         }
 
-        private void username_field_Leave(object sender, EventArgs e)
+		/// <summary>
+		/// When leaving this text field, if the field is empty we restore the example given
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void username_field_Leave(object sender, EventArgs e)
         {
             if (username_field.Text == "")
             {
@@ -589,17 +652,23 @@ namespace YAMLEditor
             }
         }
 
-        private void username_field_TextChanged(object sender, EventArgs e)
+		/// <summary>
+		/// Saves the input of the user in this text field
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void username_field_TextChanged(object sender, EventArgs e)
         {
-            if (username_field.Text.All(c => Char.IsLetterOrDigit(c) || c.Equals("") || c.Equals(' ')) || username_field.Text == "" || username_field.Text == "username")
+			// User input validation
+			if (username_field.Text.All(c => Char.IsLetterOrDigit(c) || c.Equals("") || c.Equals(' ')) || username_field.Text == "" || username_field.Text == "username")
             {
                 if (username_field.Text == "username") return;
                 if (username_field.Text == Settings.Default["username"] as string) return;
 
-                // update
+                // Update
                 Settings.Default["username"] = username_field.Text;
 
-                // save
+                // Save
                 Properties.Settings.Default.Save();
             }
             else
@@ -611,7 +680,12 @@ namespace YAMLEditor
 
 
 
-        private void password_field_Enter(object sender, EventArgs e)
+		/// <summary>
+		/// When clicking the text field, the example given will disappear
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void password_field_Enter(object sender, EventArgs e)
         {
             if (password_field.Text == "password")
                 password_field.Text = "";
@@ -619,7 +693,12 @@ namespace YAMLEditor
             password_field.ForeColor = Color.Black;
         }
 
-        private void password_field_Leave(object sender, EventArgs e)
+		/// <summary>
+		/// When leaving this text field, if the field is empty we restore the example given
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void password_field_Leave(object sender, EventArgs e)
         {
             if (password_field.Text == "")
             {
@@ -628,17 +707,23 @@ namespace YAMLEditor
             }
         }
 
-        private void password_field_TextChanged(object sender, EventArgs e)
+		/// <summary>
+		/// Saves the input of the user in this text field
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void password_field_TextChanged(object sender, EventArgs e)
         {
-            if (password_field.Text.All(c => Char.IsLetterOrDigit(c) || c.Equals("") || c.Equals('.') || c.Equals('-') || c.Equals('_')) || password_field.Text == "" || password_field.Text == "password")
+			// User input validation
+			if (password_field.Text.All(c => Char.IsLetterOrDigit(c) || c.Equals("") || c.Equals('.') || c.Equals('-') || c.Equals('_')) || password_field.Text == "" || password_field.Text == "password")
             {
                 if (password_field.Text == "password") return;
                 if (password_field.Text == Settings.Default["password"] as string) return;
 
-                // update
+                // Update
                 Settings.Default["password"] = password_field.Text;
 
-                // save
+                // Save
                 Properties.Settings.Default.Save();
             }
             else
@@ -650,7 +735,12 @@ namespace YAMLEditor
 
 
 
-        private void files_directory_field_Enter(object sender, EventArgs e)
+		/// <summary>
+		/// When clicking the text field, the example given will disappear
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void files_directory_field_Enter(object sender, EventArgs e)
         {
             if (files_directory_field.Text == "/C:/path/to/files/")
                 files_directory_field.Text = "";
@@ -658,7 +748,12 @@ namespace YAMLEditor
             files_directory_field.ForeColor = Color.Black;
         }
 
-        private void files_directory_field_Leave(object sender, EventArgs e)
+		/// <summary>
+		/// When leaving this text field, if the field is empty we restore the example given
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void files_directory_field_Leave(object sender, EventArgs e)
         {
             if (files_directory_field.Text == "")
             {
@@ -667,9 +762,15 @@ namespace YAMLEditor
             }
         }
 
-        private void files_directory_field_TextChanged(object sender, EventArgs e)
+		/// <summary>
+		/// Saves the input of the user in this text field
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void files_directory_field_TextChanged(object sender, EventArgs e)
         {
-            if (files_directory_field.Text.All(c => Char.IsLetterOrDigit(c) || c.Equals("") || c.Equals('/') || c.Equals('\\') || c.Equals('_') || c.Equals(':')) || files_directory_field.Text == "" || files_directory_field.Text == "/C:/path/to/files/")
+			// User input validation
+			if (files_directory_field.Text.All(c => Char.IsLetterOrDigit(c) || c.Equals("") || c.Equals('/') || c.Equals('\\') || c.Equals('_') || c.Equals(':')) || files_directory_field.Text == "" || files_directory_field.Text == "/C:/path/to/files/")
             {
                 if (files_directory_field.Text == "/C:/path/to/files/") return;
                 if (files_directory_field.Text == Settings.Default["remote_directory"] as string) return;
@@ -677,14 +778,13 @@ namespace YAMLEditor
                 if (!files_directory_field.Text.StartsWith("/") && files_directory_field.Text != "")
                 {
                     MessageBox.Show("Remote directories must start and end with forward slashes.", "Error");
-                    //files_directory_field.Text = files_directory_field.Text.Substring(0, files_directory_field.Text.Length - 1);
                     files_directory_field.Text = "";
                 }
 
-                // update
+                // Update
                 Settings.Default["remote_directory"] = files_directory_field.Text;
 
-                // save
+                // Save
                 Properties.Settings.Default.Save();
             }
             else
@@ -693,8 +793,17 @@ namespace YAMLEditor
                 files_directory_field.Text = "";
             }
         }
+		#endregion
 
-        private void gitrepo_link_field_Enter(object sender, EventArgs e)
+
+		#region Github Configuration
+
+		/// <summary>
+		/// When clicking the text field, the example given will disappear
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void gitrepo_link_field_Enter(object sender, EventArgs e)
         {
             if (gitrepo_link_field.Text == "github.com/user/repo.git")
                 gitrepo_link_field.Text = "";
@@ -702,7 +811,12 @@ namespace YAMLEditor
             gitrepo_link_field.ForeColor = Color.Black;
         }
 
-        private void gitrepo_link_field_Leave(object sender, EventArgs e)
+		/// <summary>
+		/// When leaving this text field, if the field is empty we restore the example given
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void gitrepo_link_field_Leave(object sender, EventArgs e)
         {
             if (gitrepo_link_field.Text == "")
             {
@@ -711,17 +825,23 @@ namespace YAMLEditor
             }
         }
 
-        private void gitrepo_link_field_TextChanged(object sender, EventArgs e)
+		/// <summary>
+		/// Saves the input of the user in this text field
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void gitrepo_link_field_TextChanged(object sender, EventArgs e)
         {
-            if (gitrepo_link_field.Text.All(c => Char.IsLetterOrDigit(c) || c.Equals("") || c.Equals('/') || c.Equals('_') || c.Equals(':') || c.Equals('.')) || gitrepo_link_field.Text == "" || gitrepo_link_field.Text == "github.com/user/repo.git")
+			// User input validation
+			if (gitrepo_link_field.Text.All(c => Char.IsLetterOrDigit(c) || c.Equals("") || c.Equals('/') || c.Equals('_') || c.Equals(':') || c.Equals('.')) || gitrepo_link_field.Text == "" || gitrepo_link_field.Text == "github.com/user/repo.git")
             {
                 if (gitrepo_link_field.Text == "github.com/user/repo.git") return;
                 if (gitrepo_link_field.Text == Settings.Default["gitrepo_link"] as string) return;
 
-                // update
+                // Update
                 Settings.Default["gitrepo_link"] = gitrepo_link_field.Text;
 
-                // save
+                // Save
                 Properties.Settings.Default.Save();
             }
             else
@@ -733,7 +853,12 @@ namespace YAMLEditor
 
 
 
-        private void git_email_field_Enter(object sender, EventArgs e)
+		/// <summary>
+		/// When clicking the text field, the example given will disappear
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void git_email_field_Enter(object sender, EventArgs e)
         {
             if (git_email_field.Text == "git email")
                 git_email_field.Text = "";
@@ -741,7 +866,12 @@ namespace YAMLEditor
             git_email_field.ForeColor = Color.Black;
         }
 
-        private void git_email_field_Leave(object sender, EventArgs e)
+		/// <summary>
+		/// When leaving this text field, if the field is empty we restore the example given
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void git_email_field_Leave(object sender, EventArgs e)
         {
             if (git_email_field.Text == "")
             {
@@ -750,17 +880,23 @@ namespace YAMLEditor
             }
         }
 
-        private void git_email_field_TextChanged(object sender, EventArgs e)
+		/// <summary>
+		/// Saves the input of the user in this text field
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void git_email_field_TextChanged(object sender, EventArgs e)
         {
-            if (git_email_field.Text.All(c => Char.IsLetterOrDigit(c) || c.Equals("") || c.Equals('_') || c.Equals('@') || c.Equals('.')) || git_email_field.Text == "" || git_email_field.Text == "git email")
+			// User input validation
+			if (git_email_field.Text.All(c => Char.IsLetterOrDigit(c) || c.Equals("") || c.Equals('_') || c.Equals('@') || c.Equals('.')) || git_email_field.Text == "" || git_email_field.Text == "git email")
             {
                 if (git_email_field.Text == "git email") return;
                 if (git_email_field.Text == Settings.Default["gitrepo_email"] as string) return;
 
-                // update
+                // Update
                 Settings.Default["gitrepo_email"] = git_email_field.Text;
 
-                // save
+                // Save
                 Properties.Settings.Default.Save();
             }
             else
@@ -772,7 +908,12 @@ namespace YAMLEditor
 
 
 
-        private void git_password_field_Enter(object sender, EventArgs e)
+		/// <summary>
+		/// When clicking the text field, the example given will disappear
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void git_password_field_Enter(object sender, EventArgs e)
         {
             if (git_password_field.Text == "git password")
                 git_password_field.Text = "";
@@ -780,7 +921,12 @@ namespace YAMLEditor
             git_password_field.ForeColor = Color.Black;
         }
 
-        private void git_password_field_Leave(object sender, EventArgs e)
+		/// <summary>
+		/// When leaving this text field, if the field is empty we restore the example given
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void git_password_field_Leave(object sender, EventArgs e)
         {
             if (git_password_field.Text == "")
             {
@@ -789,17 +935,23 @@ namespace YAMLEditor
             }
         }
 
-        private void git_password_field_TextChanged(object sender, EventArgs e)
+		/// <summary>
+		/// Saves the input of the user in this text field
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void git_password_field_TextChanged(object sender, EventArgs e)
         {
-            if (git_password_field.Text.All(c => Char.IsLetterOrDigit(c) || c.Equals("") || c.Equals('.') || c.Equals('-') || c.Equals('_')) || git_password_field.Text == "" || git_password_field.Text == "git password")
+			// User input validation
+			if (git_password_field.Text.All(c => Char.IsLetterOrDigit(c) || c.Equals("") || c.Equals('.') || c.Equals('-') || c.Equals('_')) || git_password_field.Text == "" || git_password_field.Text == "git password")
             {
                 if (git_password_field.Text == "git password") return;
                 if (git_password_field.Text == Settings.Default["gitrepo_password"] as string) return;
 
-                // update
+                // Update
                 Settings.Default["gitrepo_password"] = git_password_field.Text;
 
-                // save
+                // Save
                 Properties.Settings.Default.Save();
             }
             else
@@ -808,5 +960,6 @@ namespace YAMLEditor
                 git_password_field.Text = "";
             }
         }
-    }
+		#endregion
+	}
 }

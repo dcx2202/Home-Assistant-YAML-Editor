@@ -851,6 +851,7 @@ namespace YAMLEditor
 				// If the selected node is not the root node
                 if (node.getParent().Name != "root")
                 {
+					// Get the selected node
                     List<IComponent> parents = new List<IComponent>();
                     node = GetParents(parents, node).ElementAt(parents.Count - 2) as Component;
                 }
@@ -860,9 +861,16 @@ namespace YAMLEditor
             }
         }
 
-        private static void LoadFile(TreeNode node, string filename)
+		/// <summary>
+		/// Reads the designated yaml file and populates the data structures
+		/// </summary>
+		/// <param name="node"></param>
+		/// <param name="filename"></param>
+		private static void LoadFile(TreeNode node, string filename)
         {
             var yaml = new YamlStream();
+
+			// Tries to read the file
             try
             {
                 using(var stream = new StreamReader(filename))
@@ -876,9 +884,16 @@ namespace YAMLEditor
             }
 
             if(yaml.Documents.Count == 0) return;
+
+			// Loads the children
             LoadChildren(node, yaml.Documents[0].RootNode as YamlMappingNode);
         }
 
+		/// <summary>
+		/// Parsers the yaml file and populates the data structures
+		/// </summary>
+		/// <param name="root"></param>
+		/// <param name="mapping"></param>
         private static void LoadChildren(TreeNode root, YamlMappingNode mapping)
         {
             var children = mapping?.Children;
@@ -954,6 +969,11 @@ namespace YAMLEditor
             
         }
 
+		/// <summary>
+		/// Gets the correct image according to the node type
+		/// </summary>
+		/// <param name="node"></param>
+		/// <returns></returns>
         private static int GetImageIndex(YamlNode node)
         {
             switch(node.NodeType)
@@ -970,18 +990,26 @@ namespace YAMLEditor
             return 0;
         }
 
-        private static void LoadChildren(TreeNode root, YamlSequenceNode sequence)
+		/// <summary>
+		/// Parsers the yaml file and populates the data structures
+		/// </summary>
+		/// <param name="root"></param>
+		/// <param name="sequence"></param>
+		private static void LoadChildren(TreeNode root, YamlSequenceNode sequence)
         {
             foreach(var child in sequence.Children)
             {
                 if(child is YamlSequenceNode)
                 {
+					// Create new component and add it to the composite
                     IComponent comp = new Component(root.Text, filename, currentParent);
                     currentParent.add(comp);
                     currentParent = comp;
 
+					// Add new node to the tree
                     var node = root.Nodes.Add(root.Text);
-                    node.Tag = comp;
+					// Set the node tag as the respective component
+					node.Tag = comp;
                     node.ImageIndex = node.SelectedImageIndex = GetImageIndex(child);
 
                     LoadChildren(node, child as YamlSequenceNode);
@@ -992,42 +1020,23 @@ namespace YAMLEditor
                 }
                 else if(child is YamlScalarNode)
                 {
-                    var scalar = child as YamlScalarNode; 
+                    var scalar = child as YamlScalarNode;
 
-                    IComponent comp = new Component(root.Text, filename, currentParent);
+					// Create new component and add it to the composite
+					IComponent comp = new Component(root.Text, filename, currentParent);
                     currentParent.add(comp);
                     currentParent = comp;
 
-                    var node = root.Nodes.Add(scalar.Value);
-                    node.Tag = comp;
+					// Add new node to the tree
+					var node = root.Nodes.Add(scalar.Value);
+					// Set the node tag as the respective component
+					node.Tag = comp;
                     node.ImageIndex = node.SelectedImageIndex = GetImageIndex(child);
                 }
             }
 
             if (currentParent.getParent() != null)
                 currentParent = currentParent.getParent();
-        }
-
-        private IDictionary<YamlNode, YamlNode> GetDataStructure(string filename)
-        {
-            // Read file
-            var yaml = new YamlStream();
-            try
-            {
-                using (var stream = new StreamReader(filename))
-                {
-                    yaml.Load(stream);
-                }
-            }
-            catch (Exception exception)
-            {
-                mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - " + exception.Message);
-            }
-
-            if (yaml.Documents.Count == 0) return null;
-
-            YamlMappingNode mapping = yaml.Documents[0].RootNode as YamlMappingNode;
-            return mapping?.Children;
         }
 
         public static void UpdateTree(IComponent component, TreeNode root, string aValue)
@@ -1101,6 +1110,7 @@ namespace YAMLEditor
                 UpdateTree(component, node, aValue);
             }
         }
+
 
         public static void FindTreeNode(IComponent component, TreeNode root)
         {
@@ -1583,6 +1593,10 @@ namespace YAMLEditor
             mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Saved");
         }
 
+		/// <summary>
+		/// Allows the logger to write a message in the console
+		/// </summary>
+		/// <param name="aMessage"></param>
         public static void WriteToTextBox(string aMessage)
         {
             mLogger.WriteLine(aMessage);
