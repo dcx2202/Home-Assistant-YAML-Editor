@@ -21,29 +21,66 @@ namespace YAMLEditor
 {
     public partial class YAMLEditorForm : Form
     {
-        public static CommandManager Manager = new CommandManager();
-        public static TreeNode parentNode = new TreeNode();
+        //---------------------------- Variables ----------------------------
 
-        //use mLogger.Write(string message) to log to the textbox
+        /// <summary>
+        /// Command Manager (handles undos and redos)
+        /// </summary>
+        public static CommandManager Manager = new CommandManager();
+
+
+        /// <summary>
+        /// // Logger (used to print to the console window)
+        /// </summary>
         private static ILogger mLogger = Logging.Logger.Instance;
-        public static IComponent composite { get; set; }
-        public static IComponent currentParent;
+
+
+        // IO variables
         public static string filename;
         public static string openedfilename;
         public static string workingdir;
+
+
+        // Other variables
+        public static IComponent currentParent;
+        public static TreeNode parentNode = new TreeNode();
         public static bool componentExists { get; set; } = false;
-        public static TreeNode FileTreeRoot { get; set; }
+
+
+        //---------------------------- Data structures ----------------------------
 
         /// <summary>
+        /// Holds all the components that make up the opened file's yaml structure
+        /// </summary>
+        public static IComponent composite { get; set; }
+
+        /// <summary>
+        /// Holds all the tree nodes that make up the Tree View
+        /// </summary>
+        public static TreeNode FileTreeRoot { get; set; }
+
+
+        //---------------------------- Edited Components ----------------------------
+
+        /// <summary>
+        /// Holds the components that suffered changes
         /// {K, V}, K -> {oldvalue, parents at the time}, V -> component that changed
         /// </summary>
         public static Dictionary<Dictionary<string, List<IComponent>>, IComponent> changedComponents { get; set; }
+
+        /// <summary>
+        /// Holds the components that were added
+        /// </summary>
         public static List<IComponent> addedComponents { get; set; }
 
         /// <summary>
+        /// Holds the components that were removed
         /// {K, V}, K -> component that got removed, V -> parents at the time
         /// </summary>
         public static Dictionary<IComponent, List<IComponent>> removedComponents { get; set; }
+
+
+        //---------------------------------------------------------------------------
 
         public YAMLEditorForm()
         {
@@ -52,12 +89,12 @@ namespace YAMLEditor
 
             mLogger.Recorder = new TextBoxRecorder(mainTextBox);
             composite = new Component("root", "root", null);
-            currentParent = composite;
+            currentParent = composite; // current parent is the root
             changedComponents = new Dictionary<Dictionary<string, List<IComponent>>, IComponent>();
             addedComponents = new List<IComponent>();
             removedComponents = new Dictionary<IComponent, List<IComponent>>();
 
-            workingdir = Environment.CurrentDirectory;
+            workingdir = Environment.CurrentDirectory; // keep the directory we are working in
 
             Application.ApplicationExit += new EventHandler(this.OnApplicationExit);
 			this.CenterToScreen();
@@ -76,6 +113,7 @@ namespace YAMLEditor
             {
                 DirectoryInfo d = new DirectoryInfo("./RemoteFiles/");
 
+                // Delete all files and subdirectories
                 foreach (FileInfo file in d.GetFiles())
                 {
                     file.Delete();
@@ -85,6 +123,7 @@ namespace YAMLEditor
                     dir.Delete(true);
                 }
 
+                // Delete the directory
                 d.Delete();
             }
 
@@ -170,11 +209,18 @@ namespace YAMLEditor
 			// When opening a yaml file
 			if (dialog.ShowDialog() == DialogResult.OK)
             {
+                // clear the edited components lists
                 changedComponents = new Dictionary<Dictionary<string, List<IComponent>>, IComponent>();
                 addedComponents = new List<IComponent>();
+
+                // clear the tree
                 if(FileTreeRoot != null)
                     FileTreeRoot.Nodes.Clear();
+
+                // create new composite
                 composite = new Component("root", "root", null);
+
+                // update the parent
                 currentParent = composite;
 
                 mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Opened " + $"Filename: {dialog.FileName}");
@@ -185,11 +231,13 @@ namespace YAMLEditor
                 FileTreeRoot = mainTreeView.Nodes.Add(Path.GetFileName(dialog.FileName));
                 FileTreeRoot.ImageIndex = FileTreeRoot.SelectedImageIndex = 3;
 
+                // get filename from the filepath
                 openedfilename = dialog.FileName;
                 var splits = openedfilename.Split('\\');
                 openedfilename = splits[splits.Length - 1];
                 filename = openedfilename;
 
+                // populate data structures from file
                 LoadFile(FileTreeRoot, filename);
                 FileTreeRoot.Expand();
 
@@ -251,6 +299,7 @@ namespace YAMLEditor
 
             var component = mainTreeView.SelectedNode.Tag as Component;
 
+            // Display confirmation popup
             DialogResult result = MessageBox.Show("Do you really want to remove " + component.Name + "?", "Warning",
             MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 
@@ -262,6 +311,7 @@ namespace YAMLEditor
                 return;
             }
 
+            // Get the component
             var treenode = mainTreeView.SelectedNode;
             var node = (Component)treenode.Tag;
 
@@ -269,9 +319,11 @@ namespace YAMLEditor
             nodeparents = GetParents(nodeparents, node);
             nodeparents.Remove(nodeparents.Last());
 
+            // Remove component and tree node from their parent's children (remove from data structure)
             treenode.Parent.Nodes.Remove(treenode);
             node.getParent().getChildren().Remove(node);
 
+            // Add to the list of edited components
             removedComponents.Add(node, nodeparents);
 
             mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Removed " + component.Name);
@@ -292,18 +344,20 @@ namespace YAMLEditor
         }
 
 		/// <summary>
-		/// Restarts HomeAssistant on specified home address
+		/// Restarts HomeAssistant on specified home assistant address
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void OnRestartHomeassistant(object sender, EventArgs e)
         {
+            // Gets the stored details from the options menu
             string user_ha_address = (string)Settings.Default["ha_address"];
             string user_access_token = (string)Settings.Default["access_token"];
 
+            // If they are not filled in then we can't proceed
             if (user_ha_address == "" || user_access_token == "")
             {
-
+                MessageBox.Show("You need to specify your details. Check settings.", "Error");
                 mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - You need to specify your details. Check settings.");
                 return;
             }
@@ -315,9 +369,11 @@ namespace YAMLEditor
                 {
                     ws.Connect();
 
+                    // Auth message
                     Dictionary<string, string> auth = new Dictionary<string, string>() { { "type", "auth" }, { "access_token", user_access_token } };
                     string json = JsonConvert.SerializeObject(auth);
 
+                    // Authenticate
                     ws.Send(json);
 
 					// Sends an api restart service request
@@ -325,6 +381,7 @@ namespace YAMLEditor
 
                     json = JsonConvert.SerializeObject(service);
 
+                    // Send restart request
                     ws.Send(json);
 
                     mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Restarting HomeAssistant on address " + user_ha_address);
@@ -332,6 +389,7 @@ namespace YAMLEditor
             }
             catch (Exception exc)
             {
+                MessageBox.Show("Couldn't restart HomeAssistant. Check settings.", "Error");
                 mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Couldn't restart HomeAssistant. Check settings.");
             }
         }
@@ -439,7 +497,7 @@ namespace YAMLEditor
         }
 
 		/// <summary>
-		/// Shows the Help page of HomeAssistant
+		/// Shows the Help page of the selected component
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
@@ -461,7 +519,7 @@ namespace YAMLEditor
 		/// </summary>
         public void OpenFromURL()
         {
-			// Cashes the necessary options inputs from the settings menu
+			// Caches the necessary options inputs from the settings menu
             string rh_address = (string)Settings.Default["rh_address"];
             string username = (string)Settings.Default["username"];
             string password = (string)Settings.Default["password"];
@@ -574,7 +632,7 @@ namespace YAMLEditor
 		/// </summary>
         public void UploadToURL()
         {
-			// Cashes the necessary options inputs from the settings menu
+			// Caches the necessary options inputs from the settings menu
 			string rh_address = (string)Settings.Default["rh_address"];
             string username = (string)Settings.Default["username"];
             string password = (string)Settings.Default["password"];
