@@ -1584,6 +1584,7 @@ namespace YAMLEditor
                     if (lines[i].Contains(oldvalue) && !lines[i].Trim().StartsWith("#"))
                     {
                         // Apply the changes according to the case in question
+                        // "parent:" --> "parent: newvalue"
                         if (oldvalue == "" && newvalue != "")
                             lines[i] = lines[i] + " " + newvalue;
 
