@@ -599,6 +599,7 @@ namespace YAMLEditor
 
                 Directory.SetCurrentDirectory(workingdir);
 
+				// Tries to upload the files through SFTP
                 try
                 {
                     SFTPManager.UploadRemoteFiles(rh_address, username, password, "./RemoteFiles/", remote_dir, "yaml");
@@ -616,13 +617,18 @@ namespace YAMLEditor
             }
         }
 
+		/// <summary>
+		/// Pulls the remote files from the designated Github repository
+		/// </summary>
         private void PullFromRemote()
         {
-            string gitrepo_link = (string)Settings.Default["gitrepo_link"];
+			// Cashes the necessary options inputs from the settings menu
+			string gitrepo_link = (string)Settings.Default["gitrepo_link"];
             string gitrepo_email = (string)Settings.Default["gitrepo_email"];
             string gitrepo_password = (string)Settings.Default["gitrepo_password"];
 
-            if (gitrepo_link == "" || gitrepo_email == "") // no password -> ""
+			// If any of these fields is empty, we can't access the designated repository
+			if (gitrepo_link == "" || gitrepo_email == "") // no password -> ""
             {
                 MessageBox.Show("Please check your git settings.", "Error");
                 mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Please check your git settings before trying to pull from remote.");
@@ -630,7 +636,8 @@ namespace YAMLEditor
             }
             else
             {
-                DialogResult result = MessageBox.Show("Starting pull of files from remote host on " + gitrepo_link, "Pull from Remote",
+				// Requires confirmation input
+				DialogResult result = MessageBox.Show("Starting pull of files from remote host on " + gitrepo_link, "Pull from Remote",
                 MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
                 mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Starting pull of files from remote host on " + gitrepo_link);
 
@@ -639,7 +646,8 @@ namespace YAMLEditor
 
                 Directory.SetCurrentDirectory(workingdir);
 
-                if (Directory.Exists(workingdir + "/GitRepo/"))
+				// If this directory already exists, then we delete all its content to avoid any conficts
+				if (Directory.Exists(workingdir + "/GitRepo/"))
                 {
                     DirectoryInfo d = new DirectoryInfo(workingdir + "/GitRepo/");
 
@@ -654,6 +662,7 @@ namespace YAMLEditor
                     }
                 }
 
+				// Tries to pull the remote files from the Github repository
                 try
                 {
                     GitRepoManager.clone(gitrepo_email, gitrepo_password, gitrepo_link, workingdir + "/GitRepo/");
@@ -665,16 +674,18 @@ namespace YAMLEditor
                     return;
                 }
 
-                result = MessageBox.Show("Pull complete. Open a file...", "Success",
+				result = MessageBox.Show("Pull complete. Open a file...", "Success",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
                 mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Pull complete.");
 
-                var dialog = new OpenFileDialog()
+				// If the clonning of the files is sucessful, the user then needs to open a yaml file from this directory
+				var dialog = new OpenFileDialog()
                 { Filter = @"Yaml files (*.yaml)|*.yaml|All files (*.*)|*.*", DefaultExt = "yaml" };
 
                 dialog.InitialDirectory = workingdir + "\\GitRepo\\";
 
-                if (dialog.ShowDialog() == DialogResult.OK)
+				// Opens the chosen yaml file to edit
+				if (dialog.ShowDialog() == DialogResult.OK)
                 {
                     changedComponents = new Dictionary<Dictionary<string, List<IComponent>>, IComponent>();
                     addedComponents = new List<IComponent>();
@@ -713,13 +724,18 @@ namespace YAMLEditor
             }
         }
 
+		/// <summary>
+		/// Commits and pushes the remote files to the designated Github repository
+		/// </summary>
         private void PushToRemote()
         {
-            string gitrepo_link = (string)Settings.Default["gitrepo_link"];
+			// Cashes the necessary options inputs from the settings menu
+			string gitrepo_link = (string)Settings.Default["gitrepo_link"];
             string gitrepo_email = (string)Settings.Default["gitrepo_email"];
             string gitrepo_password = (string)Settings.Default["gitrepo_password"];
 
-            if (gitrepo_link == "" || gitrepo_email == "") // no password -> ""
+			// If any of these fields is empty, we can't access the designated repository
+			if (gitrepo_link == "" || gitrepo_email == "") // no password -> ""
             {
                 MessageBox.Show("Please check your git settings.", "Error");
                 mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Please check your git settings before trying to push to remote.");
@@ -727,7 +743,8 @@ namespace YAMLEditor
             }
             else
             {
-                DialogResult result = MessageBox.Show("Starting push of files to remote on " + gitrepo_link, "Pushing to Remote",
+				// Requires confirmation input
+				DialogResult result = MessageBox.Show("Starting push of files to remote on " + gitrepo_link, "Pushing to Remote",
                 MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
                 mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Starting push of files to remote on " + gitrepo_link);
 
@@ -736,6 +753,7 @@ namespace YAMLEditor
 
                 Directory.SetCurrentDirectory(workingdir);
 
+				// Tries to commit and push the remote files to the designated repository
                 try
                 {
                     List<string> files_paths = Directory.EnumerateFiles(workingdir + "/GitRepo/").ToList();
@@ -756,24 +774,30 @@ namespace YAMLEditor
             }
         }
 
+		/// <summary>
+		/// Shows the HomeAssistant help page for the selected node/component
+		/// </summary>
         public void LoadHelpPage()
         {
+			// If the help tab is selected
             if (mainTabControl.SelectedTab.Text == "Help")
             {
+				// If there is no selected node we can't show the help page
                 if (mainTreeView.SelectedNode == null || filename == null)
                     return;
-
-                else if (mainTreeView.SelectedNode.Tag == null)
+				else if (mainTreeView.SelectedNode.Tag == null)
                     return;
 
                 var node = (Component)mainTreeView.SelectedNode.Tag;
 
+				// If the selected node is not the root node
                 if (node.getParent().Name != "root")
                 {
                     List<IComponent> parents = new List<IComponent>();
                     node = GetParents(parents, node).ElementAt(parents.Count - 2) as Component;
                 }
 
+				// Load the HomeAssistant web page of the selected node
                 webBrowser.Navigate("https://www.home-assistant.io/components/" + node.Name);
             }
         }
