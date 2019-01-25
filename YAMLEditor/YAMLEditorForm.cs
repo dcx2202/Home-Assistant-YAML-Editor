@@ -680,7 +680,7 @@ namespace YAMLEditor
 		/// </summary>
         private void PullFromRemote()
         {
-			// Caches the necessary options inputs from the settings menu
+			// Cashes the necessary options inputs from the settings menu
 			string gitrepo_link = (string)Settings.Default["gitrepo_link"];
             string gitrepo_email = (string)Settings.Default["gitrepo_email"];
             string gitrepo_password = (string)Settings.Default["gitrepo_password"];
@@ -715,7 +715,7 @@ namespace YAMLEditor
                     }
                     foreach (DirectoryInfo dir in d.GetDirectories())
                     {
-                        setAttributesNormal(dir); // We have to do this to avoid permission denied exception
+                        setAttributesNormal(dir);
                         dir.Delete(true);
                     }
                 }
@@ -787,7 +787,7 @@ namespace YAMLEditor
 		/// </summary>
         private void PushToRemote()
         {
-			// Caches the necessary options inputs from the settings menu
+			// Cashes the necessary options inputs from the settings menu
 			string gitrepo_link = (string)Settings.Default["gitrepo_link"];
             string gitrepo_email = (string)Settings.Default["gitrepo_email"];
             string gitrepo_password = (string)Settings.Default["gitrepo_password"];
@@ -851,7 +851,7 @@ namespace YAMLEditor
 				// If the selected node is not the root node
                 if (node.getParent().Name != "root")
                 {
-                    // Get the node
+					// Get the selected node
                     List<IComponent> parents = new List<IComponent>();
                     node = GetParents(parents, node).ElementAt(parents.Count - 2) as Component;
                 }
@@ -861,9 +861,16 @@ namespace YAMLEditor
             }
         }
 
-        private static void LoadFile(TreeNode node, string filename)
+		/// <summary>
+		/// Reads the designated yaml file and populates the data structures
+		/// </summary>
+		/// <param name="node"></param>
+		/// <param name="filename"></param>
+		private static void LoadFile(TreeNode node, string filename)
         {
             var yaml = new YamlStream();
+
+			// Tries to read the file
             try
             {
                 using(var stream = new StreamReader(filename))
@@ -877,9 +884,16 @@ namespace YAMLEditor
             }
 
             if(yaml.Documents.Count == 0) return;
+
+			// Loads the children
             LoadChildren(node, yaml.Documents[0].RootNode as YamlMappingNode);
         }
 
+		/// <summary>
+		/// Parsers the yaml file and populates the data structures
+		/// </summary>
+		/// <param name="root"></param>
+		/// <param name="mapping"></param>
         private static void LoadChildren(TreeNode root, YamlMappingNode mapping)
         {
             var children = mapping?.Children;
@@ -955,6 +969,11 @@ namespace YAMLEditor
             
         }
 
+		/// <summary>
+		/// Gets the correct image according to the node type
+		/// </summary>
+		/// <param name="node"></param>
+		/// <returns></returns>
         private static int GetImageIndex(YamlNode node)
         {
             switch(node.NodeType)
@@ -971,18 +990,26 @@ namespace YAMLEditor
             return 0;
         }
 
-        private static void LoadChildren(TreeNode root, YamlSequenceNode sequence)
+		/// <summary>
+		/// Parsers the yaml file and populates the data structures
+		/// </summary>
+		/// <param name="root"></param>
+		/// <param name="sequence"></param>
+		private static void LoadChildren(TreeNode root, YamlSequenceNode sequence)
         {
             foreach(var child in sequence.Children)
             {
                 if(child is YamlSequenceNode)
                 {
+					// Create new component and add it to the composite
                     IComponent comp = new Component(root.Text, filename, currentParent);
                     currentParent.add(comp);
                     currentParent = comp;
 
+					// Add new node to the tree
                     var node = root.Nodes.Add(root.Text);
-                    node.Tag = comp;
+					// Set the node tag as the respective component
+					node.Tag = comp;
                     node.ImageIndex = node.SelectedImageIndex = GetImageIndex(child);
 
                     LoadChildren(node, child as YamlSequenceNode);
@@ -993,14 +1020,17 @@ namespace YAMLEditor
                 }
                 else if(child is YamlScalarNode)
                 {
-                    var scalar = child as YamlScalarNode; 
+                    var scalar = child as YamlScalarNode;
 
-                    IComponent comp = new Component(root.Text, filename, currentParent);
+					// Create new component and add it to the composite
+					IComponent comp = new Component(root.Text, filename, currentParent);
                     currentParent.add(comp);
                     currentParent = comp;
 
-                    var node = root.Nodes.Add(scalar.Value);
-                    node.Tag = comp;
+					// Add new node to the tree
+					var node = root.Nodes.Add(scalar.Value);
+					// Set the node tag as the respective component
+					node.Tag = comp;
                     node.ImageIndex = node.SelectedImageIndex = GetImageIndex(child);
                 }
             }
@@ -1009,221 +1039,163 @@ namespace YAMLEditor
                 currentParent = currentParent.getParent();
         }
 
-        private IDictionary<YamlNode, YamlNode> GetDataStructure(string filename)
-        {
-            // Read file
-            var yaml = new YamlStream();
-            try
-            {
-                using (var stream = new StreamReader(filename))
-                {
-                    yaml.Load(stream);
-                }
-            }
-            catch (Exception exception)
-            {
-                mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - " + exception.Message);
-            }
-
-            if (yaml.Documents.Count == 0) return null;
-
-            YamlMappingNode mapping = yaml.Documents[0].RootNode as YamlMappingNode;
-            return mapping?.Children;
-        }
-
-        /// <summary>
-        /// Updates the tree node equivalent to the given component with the new value
-        /// </summary>
-        /// <param name="component"></param>
-        /// <param name="root"></param>
-        /// <param name="aValue"></param>
         public static void UpdateTree(IComponent component, TreeNode root, string aValue)
         {
-            // If we got passed a null root then it's the tree root
             if (root == null)
                 root = FileTreeRoot;
 
-            // Get both the component and the tree node's parents
             var parents1 = new List<IComponent>();
             var parents2 = new List<TreeNode>();
 
             parents1 = GetParents(parents1, component);
             parents2 = GetParents(parents2, root);
 
-            // Remove the roots
             if(parents1.Count > 1)
                 parents1.Remove(parents1.Last());
             if (parents2.Count > 1)
                 parents2.Remove(parents2.Last());
 
-
-            // If we are comparing roots
             if (parents1.Count == 0 && parents1.Count == parents2.Count)
             {
-                // If this tree node is equivalent to the component
                 if (component.Name.Equals(root.Name))
                 {
-                    // Update the tree node value
+                    //parents1.Remove(parents1.Last());
+                    //YAMLEditorForm.changedComponents.Add(new Dictionary<string, List<IComponent>>() { { node.Name, parents1 } }, component);
+                    //root.Name = aValue;
                     root.Text = aValue;
                     return;
                 }
             }
-
-            // If we aren't then we need to check if each of the parents are the same
-            // If both the tree node and the component have all the same parents and their value is the same
-            // Then we know the tree node is equivalent to the component
             else if (parents1.Count == parents2.Count)
             {
                 for (var i = 0; i < parents1.Count; i++)
                 {
-                    // If one of the parents isn't the same then the component isn't in this subtree
                     if (parents1[i].Name != parents2[i].Text && parents2[i].Tag != null)
                         return;
                 }
 
-                // If we got here then both the tree node and the component have the same parents
-                // Get the component from the tree node tag
                 var treecomp = root.Tag as Component;
 
-                // If they have the same value then they have to be equivalent
+                /*if (component.Name.Equals(root.Name) || component.Name.Equals(treecomp.Name))
+                {
+                    //parents1.Remove(parents1.Last());
+                    //YAMLEditorForm.changedComponents.Add(new Dictionary<string, List<IComponent>>() { { node.Name, parents1 } }, component);
+                    //root.Name = aValue;
+                    root.Text = aValue;
+                    return;
+                }*/
+
                 if (component.Name.Equals(treecomp.Name))
                 {
-                    // Update the tree node value
+                    //parents1.Remove(parents1.Last());
+                    //YAMLEditorForm.changedComponents.Add(new Dictionary<string, List<IComponent>>() { { node.Name, parents1 } }, component);
+                    //root.Name = aValue;
                     root.Text = aValue;
                     return;
                 }
             }
 
-            // Go to the next tree level
+
+            /*if (root == null)
+                root = FileTreeRoot;
+
+            if (root.Tag == component)
+            {
+                root.Text = component.Name;
+                return;
+            }*/
+
             foreach (TreeNode node in root.Nodes)
             {
                 UpdateTree(component, node, aValue);
             }
         }
 
-        /// <summary>
-        /// Find the equivalent tree node to the given component
-        /// </summary>
-        /// <param name="component"></param>
-        /// <param name="root"></param>
+
         public static void FindTreeNode(IComponent component, TreeNode root)
         {
-            // If we got passed a null root then it's the tree root
+
             if (root == null)
                 root = FileTreeRoot;
 
-            // If we found the component
             if (root.Tag == component || (root.Tag == null && component == composite))
             {
                 parentNode = root;
                 return;
             }
 
-            // Go to the next level
             foreach (TreeNode node in root.Nodes)
             {
                 FindTreeNode(component, node);
             }
         }
 
-        /// <summary>
-        /// Updates the equivalent component to the given one with a new value when undoing/redoing changes
-        /// </summary>
-        /// <param name="node"></param>
-        /// <param name="component"></param>
-        /// <param name="aValue"></param>
         public static void UpdateComposite(IComponent node, IComponent component, string aValue)
         {
             if (node == null)
                 node = composite;
 
-            // We can't compare the components directly because even though they might be equal they can be in a
-            // different memory address. This is the case when we want to undo changes after saving (saving reloads
-            // the data structures from the file and as such the memory addresses are different)
-            // As such we have the components by their parents
             var parents1 = new List<IComponent>();
             var parents2 = new List<IComponent>();
 
             parents1 = GetParents(parents1, node);
             parents2 = GetParents(parents2, component);
 
-            // Remove roots
             if(parents1.Count > 0)
                 parents1.Remove(parents1.Last());
             if (parents2.Count > 0)
                 parents2.Remove(parents2.Last());
 
-            // If we are comparing roots
             if (parents1.Count == 0 && parents1.Count == parents2.Count)
             {
-                // If the components have the same value then they are the same
                 if(node.Name.Equals(component.Name))
                 {
-                    // Update the value without using the setter because we don't want to add this change to the command manager
+                    //parents1.Remove(parents1.Last());
+                    //YAMLEditorForm.changedComponents.Add(new Dictionary<string, List<IComponent>>() { { node.Name, parents1 } }, component);
                     node.setName(aValue);
                     return;
                 }
             }
-
-            // If we aren't then we need to compare the parents
             else if(parents1.Count == parents2.Count)
             {
-                // Compare the parents
                 for(var i = 0; i < parents1.Count; i++)
                 {
                     if (!parents1[i].Name.Equals(parents2[i].Name))
                         return;
                 }
 
-                // If they have the same parents and the same value
                 if (node.Name.Equals(component.Name))
                 {
-                    // They are the same component and we update the value without using the setter
-                    // because we don't want to add this change to the command manager
+                    //parents1.Remove(parents1.Last());
+                    //YAMLEditorForm.changedComponents.Add(new Dictionary<string, List<IComponent>>() { { node.Name, parents1 } }, component);
                     node.setName(aValue);
                     return;
                 }
             }
 
-            // Go to the next level
             foreach (IComponent n in node.getChildren())
             {
                 UpdateComposite(n, component, aValue);
             }
         }
 
-        /// <summary>
-        /// Checks if a given component exists in the given composite
-        /// </summary>
-        /// <param name="node"></param>
-        /// <param name="component"></param>
         public static void CheckIfComponentExists(IComponent node, IComponent component)
         {
-            // If the node given is null then we are dealing with the whole composite
             if (node == null)
                 node = composite;
 
-            // If the components have the same value
             if (node.Name == component.Name)
             {
-                // Then they are the same
                 componentExists = true;
                 return;
             }
 
-            // Go to the next level
             foreach (IComponent n in node.getChildren())
             {
                 CheckIfComponentExists(n, component);
             }
         }
 
-        /// <summary>
-        /// Returns a dictionary with the component and tree parsed from the given file
-        /// (File has to have a valid component by itself)
-        /// </summary>
-        /// <param name="filename"></param>
-        /// <returns></returns>
         public static Dictionary<IComponent, TreeNode> getComponentFromFile(string filename)
         {
             string content = File.ReadAllText(filename);
@@ -1247,94 +1219,52 @@ namespace YAMLEditor
             }
         }
 
-        /// <summary>
-        /// Adds the given component and tree to the data structures
-        /// </summary>
-        /// <param name="aComponent"></param>
-        /// <param name="aTree"></param>
-        /// <param name="aParent"></param>
         public static void AddComponentToData(IComponent aComponent, TreeNode aTree, IComponent aParent)
         {
-            // Set the new component's parent as the given parent (the selected node)
             aComponent.setParent(aParent);
-
-            // Add the new component to the composite
             aParent.add(aComponent);
-
-            // Add the new component to the added components list
             addedComponents.Add(aComponent);
-
-            // Get the equivalent parent tree node to the given component parent
+            //var parentNode = new TreeNode();
             FindTreeNode(aParent, null);
-
-            // Add the new tree to the parent tree node
             parentNode.Nodes.Add(aTree);
 
             mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Added " + aComponent.Name);
         }
 
-        /// <summary>
-        /// Gets all the parents back to the root from a given component
-        /// </summary>
-        /// <param name="parents"> List that will hold all the parents by the end </param>
-        /// <param name="node"> Component whose parents we will get </param>
-        /// <returns> List of all the parents back to the root from a given component </returns>
         public static List<IComponent> GetParents(List<IComponent> parents, IComponent node)
         {
-            // If we got to the root
             if (node.getParent() == null)
             {
                 return parents;
             }
             else
             {
-                // Add this node's parent
                 parents.Add(node.getParent());
-
-                // Get this node's parent parents
                 return GetParents(parents, node.getParent());
             }
         }
 
-        /// <summary>
-        /// Gets all the parents back to the root from a given tree node
-        /// </summary>
-        /// <param name="parents"> List that will hold all the parents by the end </param>
-        /// <param name="node"> Tree node whose parents we will get </param>
-        /// <returns></returns>
         public static List<TreeNode> GetParents(List<TreeNode> parents, TreeNode node)
         {
-            // If we got to the root
             if (node.Parent == null)
             {
                 return parents;
             }
             else
             {
-                // Add this node's parent
                 parents.Add(node.Parent);
-
-                // Get this node's parent parents
                 return GetParents(parents, node.Parent);
             }
         }
 
-        /// <summary>
-        /// Gets all the children (and grandchildren and so on) from a given component
-        /// </summary>
-        /// <param name="children"> List that will hold all the children by the end </param>
-        /// <param name="node"> Component whose children we will get</param>
-        /// <returns></returns>
         public static List<IComponent> GetAllChildren(List<IComponent> children, IComponent node)
         {
-            // If this node hasn't got any children then we reached a leaf
             if(node.getChildren().Count == 0)
             {
                 return children;
             }
             else
             {
-                // For each child we add it to the list and get all of its children
                 foreach(IComponent child in node.getChildren())
                 {
                     children.Add(child);
@@ -1345,18 +1275,13 @@ namespace YAMLEditor
             return children;
         }
 
-        /// <summary>
-        /// Saves all the changes to the correct files
-        /// </summary>
         public void Save()
         {
-            #region Added Components
             // For each component that was added we write it to the opened file
             foreach (IComponent comp in addedComponents)
             {
                 List<string> lines = new List<string>();
 
-                // Try reading the file
                 try
                 {
                     lines = File.ReadAllLines(filename).ToList();
@@ -1367,28 +1292,19 @@ namespace YAMLEditor
                     continue;
                 }
 
-                // If this component was added to the root then we simply include it at the bottom of the file
                 if (comp.getParent().Name == "root")
                 {
                     lines.Add("");
                     lines.Add(comp.Name + ": !include " + comp.getFileName());
                 }
-
-                // Else we get all of its parents and find the line of its direct parent
-                // After that we make the appropriate changes according to the case in question
                 else
                 {
-                    // Get all of its parents
                     List<IComponent> nodeparents = new List<IComponent>();
                     nodeparents = GetParents(nodeparents, comp);
-
-                    // Remove the root
                     nodeparents.Remove(nodeparents.Last());
 
-                    // Starting identation
                     string ident = "";
 
-                    // Get the added component's parent identation (used to know which line the parent ends)
                     for(var i = 0; i < nodeparents.Count - 1; i++)
                     {
                         ident += "  ";
@@ -1397,22 +1313,18 @@ namespace YAMLEditor
                     int ln = 0;
 
                     // if it's a level 0 component, the parent will be null
-                    // and as such, the "parent's" line will be 0 (as if the
+                    // and as such, the "parent's" line will 0 (as if the
                     // hypothetical parent was the whole file)
                     if (nodeparents.Count != 0)
                     {
                         var aux = false;
-
-                        // For each parent we look for it in each line
-                        for (var j = nodeparents.Count - 1; j >= 0; j--)
+                        for (var j = nodeparents.Count - 1; j >= 0; j--)// IComponent parent in nodeparents)
                         {
-                            // For each line of this file we look for the parent
+                            // For each line of this file we look for the component
                             for (var i = ln; i < lines.Count; i++)
                             {
-                                // If this line is this parent's
-                                if (lines[i].Trim().StartsWith(nodeparents[j].Name) || lines[i].Trim().StartsWith("- " + nodeparents[j].Name))
+                                if (lines[i].Trim().StartsWith(nodeparents[j].Name) || lines[i].Trim().StartsWith("- " + nodeparents[j].Name))//lines[i].Contains(nodeparents[j].Name))
                                 {
-                                    // We found this parent and can move on to the next parent
                                     aux = true;
                                     ln = i;
                                     nodeparents.RemoveAt(j);
@@ -1428,12 +1340,10 @@ namespace YAMLEditor
                             continue; // didn't find the component - should never happen
                     }
 
-                    // Get all of the new component's siblings
+
                     List<IComponent> siblings = new List<IComponent>();
                     siblings = GetAllChildren(siblings, comp.getParent());
 
-                    // According to the number of siblings and how they are defined (scalar, sequence, ...) we add the new component correctly
-                    // If the parent is a leaf then we simply add an include in front like so: parent: !include comp.yaml
                     if (siblings.Count == 1 && siblings.First().Name == "")
                     {
                         comp.getParent().getChildren().RemoveAt(0);
@@ -1442,13 +1352,11 @@ namespace YAMLEditor
                     }
                     else
                     {
-                        // After we've got the parent's exact line
-                        // For each line after it we look for the correct place to add the new component
+                        // after we've got the parent's exact line
                         for (var i = ln + 1; i < lines.Count; i++)
                         {
                             string line_ident = "";
 
-                            // Get this line's identation
                             foreach(Char c in lines[i])
                             {
                                 if (c.Equals(' '))
@@ -1462,26 +1370,19 @@ namespace YAMLEditor
                                     break;
                             }
 
-                            // If it's a comment line then move on to the next line
                             if (line_ident == "#")
                                 continue;
 
-                            // If it's a white space only line then we can add the new component here
                             if (lines[i].Trim() == "")
                             {
                                 lines.Insert(i, ident + "  " + comp.Name + ": !include " + comp.getFileName());
                                 break;
                             }
-
-                            // If we found a component on the same identation level as the parent then the parent
-                            // ends in the line above and we add the new component here
                             else if (ident == line_ident && !lines[i].Trim().StartsWith("#"))
                             {
                                 lines.Insert(i - 1, ident + "  " + comp.Name + ": !include " + comp.getFileName());
                                 break;
                             }
-
-                            // If we reached the end of the file we can simply add the new component here
                             else if(i == lines.Count)
                             {
                                 lines.Add(ident + "  " + comp.Name + ": !include " + comp.getFileName());
@@ -1491,22 +1392,16 @@ namespace YAMLEditor
                     }
                 }
 
-                // Try to write to the file
                 try
                 {
                     File.WriteAllLines(filename, lines);
-
-                    // Clear the added components list
-                    addedComponents = new List<IComponent>();
                 }
                 catch(IOException ioe)
                 {
                     mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Couldn't save added components");
                 }
             }
-            #endregion
 
-            #region Changed Components
             // For each component that suffered changes we look for it in the files (opened and !included)
             foreach (KeyValuePair< Dictionary<string, List<IComponent>>, IComponent > comp in changedComponents)
             {
@@ -1519,12 +1414,10 @@ namespace YAMLEditor
                 // its old value
                 var oldvalue = comp.Key.Keys.First();
 
-                // its new value
                 string newvalue = node.Name;
 
                 List<string> lines = new List<string>();
 
-                // Try reading the file
                 try
                 {
                     lines = File.ReadAllLines(node.getFileName()).ToList();
@@ -1535,9 +1428,6 @@ namespace YAMLEditor
                     continue;
                 }
 
-                // We get all of its parents and find the line of its direct parent
-                // After that we make the appropriate changes according to the case in question
-
                 int ln = 0;
 
                 // if it's a level 0 component, the parent will be null
@@ -1546,14 +1436,13 @@ namespace YAMLEditor
                 if (nodeparents.Count != 0)
                 {
                     var aux = false;
-                    for (var j = nodeparents.Count - 1; j >= 0; j--)
+                    for (var j = nodeparents.Count - 1; j >= 0; j--)// IComponent parent in nodeparents)
                     {
-                        // For each line of this file we look for the parent
+                        // For each line of this file we look for the component
                         for (var i = ln; i < lines.Count; i++)
                         {
-                            if (lines[i].Trim().StartsWith(nodeparents[j].Name) || lines[i].Trim().StartsWith("- " + nodeparents[j].Name))
+                            if (lines[i].Trim().StartsWith(nodeparents[j].Name) || lines[i].Trim().StartsWith("- " + nodeparents[j].Name))//lines[i].Contains(nodeparents[j].Name))
                             {
-                                // If we found this parent then move on to the next parent
                                 aux = true;
                                 ln = i;
                                 nodeparents.RemoveAt(j);
@@ -1572,10 +1461,9 @@ namespace YAMLEditor
                 // after we've got the parent's exact line
                 for (var i = ln; i < lines.Count; i++)
                 {
-                    // If this line contains the oldvalue and it isn't a comment line
                     if (lines[i].Contains(oldvalue) && !lines[i].Trim().StartsWith("#"))
                     {
-                        // Apply the changes according to the case in question
+                        // "parent:" --> "parent: newvalue"
                         if (oldvalue == "" && newvalue != "")
                             lines[i] = lines[i] + " " + newvalue;
 
@@ -1602,22 +1490,16 @@ namespace YAMLEditor
                     }
                 }
 
-                // Try writing to the file
                 try
                 {
                     File.WriteAllLines(node.getFileName(), lines);
-
-                    // Clear the changed components list
-                    changedComponents = new Dictionary<Dictionary<string, List<IComponent>>, IComponent>();
                 }
                 catch(IOException ioe)
                 {
                     mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Couldn't save changed components");
                 }
             }
-            #endregion
 
-            #region Removed Components
             // For each component that was removed we remove it from the opened file
             foreach (KeyValuePair<IComponent, List<IComponent>> comp in removedComponents)
             {
@@ -1626,7 +1508,6 @@ namespace YAMLEditor
 
                 List<string> lines = new List<string>();
 
-                // Try reading the file
                 try
                 {
                     lines = File.ReadAllLines(node.getFileName()).ToList();
@@ -1637,26 +1518,19 @@ namespace YAMLEditor
                     continue;
                 }
 
-                // We look for the removed component's direct parent
-                // After that we go through each of the following lines 
-                // and make the correct changes when needed
-
                 int ln = 0;
 
                 var aux = false;
 
                 if (nodeparents.Count > 1)
                 {
-                    // For each parent we look for it
-                    for (var j = nodeparents.Count - 1; j >= 0; j--)
+                    for (var j = nodeparents.Count - 1; j >= 0; j--)// IComponent parent in nodeparents)
                     {
-                        // For each line of this file we look for the parent
+                        // For each line of this file we look for the component
                         for (var i = ln; i < lines.Count; i++)
                         {
-                            // If this line is this parent's
-                            if (lines[i].Trim().StartsWith(nodeparents[j].Name) || lines[i].Trim().StartsWith("- " + nodeparents[j].Name))
+                            if (lines[i].Trim().StartsWith(nodeparents[j].Name) || lines[i].Trim().StartsWith("- " + nodeparents[j].Name))//lines[i].Contains(nodeparents[j].Name))
                             {
-                                // Move on to the next parent
                                 aux = true;
                                 ln = i;
                                 nodeparents.RemoveAt(j);
@@ -1669,12 +1543,10 @@ namespace YAMLEditor
                     }
                 }
 
-                // We got the component's direct parent line
-                // For each of the following lines we make the appropriate changes
+                // temos a linha do pai direto do no
                 aux = false;
                 for (var i = ln; i < lines.Count; i++)
                 {
-                    // If this component is in this line and it isn't a comment line then we remove it
                     if (lines[i].Contains(node.Name) && !lines[i].Trim().StartsWith("#") && !aux)
                     {
                         lines.RemoveAt(i);
@@ -1683,12 +1555,10 @@ namespace YAMLEditor
                         aux = true;
                     }
 
-                    // If this component has children then we need to remove them too
                     if (aux && node.getChildren().Count > 1)
                     {
                         foreach (IComponent child in node.getChildren())
                         {
-                            // If this line contains this child and it isn't a comment line then we remove it
                             if (lines[i].Contains(child.Name) && !lines[i].Trim().StartsWith("#"))
                             {
                                 lines.RemoveAt(i);
@@ -1698,66 +1568,48 @@ namespace YAMLEditor
                         }
                     }
 
-                    // If we found a white space only line then we found the end of the component
                     if (aux && lines[i].Trim() == "")
                         break;
                 }
 
-                // Try writing to the file
                 try
                 {
                     File.WriteAllLines(node.getFileName(), lines);
-
-                    // Clear the removed components list
-                    removedComponents = new Dictionary<IComponent, List<IComponent>>();
                 }
                 catch(IOException ioe)
                 {
                     mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Couldn't save removed components");
                 }
             }
-            #endregion
 
-            // Clear the tree
+            changedComponents = new Dictionary<Dictionary<string, List<IComponent>>, IComponent>();
+            addedComponents = new List<IComponent>();
+            removedComponents = new Dictionary<IComponent, List<IComponent>>();
             FileTreeRoot.Nodes.Clear();
-
-            // Create a new composite
             composite = new Component("root", "root", null);
-
-            // Reload the data structures from the file
             currentParent = composite;
             LoadFile(FileTreeRoot, filename);
 
             mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Saved");
         }
 
-        /// <summary>
-        /// Writes a given message to the console window
-        /// </summary>
-        /// <param name="aMessage"> Message to be written </param>
+		/// <summary>
+		/// Allows the logger to write a message in the console
+		/// </summary>
+		/// <param name="aMessage"></param>
         public static void WriteToTextBox(string aMessage)
         {
             mLogger.WriteLine(aMessage);
         }
 
-        /// <summary>
-        /// Tries adding a component read from a file to the given parent
-        /// </summary>
-        /// <param name="aParent"></param>
-        /// <param name="aFilename"></param>
         public static void AddComponent(IComponent aParent, string aFilename)
         {
-            // Get the component from the file
             Dictionary<IComponent, TreeNode> fileRoot = YAMLEditorForm.getComponentFromFile(aFilename);
-
-            // Get the filename from the filepath
             var splits = aFilename.Split('\\');
             var name = splits[splits.Length - 1];
 
-            // If we got a component from the file
             if (fileRoot != null)
             {
-                // Update the component's filename (used to be the filepath)
                 fileRoot.Keys.First().setFileName(name);
 
                 //Check if this component already exists where we are trying to add
@@ -1771,18 +1623,12 @@ namespace YAMLEditor
                 else
                 {
                     MessageBox.Show(fileRoot.Keys.First().getChild(0).Name + " added successfully under " + aParent.Name + ".", "Success");
-
-                    // Add it to the data structures
                     AddComponentToData(fileRoot.Keys.First().getChild(0), fileRoot.Values.First().Nodes[0], aParent);
                 }
                 YAMLEditorForm.componentExists = false;
             }
         }
 
-        /// <summary>
-        /// Sets a given directory's attributes to normal to prevent permission denied exceptions when deleting its contents
-        /// </summary>
-        /// <param name="dir"></param>
         private void setAttributesNormal(DirectoryInfo dir)
         {
             foreach (var subDir in dir.GetDirectories())
