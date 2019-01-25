@@ -1009,28 +1009,6 @@ namespace YAMLEditor
                 currentParent = currentParent.getParent();
         }
 
-        private IDictionary<YamlNode, YamlNode> GetDataStructure(string filename)
-        {
-            // Read file
-            var yaml = new YamlStream();
-            try
-            {
-                using (var stream = new StreamReader(filename))
-                {
-                    yaml.Load(stream);
-                }
-            }
-            catch (Exception exception)
-            {
-                mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - " + exception.Message);
-            }
-
-            if (yaml.Documents.Count == 0) return null;
-
-            YamlMappingNode mapping = yaml.Documents[0].RootNode as YamlMappingNode;
-            return mapping?.Children;
-        }
-
         /// <summary>
         /// Updates the tree node equivalent to the given component with the new value
         /// </summary>
