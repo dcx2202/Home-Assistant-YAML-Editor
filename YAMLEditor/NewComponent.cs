@@ -22,6 +22,11 @@ namespace YAMLEditor
             this.mParent = parent;
         }
 
+		/// <summary>
+		/// Allows the user to choose the desired yaml file to add it to the selected node
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void FileExplorer(object sender, EventArgs e)
 		{
 			var dialog = new OpenFileDialog()
@@ -39,11 +44,21 @@ namespace YAMLEditor
 			this.Close();
 		}
 
+		/// <summary>
+		/// Redirects the user to the HomeAssistant web page, where they can find new components
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void LinkButton(object sender, LinkLabelLinkClickedEventArgs e)
 		{
 			System.Diagnostics.Process.Start("https://www.home-assistant.io/components/");
 		}
 
+		/// <summary>
+		/// Adds the chosen component to the previously selected node
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
         private void OkButton(object sender, EventArgs e)
         {
             YAMLEditorForm.AddComponent(mParent, filename);
