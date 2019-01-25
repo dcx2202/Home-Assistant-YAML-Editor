@@ -62,6 +62,11 @@ namespace YAMLEditor
             Application.ApplicationExit += new EventHandler(this.OnApplicationExit);
         }
 
+		/// <summary>
+		/// When exiting the program, we delete all temporary files that we created either by SFTP or by Github repositories
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
         private void OnApplicationExit(object sender, EventArgs e)
         {
             Directory.SetCurrentDirectory(workingdir);
@@ -102,13 +107,20 @@ namespace YAMLEditor
 
 
         #region Button Actions
+		/// <summary>
+		/// Adds a component to the selected node
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
         private void OnNewComponent(object sender, EventArgs e)
         {
             IComponent component;
 
+			// If we don't have a selected node in the tree or we have the root node selected, the parent of the new node will be the root node
             if (mainTreeView.SelectedNode == null || mainTreeView.SelectedNode.Tag == null)
                 component = composite;
-            else
+			// Else the selected node will be the parent of the new node
+			else
                 component = mainTreeView.SelectedNode.Tag as Component;
 
             if (component.Name != "root")
@@ -116,6 +128,7 @@ namespace YAMLEditor
                 List<IComponent> allchildren = new List<IComponent>();
                 allchildren = GetAllChildren(allchildren, component);
 
+				// We validate if the selected node can have a new component added as a child
                 if ((allchildren.Count == 1 && allchildren.First().Name != "") || allchildren.Count == 0)
                 {
                     if(component.Name == "")
@@ -128,21 +141,32 @@ namespace YAMLEditor
 
             NewComponent nc = new NewComponent(component);
 
-
             nc.ShowDialog();
         }
 
+		/// <summary>
+		/// Exits the application
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
         private void OnExit(object sender, EventArgs e)
         {
             Application.Exit();
         }
 
+		/// <summary>
+		/// Allows the user to choose a yaml file to edit
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
         private void OnOpen(object sender, EventArgs e)
         {
             Directory.SetCurrentDirectory(workingdir);
             var dialog = new OpenFileDialog()
             { Filter = @"Yaml files (*.yaml)|*.yaml|All files (*.*)|*.*", DefaultExt = "yaml" };
-            if(dialog.ShowDialog() == DialogResult.OK)
+
+			// When opening a yaml file
+			if (dialog.ShowDialog() == DialogResult.OK)
             {
                 changedComponents = new Dictionary<Dictionary<string, List<IComponent>>, IComponent>();
                 addedComponents = new List<IComponent>();
@@ -168,23 +192,15 @@ namespace YAMLEditor
                 FileTreeRoot.Expand();
 
                 // After opening a file we enable these buttons
-                newToolStripButton.Enabled = true;
-                newToolStripMenuItem.Enabled = true;
-                cutToolStripButton.Enabled = true;
+                newComponentButton.Enabled = true;
+                newComponentMenuItem.Enabled = true;
+                removeToolStripButton.Enabled = true;
                 removeToolStripMenuItem.Enabled = true;
                 saveToolStripButton.Enabled = true;
                 saveToolStripMenuItem.Enabled = true;
                 uploadtourl.Enabled = true;
                 push_toolStrip.Enabled = true;
             }
-        }
-
-        private void OnPasteToolStripButton_Click(object sender, EventArgs e)
-        {
-            var a = composite;
-            var b = FileTreeRoot;
-            var c = mainTabControl.SelectedTab;
-            var d = mainTabControl.SelectedTab;
         }
 
         private void OnSaveButton(object sender, EventArgs e)
@@ -440,9 +456,9 @@ namespace YAMLEditor
                     FileTreeRoot.Expand();
 
                     // After opening a file we enable these buttons
-                    newToolStripButton.Enabled = true;
-                    newToolStripMenuItem.Enabled = true;
-                    cutToolStripButton.Enabled = true;
+                    newComponentButton.Enabled = true;
+                    newComponentMenuItem.Enabled = true;
+                    removeToolStripButton.Enabled = true;
                     removeToolStripMenuItem.Enabled = true;
                     saveToolStripButton.Enabled = true;
                     saveToolStripMenuItem.Enabled = true;
@@ -578,9 +594,9 @@ namespace YAMLEditor
                     FileTreeRoot.Expand();
 
                     // After opening a file we enable these buttons
-                    newToolStripButton.Enabled = true;
-                    newToolStripMenuItem.Enabled = true;
-                    cutToolStripButton.Enabled = true;
+                    newComponentButton.Enabled = true;
+                    newComponentMenuItem.Enabled = true;
+                    removeToolStripButton.Enabled = true;
                     removeToolStripMenuItem.Enabled = true;
                     saveToolStripButton.Enabled = true;
                     saveToolStripMenuItem.Enabled = true;
