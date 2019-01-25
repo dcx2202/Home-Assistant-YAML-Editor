@@ -507,7 +507,7 @@
 			this.helpTabPage.Margin = new System.Windows.Forms.Padding(2);
 			this.helpTabPage.Name = "helpTabPage";
 			this.helpTabPage.Padding = new System.Windows.Forms.Padding(2);
-			this.helpTabPage.Size = new System.Drawing.Size(416, 399);
+			this.helpTabPage.Size = new System.Drawing.Size(416, 395);
 			this.helpTabPage.TabIndex = 1;
 			this.helpTabPage.Text = "Help";
 			this.helpTabPage.UseVisualStyleBackColor = true;
@@ -519,7 +519,7 @@
 			this.webBrowser.Margin = new System.Windows.Forms.Padding(2);
 			this.webBrowser.MinimumSize = new System.Drawing.Size(11, 11);
 			this.webBrowser.Name = "webBrowser";
-			this.webBrowser.Size = new System.Drawing.Size(412, 395);
+			this.webBrowser.Size = new System.Drawing.Size(412, 391);
 			this.webBrowser.TabIndex = 0;
 			// 
 			// mainTextBox

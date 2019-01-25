@@ -60,6 +60,7 @@ namespace YAMLEditor
             workingdir = Environment.CurrentDirectory;
 
             Application.ApplicationExit += new EventHandler(this.OnApplicationExit);
+			this.CenterToScreen();
         }
 
 		/// <summary>
@@ -107,6 +108,7 @@ namespace YAMLEditor
 
 
         #region Button Actions
+		
 		/// <summary>
 		/// Adds a component to the selected node
 		/// </summary>
@@ -203,23 +205,44 @@ namespace YAMLEditor
             }
         }
 
+		/// <summary>
+		/// Saves all changes made
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
         private void OnSaveButton(object sender, EventArgs e)
         {
             Save();
         }
 
+		/// <summary>
+		/// Undoes (if possible) last change
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
         private void OnUndo(object sender, EventArgs e)
         {
             Manager.Undo();
         }
 
+		/// <summary>
+		/// Redoes (if possible) last undo
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
         private void OnRedo(object sender, EventArgs e)
         {
             Manager.Redo();
         }
 
+		/// <summary>
+		/// Removes the selected node
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
         private void OnRemoveComponent(object sender, EventArgs e)
         {
+			// If there is no node selected
             if (mainTreeView.SelectedNode == null)
             {
                 MessageBox.Show("There is no node currently selected", "Error");
@@ -231,6 +254,7 @@ namespace YAMLEditor
             DialogResult result = MessageBox.Show("Do you really want to remove " + component.Name + "?", "Warning",
             MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 
+			// If the user cancelled the component removal
             if (result == DialogResult.No)
             {
                 MessageBox.Show("Removal cancelled");
@@ -253,6 +277,11 @@ namespace YAMLEditor
             mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Removed " + component.Name);
         }
 
+		/// <summary>
+		/// Shows the developer team
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
         private void OnAboutButton(object sender, EventArgs e)
         {
             MessageBox.Show("Developed by: " +
@@ -262,7 +291,12 @@ namespace YAMLEditor
                 "Marco Lima", "About");
         }
 
-        private void OnRestartHomeassistant(object sender, EventArgs e)
+		/// <summary>
+		/// Restarts HomeAssistant on specified home address
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void OnRestartHomeassistant(object sender, EventArgs e)
         {
             string user_ha_address = (string)Settings.Default["ha_address"];
             string user_access_token = (string)Settings.Default["access_token"];
@@ -276,7 +310,8 @@ namespace YAMLEditor
 
             try
             {
-                using (var ws = new WebSocket("ws://" + user_ha_address + "/api/websocket"))
+				// Establishes the web socket connection with the server running on the user_ha_address with the user_access_token
+				using (var ws = new WebSocket("ws://" + user_ha_address + "/api/websocket"))
                 {
                     ws.Connect();
 
@@ -285,6 +320,7 @@ namespace YAMLEditor
 
                     ws.Send(json);
 
+					// Sends an api restart service request
                     var service = new Dictionary<object, object>() { { "type", "call_service" }, { "domain", "homeassistant" }, { "service", "restart" }, { "service_data", new Dictionary<string, string>() { } }, { "id", "14" } };
 
                     json = JsonConvert.SerializeObject(service);
@@ -300,59 +336,114 @@ namespace YAMLEditor
             }
         }
 
+		/// <summary>
+		/// Opens the settings menu
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
         private void OnOptionsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OptionsWindow options = new OptionsWindow();
             options.ShowDialog();
         }
 
+		/// <summary>
+		/// Shows the Help page of HomeAssistant
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
         private void OnAfterSelect(object sender, TreeViewEventArgs e)
         {
             mainPropertyGrid.SelectedObject = e.Node.Tag;
             LoadHelpPage();
         }
 
+		/// <summary>
+		/// Downloads remote files through SFTP
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
         private void OnOpenFromURL(object sender, EventArgs e)
         {
             OpenFromURL();
         }
 
+		/// <summary>
+		/// Uploads the remote files through SFTP
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
         private void OnUploadToURL(object sender, EventArgs e)
         {
             UploadToURL();
         }
 
-        private void OnToolStripOpenFromURL(object sender, EventArgs e)
+		/// <summary>
+		/// Downloads remotes files through SFTP
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void OnToolStripOpenFromURL(object sender, EventArgs e)
         {
             OpenFromURL();
         }
 
-        private void OnToolStripUploadToRemote(object sender, EventArgs e)
+		/// <summary>
+		/// Uploads the remote files through SFTP
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void OnToolStripUploadToRemote(object sender, EventArgs e)
         {
             UploadToURL();
         }
 
+		/// <summary>
+		/// Pulls the files from Github repository
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
         private void OnPullFromRemote(object sender, EventArgs e)
         {
             PullFromRemote();
         }
 
+		/// <summary>
+		/// Pushes the files to Github repository
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
         private void OnPushToRemote(object sender, EventArgs e)
         {
             PushToRemote();
         }
 
-        private void OnToolStripPullFromRemote(object sender, EventArgs e)
+		/// <summary>
+		/// Pulls the files from Github repository
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void OnToolStripPullFromRemote(object sender, EventArgs e)
         {
             PullFromRemote();
         }
 
-        private void OnToolStripPushToRemote(object sender, EventArgs e)
+		/// <summary>
+		/// Pushes the files to Github repository
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void OnToolStripPushToRemote(object sender, EventArgs e)
         {
             PushToRemote();
         }
 
-        public void LoadHelpPageEvent(object sender, EventArgs e)
+		/// <summary>
+		/// Shows the Help page of HomeAssistant
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		public void LoadHelpPageEvent(object sender, EventArgs e)
         {
             try
             {
@@ -365,13 +456,18 @@ namespace YAMLEditor
         }
         #endregion
 
+		/// <summary>
+		/// Downloads the remote files through SFTP
+		/// </summary>
         public void OpenFromURL()
         {
+			// Cashes the necessary options inputs from the settings menu
             string rh_address = (string)Settings.Default["rh_address"];
             string username = (string)Settings.Default["username"];
             string password = (string)Settings.Default["password"];
             string remote_dir = (string)Settings.Default["remote_directory"];
 
+			// If any of these fields is empty, we can't download the files
             if (rh_address == "" || username == "" || remote_dir == "") // no password -> ""
             {
                 MessageBox.Show("Please check your remote host file editing settings.", "Error");
@@ -380,6 +476,7 @@ namespace YAMLEditor
             }
             else
             {
+				// Requires confirmation input
                 DialogResult result = MessageBox.Show("Starting download of files from remote host on " + rh_address, "Open from URL",
                 MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
                 mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Starting download of files from remote host on " + rh_address);
@@ -389,6 +486,7 @@ namespace YAMLEditor
 
                 Directory.SetCurrentDirectory(workingdir);
 
+				// If this directory already exists, then we delete all its content to avoid any conficts
                 if (Directory.Exists("./RemoteFiles/"))
                 {
                     DirectoryInfo d = new DirectoryInfo("./RemoteFiles/");
@@ -403,11 +501,13 @@ namespace YAMLEditor
                     }
                 }
 
+				// Making sure the file path is correct
                 if (!remote_dir.StartsWith("/"))
                     remote_dir = "/" + remote_dir;
                 if (!remote_dir.EndsWith("/"))
                     remote_dir = remote_dir + "/";
 
+				// Tries to download the files through SFTP
                 try
                 {
                     SFTPManager.DownloadRemoteFiles(rh_address, username, password, remote_dir, "./RemoteFiles/", "yaml");
@@ -419,6 +519,7 @@ namespace YAMLEditor
                     return;
                 }
 
+				// If the download is sucessful, the user then needs to open a yaml file from this directory 
                 result = MessageBox.Show("Download complete. Open a file...", "Success",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
                 mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Download complete.");
@@ -428,6 +529,7 @@ namespace YAMLEditor
 
                 dialog.InitialDirectory = workingdir + "\\RemoteFiles\\";
 
+				// Opens the chosen yaml file to edit
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
                     changedComponents = new Dictionary<Dictionary<string, List<IComponent>>, IComponent>();
@@ -467,14 +569,19 @@ namespace YAMLEditor
             }
         }
 
+		/// <summary>
+		/// Uploads the remote files through SFTP
+		/// </summary>
         public void UploadToURL()
         {
-            string rh_address = (string)Settings.Default["rh_address"];
+			// Cashes the necessary options inputs from the settings menu
+			string rh_address = (string)Settings.Default["rh_address"];
             string username = (string)Settings.Default["username"];
             string password = (string)Settings.Default["password"];
             string remote_dir = (string)Settings.Default["remote_directory"];
 
-            if (rh_address == "" || username == "" || remote_dir == "") // no password -> ""
+			// If any of these fields is empty, we can't download the files
+			if (rh_address == "" || username == "" || remote_dir == "") // no password -> ""
             {
                 MessageBox.Show("Please check your remote host file editing settings.", "Error");
                 mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Please check your remote host file editing settings before trying to upload to remote host.");
@@ -482,7 +589,8 @@ namespace YAMLEditor
             }
             else
             {
-                DialogResult result = MessageBox.Show("Starting upload of files to remote host on " + rh_address, "Uploading to Remote",
+				// Requires confirmation input
+				DialogResult result = MessageBox.Show("Starting upload of files to remote host on " + rh_address, "Uploading to Remote",
                 MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
                 mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Starting upload of files to remote host on " + rh_address);
 
