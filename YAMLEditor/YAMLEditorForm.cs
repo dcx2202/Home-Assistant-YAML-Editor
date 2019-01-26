@@ -1503,9 +1503,6 @@ namespace YAMLEditor
                 try
                 {
                     File.WriteAllLines(filename, lines);
-
-                    // Clear the added components list
-                    addedComponents = new List<IComponent>();
                 }
                 catch(IOException ioe)
                 {
@@ -1615,9 +1612,6 @@ namespace YAMLEditor
                 try
                 {
                     File.WriteAllLines(node.getFileName(), lines);
-
-                    // Clear the changed components list
-                    changedComponents = new Dictionary<Dictionary<string, List<IComponent>>, IComponent>();
                 }
                 catch(IOException ioe)
                 {
@@ -1716,9 +1710,6 @@ namespace YAMLEditor
                 try
                 {
                     File.WriteAllLines(node.getFileName(), lines);
-
-                    // Clear the removed components list
-                    removedComponents = new Dictionary<IComponent, List<IComponent>>();
                 }
                 catch(IOException ioe)
                 {
@@ -1726,6 +1717,15 @@ namespace YAMLEditor
                 }
             }
             #endregion
+
+            // Clear the added components list
+            addedComponents = new List<IComponent>();
+
+            // Clear the changed components list
+            changedComponents = new Dictionary<Dictionary<string, List<IComponent>>, IComponent>();
+
+            // Clear the removed components list
+            removedComponents = new Dictionary<IComponent, List<IComponent>>();
 
             // Clear the tree
             FileTreeRoot.Nodes.Clear();
