@@ -25,7 +25,6 @@ namespace YAMLEditor.Autosave
         private void autosave(object sender, EventArgs e)
         {
             YAMLEditorForm.Save();
-            logger.WriteLine("'TIS WORKEN\n----------------------------------------\n");
         }
     }
 }
