@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using YamlDotNet.RepresentationModel;
 using YAMLEditor.Commands;
 using YAMLEditor.Patterns;
 
@@ -12,20 +9,29 @@ namespace YAMLEditor
 {
     class Component : IComponent
     {
-        public List<IComponent> children;
-        public string filename;
         private string name;
+        public string filename;
+
         public IComponent parent;
+        public List<IComponent> children;
+
+        /// <summary>
+        /// Property grid value
+        /// </summary>
         public string Name
         {
             get
             {
                 return this.name;
             }
+            
+            // Called when the user changes a component's value in the property grid
             set
             {
+                // Input validation
                 if(value.All(c => Char.IsLetterOrDigit(c) || c.Equals('_') || c.Equals("") || c.Equals(' ')))
                 {
+                    // Can only remove the component's value if it's a leaf
                     if (children.Count != 0 && value == "")
                     {
                         MessageBox.Show("Can't set this node's value as empty", "Error");
@@ -35,8 +41,11 @@ namespace YAMLEditor
                         // Cache the old name
                         string oldvalue = this.name;
 
+                        // Get all the parents
                         List<IComponent> parents = new List<IComponent>();
                         YAMLEditorForm.GetParents(parents, this);
+
+                        // Remove the root
                         parents.Remove(parents.Last());
 
                         Dictionary<string, List<IComponent>> dic = new Dictionary<string, List<IComponent>> { { oldvalue, parents } };
@@ -58,6 +67,9 @@ namespace YAMLEditor
             }
         }
 
+        /// <summary>
+        /// Property grid filename
+        /// </summary>
         public string Filename
         {
             get { return this.filename; }
@@ -71,55 +83,92 @@ namespace YAMLEditor
             name = aName;
         }
 
-        public void add(IComponent child)
+        /// <summary>
+        /// Adds a new child to this component's children
+        /// </summary>
+        /// <param name="child"></param>
+        public void Add(IComponent child)
         {
             children.Add(child);
         }
 
-        public void remove(IComponent child)
+        /// <summary>
+        /// Removes a given child from this component's children
+        /// </summary>
+        /// <param name="child"></param>
+        public void Remove(IComponent child)
         {
             children.Remove(child);
         }
 
-        public IComponent getChild(int i)
+        /// <summary>
+        /// Returns this component's child at the given index if it exists, null otherwise
+        /// </summary>
+        /// <param name="i"></param>
+        /// <returns></returns>
+        public IComponent GetChild(int i)
         {
             if(children.Count >= i)
                 return children[i];
             return null;
         }
 
-        public List<IComponent> getChildren()
+        /// <summary>
+        /// Returns this component's children
+        /// </summary>
+        /// <returns></returns>
+        public List<IComponent> GetChildren()
         {
             return children;
         }
 
-        public IComponent getParent()
+        /// <summary>
+        /// Returns this component's parent
+        /// </summary>
+        /// <returns></returns>
+        public IComponent GetParent()
         {
             return parent;
         }
 
-        public void setParent(IComponent aParent)
+        /// <summary>
+        /// Sets this component's parent
+        /// </summary>
+        /// <param name="aParent"></param>
+        public void SetParent(IComponent aParent)
         {
             parent = aParent;
         }
 
-        public string getFileName()
+        /// <summary>
+        /// Returns this component's filename (where it's located)
+        /// </summary>
+        /// <returns></returns>
+        public string GetFileName()
         {
             return filename;
         }
 
-        public void setFileName(string aFileName)
+        /// <summary>
+        /// Sets this component's filename (in the program, not in the file system)
+        /// </summary>
+        /// <param name="aFileName"></param>
+        public void SetFileName(string aFileName)
         {
             if (children.Count > 0)
             {
                 foreach (IComponent child in children)
-                    child.setFileName(aFileName);
+                    child.SetFileName(aFileName);
             }
 
             filename = aFileName;
         }
 
-        public void setName(string aName)
+        /// <summary>
+        /// Sets this component's name
+        /// </summary>
+        /// <param name="aName"></param>
+        public void SetName(string aName)
         {
             name = aName;
         }

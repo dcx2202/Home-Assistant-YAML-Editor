@@ -36,7 +36,7 @@ namespace YAMLEditor.Commands
             var parents = new List<IComponent>();
             parents = YAMLEditorForm.GetParents(parents, component);
             parents.Remove(parents.Last());
-            component.setName(newvalue);
+            component.SetName(newvalue);
             YAMLEditorForm.changedComponents.Add(new Dictionary<string, List<IComponent>>() { { oldvalue, parents } }, component);
         }
 
@@ -47,7 +47,7 @@ namespace YAMLEditor.Commands
             var parents = new List<IComponent>();
             parents = YAMLEditorForm.GetParents(parents, component);
             parents.Remove(parents.Last());
-            component.setName(oldvalue);
+            component.SetName(oldvalue);
             YAMLEditorForm.changedComponents.Add(new Dictionary<string, List<IComponent>>() { { newvalue, parents } }, component);
         }
     }

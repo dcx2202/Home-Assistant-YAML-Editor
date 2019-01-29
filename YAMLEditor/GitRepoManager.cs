@@ -2,10 +2,6 @@
 using LibGit2Sharp.Handlers;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace YAMLEditor
 {
@@ -18,7 +14,7 @@ namespace YAMLEditor
         /// <param name="password"></param>
         /// <param name="remoterepo_path"></param>
         /// <param name="localrepo_path"></param>
-        public static void clone(string email, string password, string remoterepo_path, string localrepo_path)
+        public static void Clone(string email, string password, string remoterepo_path, string localrepo_path)
         {
             var co = new CloneOptions();
             co.CredentialsProvider = (_url, _user, _cred) => new UsernamePasswordCredentials { Username = email, Password = password };
@@ -35,7 +31,7 @@ namespace YAMLEditor
         /// <param name="email"></param>
         /// <param name="password"></param>
         /// <param name="localrepo"></param>
-        public static void pull(string email, string password, string localrepo_path)
+        public static void Pull(string email, string password, string localrepo_path)
         {
             using (var repo = new Repository(localrepo_path))
             {
@@ -65,7 +61,7 @@ namespace YAMLEditor
         /// <param name="email"></param>
         /// <param name="password"></param>
         /// <param name="localrepo_path"></param>
-        public static void push(string email, string password, string localrepo_path)
+        public static void Push(string email, string password, string localrepo_path)
         {
             using (var repo = new Repository(localrepo_path))
             {
@@ -83,7 +79,7 @@ namespace YAMLEditor
         /// <param name="email"></param>
         /// <param name="localrepo_path"></param>
         /// <param name="files"></param>
-        public static void commit(string email, string localrepo_path, List<string> files)
+        public static void Commit(string email, string localrepo_path, List<string> files)
         {
             using (var repo = new Repository(localrepo_path))
             {
