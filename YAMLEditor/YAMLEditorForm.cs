@@ -1,21 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using YamlDotNet.RepresentationModel;
 using YAMLEditor.Logging;
 using YAMLEditor.Patterns;
-using Microsoft.VisualBasic;
 using WebSocketSharp;
 using Newtonsoft.Json;
 using YAMLEditor.Properties;
-using Renci.SshNet;
 
 namespace YAMLEditor
 {
@@ -60,7 +53,7 @@ namespace YAMLEditor
         public static TreeNode FileTreeRoot { get; set; }
 
 
-        //---------------------------- Edited Components ----------------------------
+        //---------------------------- Malleable Components ----------------------------
 
         /// <summary>
         /// Holds the components that suffered changes
@@ -137,7 +130,7 @@ namespace YAMLEditor
                 }
                 foreach (DirectoryInfo dir in d.GetDirectories())
                 {
-                    setAttributesNormal(dir);
+                    SetAttributesNormal(dir);
                     dir.Delete(true);
                 }
 
@@ -147,7 +140,6 @@ namespace YAMLEditor
 
 
         #region Button Actions
-		
 		/// <summary>
 		/// Adds a component to the selected node
 		/// </summary>
@@ -250,6 +242,8 @@ namespace YAMLEditor
                 saveToolStripMenuItem.Enabled = true;
                 uploadtourl.Enabled = true;
                 push_toolStrip.Enabled = true;
+
+                new Autosave.Autosave(mLogger);
             }
         }
 
@@ -514,6 +508,7 @@ namespace YAMLEditor
         }
         #endregion
 
+
 		/// <summary>
 		/// Downloads the remote files through SFTP
 		/// </summary>
@@ -715,7 +710,7 @@ namespace YAMLEditor
                     }
                     foreach (DirectoryInfo dir in d.GetDirectories())
                     {
-                        setAttributesNormal(dir); // We have to do this to avoid permission denied exception
+                        SetAttributesNormal(dir); // We have to do this to avoid permission denied exception
                         dir.Delete(true);
                     }
                 }
@@ -930,9 +925,6 @@ namespace YAMLEditor
                     //if it's another file, then load that file
                     if (scalar.Tag == "!include")
                     {
-                        var parentNode = node.Parent;
-                        root.Nodes.Remove(node);
-                        node = parentNode;
                         filename = scalar.Value;
                         LoadFile(node, scalar.Value);
                         filename = openedfilename;
@@ -1356,7 +1348,7 @@ namespace YAMLEditor
         /// <summary>
         /// Saves all the changes to the correct files
         /// </summary>
-        public void Save()
+        public static void Save()
         {
             #region Added Components
             // For each component that was added we write it to the opened file
@@ -1792,11 +1784,11 @@ namespace YAMLEditor
         /// Sets a given directory's attributes to normal to prevent permission denied exceptions when deleting its contents
         /// </summary>
         /// <param name="dir"></param>
-        private void setAttributesNormal(DirectoryInfo dir)
+        private void SetAttributesNormal(DirectoryInfo dir)
         {
             foreach (var subDir in dir.GetDirectories())
             {
-                setAttributesNormal(subDir);
+                SetAttributesNormal(subDir);
                 subDir.Attributes = FileAttributes.Normal;
             }
             foreach (var file in dir.GetFiles())

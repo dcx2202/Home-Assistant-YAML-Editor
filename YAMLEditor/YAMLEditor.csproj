@@ -65,6 +65,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Autosave\Autosave.cs" />
     <Compile Include="Commands\Command.cs" />
     <Compile Include="GitRepoManager.cs" />
     <Compile Include="Model\IComponent.cs" />
@@ -91,7 +92,6 @@
     <Compile Include="OptionsWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Saver\Saver.cs" />
     <Compile Include="SFTPManager.cs" />
     <Compile Include="YAMLEditorForm.cs">
       <SubType>Form</SubType>
@@ -139,12 +139,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\favicon-192x1921.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\YAMLEditor.AutoSave\YAMLEditor.AutoSave.csproj">
-      <Project>{2812f5bc-ba53-4152-b648-652d125dc4a9}</Project>
-      <Name>YAMLEditor.AutoSave</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\copy-document.png" />
