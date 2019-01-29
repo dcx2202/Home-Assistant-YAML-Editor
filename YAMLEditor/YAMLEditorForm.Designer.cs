@@ -98,7 +98,7 @@
             this.mainMenuStrip.Location = new System.Drawing.Point(0, 0);
             this.mainMenuStrip.Name = "mainMenuStrip";
             this.mainMenuStrip.Padding = new System.Windows.Forms.Padding(2, 1, 0, 1);
-            this.mainMenuStrip.Size = new System.Drawing.Size(754, 25);
+            this.mainMenuStrip.Size = new System.Drawing.Size(969, 25);
             this.mainMenuStrip.TabIndex = 0;
             this.mainMenuStrip.Text = "menuStrip1";
             // 
@@ -285,7 +285,7 @@
             this.toolStripButton3});
             this.mainToolStrip.Location = new System.Drawing.Point(0, 25);
             this.mainToolStrip.Name = "mainToolStrip";
-            this.mainToolStrip.Size = new System.Drawing.Size(754, 27);
+            this.mainToolStrip.Size = new System.Drawing.Size(969, 27);
             this.mainToolStrip.TabIndex = 2;
             this.mainToolStrip.Text = "toolStrip";
             // 
@@ -421,8 +421,8 @@
             // mainSplitContainer.Panel2
             // 
             this.mainSplitContainer.Panel2.Controls.Add(this.mainTabControl);
-            this.mainSplitContainer.Size = new System.Drawing.Size(754, 457);
-            this.mainSplitContainer.SplitterDistance = 352;
+            this.mainSplitContainer.Size = new System.Drawing.Size(969, 457);
+            this.mainSplitContainer.SplitterDistance = 452;
             this.mainSplitContainer.SplitterWidth = 2;
             this.mainSplitContainer.TabIndex = 3;
             // 
@@ -440,7 +440,7 @@
             this.mainTreeView.Margin = new System.Windows.Forms.Padding(2);
             this.mainTreeView.Name = "mainTreeView";
             this.mainTreeView.SelectedImageIndex = 0;
-            this.mainTreeView.Size = new System.Drawing.Size(352, 457);
+            this.mainTreeView.Size = new System.Drawing.Size(452, 457);
             this.mainTreeView.TabIndex = 0;
             this.mainTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnAfterSelect);
             // 
@@ -466,7 +466,7 @@
             this.mainTabControl.Margin = new System.Windows.Forms.Padding(2);
             this.mainTabControl.Name = "mainTabControl";
             this.mainTabControl.SelectedIndex = 0;
-            this.mainTabControl.Size = new System.Drawing.Size(400, 457);
+            this.mainTabControl.Size = new System.Drawing.Size(515, 457);
             this.mainTabControl.TabIndex = 1;
             // 
             // tabPage1
@@ -477,7 +477,7 @@
             this.tabPage1.Margin = new System.Windows.Forms.Padding(2);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPage1.Size = new System.Drawing.Size(392, 428);
+            this.tabPage1.Size = new System.Drawing.Size(507, 428);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Properties";
             // 
@@ -495,7 +495,7 @@
             this.mainPropertyGrid.Name = "mainPropertyGrid";
             this.mainPropertyGrid.SelectedItemWithFocusBackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.mainPropertyGrid.SelectedItemWithFocusForeColor = System.Drawing.SystemColors.ControlDark;
-            this.mainPropertyGrid.Size = new System.Drawing.Size(388, 424);
+            this.mainPropertyGrid.Size = new System.Drawing.Size(503, 424);
             this.mainPropertyGrid.TabIndex = 0;
             this.mainPropertyGrid.ViewBackColor = System.Drawing.SystemColors.ControlDark;
             this.mainPropertyGrid.ViewBorderColor = System.Drawing.SystemColors.ControlDarkDark;
@@ -507,7 +507,7 @@
             this.helpTabPage.Margin = new System.Windows.Forms.Padding(2);
             this.helpTabPage.Name = "helpTabPage";
             this.helpTabPage.Padding = new System.Windows.Forms.Padding(2);
-            this.helpTabPage.Size = new System.Drawing.Size(310, 298);
+            this.helpTabPage.Size = new System.Drawing.Size(392, 428);
             this.helpTabPage.TabIndex = 1;
             this.helpTabPage.Text = "Help";
             this.helpTabPage.UseVisualStyleBackColor = true;
@@ -519,7 +519,7 @@
             this.webBrowser.Margin = new System.Windows.Forms.Padding(2);
             this.webBrowser.MinimumSize = new System.Drawing.Size(8, 8);
             this.webBrowser.Name = "webBrowser";
-            this.webBrowser.Size = new System.Drawing.Size(306, 294);
+            this.webBrowser.Size = new System.Drawing.Size(388, 424);
             this.webBrowser.TabIndex = 0;
             // 
             // mainTextBox
@@ -529,18 +529,18 @@
             this.mainTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mainTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.mainTextBox.Location = new System.Drawing.Point(0, 0);
-            this.mainTextBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.mainTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.mainTextBox.Multiline = true;
             this.mainTextBox.Name = "mainTextBox";
             this.mainTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.mainTextBox.Size = new System.Drawing.Size(754, 119);
+            this.mainTextBox.Size = new System.Drawing.Size(969, 119);
             this.mainTextBox.TabIndex = 4;
             // 
             // splitContainer2
             // 
             this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer2.Location = new System.Drawing.Point(0, 52);
-            this.splitContainer2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.splitContainer2.Margin = new System.Windows.Forms.Padding(2);
             this.splitContainer2.Name = "splitContainer2";
             this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -552,7 +552,7 @@
             // 
             this.splitContainer2.Panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.splitContainer2.Panel2.Controls.Add(this.mainTextBox);
-            this.splitContainer2.Size = new System.Drawing.Size(754, 579);
+            this.splitContainer2.Size = new System.Drawing.Size(969, 579);
             this.splitContainer2.SplitterDistance = 457;
             this.splitContainer2.SplitterWidth = 3;
             this.splitContainer2.TabIndex = 4;
@@ -562,7 +562,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.ClientSize = new System.Drawing.Size(754, 631);
+            this.ClientSize = new System.Drawing.Size(969, 631);
             this.Controls.Add(this.splitContainer2);
             this.Controls.Add(this.mainToolStrip);
             this.Controls.Add(this.mainMenuStrip);

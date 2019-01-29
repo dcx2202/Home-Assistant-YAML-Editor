@@ -307,18 +307,17 @@ namespace YAMLEditor
 
             // Get the component
             var treenode = mainTreeView.SelectedNode;
-            var node = (Component)treenode.Tag;
 
             List<IComponent> nodeparents = new List<IComponent>();
-            nodeparents = GetParents(nodeparents, node);
+            nodeparents = GetParents(nodeparents, component);
             nodeparents.Remove(nodeparents.Last());
 
             // Remove component and tree node from their parent's children (remove from data structure)
             treenode.Parent.Nodes.Remove(treenode);
-            node.getParent().getChildren().Remove(node);
+            component.getParent().getChildren().Remove(component);
 
             // Add to the list of edited components
-            removedComponents.Add(node, nodeparents);
+            removedComponents.Add(component, nodeparents);
 
             mLogger.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " - Removed " + component.Name);
         }
