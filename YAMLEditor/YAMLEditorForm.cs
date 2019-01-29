@@ -173,7 +173,7 @@ namespace YAMLEditor
                 if ((allchildren.Count == 1 && allchildren.First().Name != "") || allchildren.Count == 0)
                 {
                     if(component.Name == "")
-                        MessageBox.Show("Can't add a new component to this node. Try adding to " + component.getParent().Name + ".");
+                        MessageBox.Show("Can't add a new component to this node. Try adding to " + component.GetParent().Name + ".");
                     else
                         MessageBox.Show("Can't add a new component to this node.");
                     return;
@@ -321,7 +321,7 @@ namespace YAMLEditor
 
             // Remove component and tree node from their parent's children (remove from data structure)
             treenode.Parent.Nodes.Remove(treenode);
-            node.getParent().getChildren().Remove(node);
+            node.GetParent().Remove(node);
 
             // Add to the list of edited components
             removedComponents.Add(node, nodeparents);
@@ -723,7 +723,7 @@ namespace YAMLEditor
 				// Tries to pull the remote files from the Github repository
                 try
                 {
-                    GitRepoManager.clone(gitrepo_email, gitrepo_password, gitrepo_link, workingdir + "/GitRepo/");
+                    GitRepoManager.Clone(gitrepo_email, gitrepo_password, gitrepo_link, workingdir + "/GitRepo/");
                 }
                 catch (Exception exc)
                 {
@@ -816,8 +816,8 @@ namespace YAMLEditor
                 {
                     List<string> files_paths = Directory.EnumerateFiles(workingdir + "/GitRepo/").ToList();
 
-                    GitRepoManager.commit(gitrepo_email, workingdir + "/GitRepo/", files_paths);
-                    GitRepoManager.push(gitrepo_email, gitrepo_password, workingdir + "/GitRepo/");
+                    GitRepoManager.Commit(gitrepo_email, workingdir + "/GitRepo/", files_paths);
+                    GitRepoManager.Push(gitrepo_email, gitrepo_password, workingdir + "/GitRepo/");
                 }
                 catch (Exception exc)
                 {
@@ -849,7 +849,7 @@ namespace YAMLEditor
                 var node = (Component)mainTreeView.SelectedNode.Tag;
 
 				// If the selected node is not the root node
-                if (node.getParent().Name != "root")
+                if (node.GetParent().Name != "root")
                 {
                     // Get the node
                     List<IComponent> parents = new List<IComponent>();
@@ -909,7 +909,7 @@ namespace YAMLEditor
                     var scalar = child.Value as YamlScalarNode;
 
                     IComponent comp = new Component(key.Value, filename, currentParent);
-                    currentParent.add(comp);
+                    currentParent.Add(comp);
                     currentParent = comp;
 
                     var node = root.Nodes.Add($"{key.Value}");
@@ -917,7 +917,7 @@ namespace YAMLEditor
                     node.ImageIndex = node.SelectedImageIndex = GetImageIndex(scalar);
 
                     comp = new Component(scalar.Value, filename, currentParent);
-                    currentParent.add(comp);
+                    currentParent.Add(comp);
 
                     //if it's not another file, then add to tree
                     if (scalar.Tag != "!include")
@@ -941,7 +941,7 @@ namespace YAMLEditor
                 else if (child.Value is YamlSequenceNode)
                 {
                     IComponent comp = new Component(key.Value, filename, currentParent);
-                    currentParent.add(comp);
+                    currentParent.Add(comp);
                     currentParent = comp;
 
                     var node = root.Nodes.Add(key.Value);
@@ -953,7 +953,7 @@ namespace YAMLEditor
                 else if (child.Value is YamlMappingNode)
                 {
                     IComponent comp = new Component(key.Value, filename, currentParent);
-                    currentParent.add(comp);
+                    currentParent.Add(comp);
                     currentParent = comp;
 
                     var node = root.Nodes.Add(key.Value);
@@ -963,8 +963,8 @@ namespace YAMLEditor
                     LoadChildren(node, child.Value as YamlMappingNode);
                 }
 
-                if (currentParent.getParent() != null)
-                    currentParent = currentParent.getParent();
+                if (currentParent.GetParent() != null)
+                    currentParent = currentParent.GetParent();
             }
 
         }
@@ -1003,7 +1003,7 @@ namespace YAMLEditor
                 {
                     // Create new component and add it to the composite
                     IComponent comp = new Component(root.Text, filename, currentParent);
-                    currentParent.add(comp);
+                    currentParent.Add(comp);
                     currentParent = comp;
 
                     // Add new node to the tree
@@ -1024,7 +1024,7 @@ namespace YAMLEditor
 
                     // Create new component and add it to the composite
                     IComponent comp = new Component(root.Text, filename, currentParent);
-                    currentParent.add(comp);
+                    currentParent.Add(comp);
                     currentParent = comp;
 
                     // Add new node to the tree
@@ -1035,8 +1035,8 @@ namespace YAMLEditor
                 }
             }
 
-            if (currentParent.getParent() != null)
-                currentParent = currentParent.getParent();
+            if (currentParent.GetParent() != null)
+                currentParent = currentParent.GetParent();
         }
 
         /// <summary>
@@ -1168,7 +1168,7 @@ namespace YAMLEditor
                 if(node.Name.Equals(component.Name))
                 {
                     // Update the value without using the setter because we don't want to add this change to the command manager
-                    node.setName(aValue);
+                    node.SetName(aValue);
                     return;
                 }
             }
@@ -1188,13 +1188,13 @@ namespace YAMLEditor
                 {
                     // They are the same component and we update the value without using the setter
                     // because we don't want to add this change to the command manager
-                    node.setName(aValue);
+                    node.SetName(aValue);
                     return;
                 }
             }
 
             // Go to the next level
-            foreach (IComponent n in node.getChildren())
+            foreach (IComponent n in node.GetChildren())
             {
                 UpdateComposite(n, component, aValue);
             }
@@ -1220,7 +1220,7 @@ namespace YAMLEditor
             }
 
             // Go to the next level
-            foreach (IComponent n in node.getChildren())
+            foreach (IComponent n in node.GetChildren())
             {
                 CheckIfComponentExists(n, component);
             }
@@ -1264,10 +1264,10 @@ namespace YAMLEditor
         public static void AddComponentToData(IComponent aComponent, TreeNode aTree, IComponent aParent)
         {
             // Set the new component's parent as the given parent (the selected node)
-            aComponent.setParent(aParent);
+            aComponent.SetParent(aParent);
 
             // Add the new component to the composite
-            aParent.add(aComponent);
+            aParent.Add(aComponent);
 
             // Add the new component to the added components list
             addedComponents.Add(aComponent);
@@ -1290,17 +1290,17 @@ namespace YAMLEditor
         public static List<IComponent> GetParents(List<IComponent> parents, IComponent node)
         {
             // If we got to the root
-            if (node.getParent() == null)
+            if (node.GetParent() == null)
             {
                 return parents;
             }
             else
             {
                 // Add this node's parent
-                parents.Add(node.getParent());
+                parents.Add(node.GetParent());
 
                 // Get this node's parent parents
-                return GetParents(parents, node.getParent());
+                return GetParents(parents, node.GetParent());
             }
         }
 
@@ -1336,14 +1336,14 @@ namespace YAMLEditor
         public static List<IComponent> GetAllChildren(List<IComponent> children, IComponent node)
         {
             // If this node hasn't got any children then we reached a leaf
-            if(node.getChildren().Count == 0)
+            if(node.GetChildren().Count == 0)
             {
                 return children;
             }
             else
             {
                 // For each child we add it to the list and get all of its children
-                foreach(IComponent child in node.getChildren())
+                foreach(IComponent child in node.GetChildren())
                 {
                     children.Add(child);
                     GetAllChildren(children, child);
@@ -1376,10 +1376,10 @@ namespace YAMLEditor
                 }
 
                 // If this component was added to the root then we simply include it at the bottom of the file
-                if (comp.getParent().Name == "root")
+                if (comp.GetParent().Name == "root")
                 {
                     lines.Add("");
-                    lines.Add(comp.Name + ": !include " + comp.getFileName());
+                    lines.Add(comp.Name + ": !include " + comp.GetFileName());
                 }
 
                 // Else we get all of its parents and find the line of its direct parent
@@ -1438,14 +1438,14 @@ namespace YAMLEditor
 
                     // Get all of the new component's siblings
                     List<IComponent> siblings = new List<IComponent>();
-                    siblings = GetAllChildren(siblings, comp.getParent());
+                    siblings = GetAllChildren(siblings, comp.GetParent());
 
                     // According to the number of siblings and how they are defined (scalar, sequence, ...) we add the new component correctly
                     // If the parent is a leaf then we simply add an include in front like so: parent: !include comp.yaml
                     if (siblings.Count == 1 && siblings.First().Name == "")
                     {
-                        comp.getParent().getChildren().RemoveAt(0);
-                        lines[ln] = lines[ln] + " !include " + comp.getFileName();
+                        comp.GetParent().GetChildren().RemoveAt(0);
+                        lines[ln] = lines[ln] + " !include " + comp.GetFileName();
                         break;
                     }
                     else
@@ -1477,7 +1477,7 @@ namespace YAMLEditor
                             // If it's a white space only line then we can add the new component here
                             if (lines[i].Trim() == "")
                             {
-                                lines.Insert(i, ident + "  " + comp.Name + ": !include " + comp.getFileName());
+                                lines.Insert(i, ident + "  " + comp.Name + ": !include " + comp.GetFileName());
                                 break;
                             }
 
@@ -1485,14 +1485,14 @@ namespace YAMLEditor
                             // ends in the line above and we add the new component here
                             else if (ident == line_ident && !lines[i].Trim().StartsWith("#"))
                             {
-                                lines.Insert(i - 1, ident + "  " + comp.Name + ": !include " + comp.getFileName());
+                                lines.Insert(i - 1, ident + "  " + comp.Name + ": !include " + comp.GetFileName());
                                 break;
                             }
 
                             // If we reached the end of the file we can simply add the new component here
                             else if(i == lines.Count)
                             {
-                                lines.Add(ident + "  " + comp.Name + ": !include " + comp.getFileName());
+                                lines.Add(ident + "  " + comp.Name + ": !include " + comp.GetFileName());
                                 break;
                             }
                         }
@@ -1532,7 +1532,7 @@ namespace YAMLEditor
                 // Try reading the file
                 try
                 {
-                    lines = File.ReadAllLines(node.getFileName()).ToList();
+                    lines = File.ReadAllLines(node.GetFileName()).ToList();
                 }
                 catch (IOException e)
                 {
@@ -1611,7 +1611,7 @@ namespace YAMLEditor
                 // Try writing to the file
                 try
                 {
-                    File.WriteAllLines(node.getFileName(), lines);
+                    File.WriteAllLines(node.GetFileName(), lines);
                 }
                 catch(IOException ioe)
                 {
@@ -1632,7 +1632,7 @@ namespace YAMLEditor
                 // Try reading the file
                 try
                 {
-                    lines = File.ReadAllLines(node.getFileName()).ToList();
+                    lines = File.ReadAllLines(node.GetFileName()).ToList();
                 }
                 catch(IOException ioe)
                 {
@@ -1687,9 +1687,9 @@ namespace YAMLEditor
                     }
 
                     // If this component has children then we need to remove them too
-                    if (aux && node.getChildren().Count > 1)
+                    if (aux && node.GetChildren().Count > 1)
                     {
-                        foreach (IComponent child in node.getChildren())
+                        foreach (IComponent child in node.GetChildren())
                         {
                             // If this line contains this child and it isn't a comment line then we remove it
                             if (lines[i].Contains(child.Name) && !lines[i].Trim().StartsWith("#"))
@@ -1709,7 +1709,7 @@ namespace YAMLEditor
                 // Try writing to the file
                 try
                 {
-                    File.WriteAllLines(node.getFileName(), lines);
+                    File.WriteAllLines(node.GetFileName(), lines);
                 }
                 catch(IOException ioe)
                 {
@@ -1767,22 +1767,22 @@ namespace YAMLEditor
             if (fileRoot != null)
             {
                 // Update the component's filename (used to be the filepath)
-                fileRoot.Keys.First().setFileName(name);
+                fileRoot.Keys.First().SetFileName(name);
 
                 //Check if this component already exists where we are trying to add
                 YAMLEditorForm.componentExists = false;
-                YAMLEditorForm.CheckIfComponentExists(aParent, fileRoot.Keys.First().getChild(0));
+                YAMLEditorForm.CheckIfComponentExists(aParent, fileRoot.Keys.First().GetChild(0));
 
                 if (YAMLEditorForm.componentExists)
                 {
-                    MessageBox.Show(fileRoot.Keys.First().getChild(0).Name + " already exists under " + aParent.Name + ".", "Error");
+                    MessageBox.Show(fileRoot.Keys.First().GetChild(0).Name + " already exists under " + aParent.Name + ".", "Error");
                 }
                 else
                 {
-                    MessageBox.Show(fileRoot.Keys.First().getChild(0).Name + " added successfully under " + aParent.Name + ".", "Success");
+                    MessageBox.Show(fileRoot.Keys.First().GetChild(0).Name + " added successfully under " + aParent.Name + ".", "Success");
 
                     // Add it to the data structures
-                    AddComponentToData(fileRoot.Keys.First().getChild(0), fileRoot.Values.First().Nodes[0], aParent);
+                    AddComponentToData(fileRoot.Keys.First().GetChild(0), fileRoot.Values.First().Nodes[0], aParent);
                 }
                 YAMLEditorForm.componentExists = false;
             }

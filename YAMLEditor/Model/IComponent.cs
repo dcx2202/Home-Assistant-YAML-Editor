@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace YAMLEditor
 {
@@ -10,14 +6,14 @@ namespace YAMLEditor
     {
         string Name { get; set; }
         string Filename { get; }
-        void add(IComponent child);
-        void remove(IComponent child);
-        IComponent getChild(int i);
-        List<IComponent> getChildren();
-        IComponent getParent();
-        void setParent(IComponent aParent);
-        string getFileName();
-        void setFileName(string aFileName);
-        void setName(string aName);
+        void Add(IComponent child);
+        void Remove(IComponent child);
+        IComponent GetChild(int i);
+        List<IComponent> GetChildren();
+        IComponent GetParent();
+        void SetParent(IComponent aParent);
+        string GetFileName();
+        void SetFileName(string aFileName);
+        void SetName(string aName);
     }
 }
