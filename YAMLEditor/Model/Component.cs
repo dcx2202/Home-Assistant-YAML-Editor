@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using YamlDotNet.RepresentationModel;
-using YAMLEditor;
 using YAMLEditor.Commands;
 using YAMLEditor.Patterns;
 

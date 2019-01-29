@@ -1,4 +1,4 @@
-homeassistant:
+homeassistant111:
   # Name of the location where Home Assistant is running
   name: Home
   # Location required to calculate the time the sun rises and sets
@@ -12,7 +12,6 @@ homeassistant:
   time_zone: UTC
   # Customization file
   customize: !include customize.yaml
-  quimcao: !include generic_test.yaml
 
 # Show links to resources in log and frontend
 introduction:
@@ -69,4 +68,5 @@ cloud:
 group: !include groups.yaml
 automation: !include automations.yaml
 script: !include scripts.yaml
+
 quimcao: !include generic_test.yaml
