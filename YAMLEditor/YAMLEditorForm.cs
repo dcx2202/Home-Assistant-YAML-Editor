@@ -651,7 +651,13 @@ namespace YAMLEditor
 
                 Directory.SetCurrentDirectory(workingdir);
 
-				// Tries to upload the files through SFTP
+                // Making sure the file path is correct
+                if (!remote_dir.StartsWith("/"))
+                    remote_dir = "/" + remote_dir;
+                if (!remote_dir.EndsWith("/"))
+                    remote_dir = remote_dir + "/";
+
+                // Tries to upload the files through SFTP
                 try
                 {
                     SFTPManager.UploadRemoteFiles(rh_address, username, password, "./RemoteFiles/", remote_dir, "yaml");
